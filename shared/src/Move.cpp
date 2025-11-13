@@ -1,4 +1,4 @@
-#include "../headers/move.hpp"
+#include "../headers/Move.hpp"
 
 // Konstruktor
 Move::Move(char piece, std::pair<int, int> from, std::pair<int, int> to)

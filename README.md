@@ -91,7 +91,7 @@
 * `class IsThatFun` \n `{}` <- Klasy z wielkiej litery
 * `using std::string`
 * `using namespace std;` <- ale nie globalnie
-* `const std::string& name;` <- brak wskaznikow
+* `const std::string &name;` <- brak wskaznikow
 * `int &var;`
 * `Move.hpp`
 ```C++

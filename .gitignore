@@ -1,4 +1,13 @@
-*.obj
+# IDE files and directories
+*.vscode/
+
+# Compilation folders
+*build/
+*release/
+
+# Compilation files
 *.exe
+*.obj
+*.o
 *.ilk
 *.pdb

@@ -88,40 +88,47 @@
 * `int isThatFun = 0;`
 * `const int MAX_VALUE = 0;`
 * `#define MAX_VALUE 0`
-* `class isThatFun` \n `{}`
+* `class IsThatFun` \n `{}` <- Klasy z wielkiej litery
 * `using std::string`
 * `using namespace std;` <- ale nie globalnie
 * `const std::string& name;` <- brak wskaznikow
 * `int &var;`
-* `player.hpp`
+* `Move.hpp`
 ```C++
-class player {
+#ifndef MOVE_HPP
+#define MOVE_HPP
+#include <utility>
+
+class Move
+{
 private:
-    std::string name;
-    int score;
+	char piece;
+	std::pair<int, int> from;
+	std::pair<int, int> to;
 
 public:
-    // --- konstruktory ---
-    player();
-    player(const std::string& name, int score = 0);
+	// Konstruktor
+	Move(char piece, std::pair<int, int> from, std::pair<int, int> to);
 
-    // --- gettery/settery ---
-    std::string getName() const;
-    int getScore() const;
-    void setScore(int newScore);
-
-    // --- metody ---
-    void addScore(int points);
+	// Gettery
+	char getPiece() const noexcept;
+	std::pair<int, int> getFrom() const noexcept;
+	std::pair<int, int> getTo() const noexcept;
 };
-```
-* imo.cpp
-```C++
-class imo{
-  int var
-  void fun {
-    //do smthing
-     return 0;
-  }
 
+#endif // MOVE_HPP
+```
+* Move.hpp
+```C++
+#include "../headers/move.hpp"
+
+// Konstruktor
+Move::Move(char piece, std::pair<int, int> from, std::pair<int, int> to)
+	: piece(piece), from(from), to(to) {}
+
+// Gettery
+char Move::getPiece() const noexcept
+{
+	return piece;
 }
 ```

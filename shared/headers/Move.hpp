@@ -10,10 +10,10 @@ private:
 	std::pair<int, int> to;
 
 public:
-	// Konstruktor
+	// Constructor
 	Move(char piece, std::pair<int, int> from, std::pair<int, int> to);
 
-	// Gettery
+	// Getters
 	char getPiece() const noexcept;
 	std::pair<int, int> getFrom() const noexcept;
 	std::pair<int, int> getTo() const noexcept;

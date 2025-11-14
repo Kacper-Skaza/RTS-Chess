@@ -1,10 +1,10 @@
 #include "../headers/Move.hpp"
 
-// Konstruktor
+// Constructor
 Move::Move(char piece, std::pair<int, int> from, std::pair<int, int> to)
 	: piece(piece), from(from), to(to) {}
 
-// Gettery
+// Getters
 char Move::getPiece() const noexcept
 {
 	return piece;

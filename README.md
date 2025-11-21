@@ -83,6 +83,8 @@
 ## Nazewnictwo
 
 * -Wall -Wextra -O2
+* Biale figury dostaja wilekie litery 
+* Czarne figury dostaja male litery
 * Używamy znaczków
 * `isThatFun()`
 * `int isThatFun = 0;`

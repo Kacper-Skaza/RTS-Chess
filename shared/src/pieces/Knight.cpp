@@ -14,6 +14,11 @@ char Knight::getSymbol() const noexcept
 	return SYMBOL;
 }
 
+bool Knight::getFirstMove() const noexcept
+{
+	return firstMove;
+}
+
 bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
 	const Piece *piece = move.getPiece();
@@ -39,4 +44,9 @@ bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::u
 		return true;
 
 	return false;
+}
+
+void Knight::makeMove()
+{
+	firstMove = false;
 }

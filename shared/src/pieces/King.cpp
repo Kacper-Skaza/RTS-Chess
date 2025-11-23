@@ -14,6 +14,11 @@ char King::getSymbol() const noexcept
 	return SYMBOL;
 }
 
+bool King::getFirstMove() const noexcept
+{
+	return firstMove;
+}
+
 bool King::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
 	const Piece *piece = move.getPiece();
@@ -39,4 +44,9 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<std::uni
 		return true;
 
 	return false;
+}
+
+void King::makeMove()
+{
+	firstMove = false;
 }

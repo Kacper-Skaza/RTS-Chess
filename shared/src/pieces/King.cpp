@@ -24,6 +24,10 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<std::uni
 	int dx = std::abs(to.first - from.first);
 	int dy = std::abs(to.second - from.second);
 
+	// Validate piece
+	if (piece != this)
+		return false;
+
 	// Check if move is one square in any direction
 	if (!(dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)))
 		return false;

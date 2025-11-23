@@ -24,6 +24,10 @@ bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::u
 	int dx = std::abs(to.first - from.first);
 	int dy = std::abs(to.second - from.second);
 
+	// Validate piece
+	if (piece != this)
+		return false;
+
 	// Check if move is in L-shape
 	if (!((dx == 2 && dy == 1) || (dx == 1 && dy == 2)))
 		return false;

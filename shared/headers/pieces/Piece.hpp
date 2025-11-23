@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../Move.hpp"
 class Move;
 
 #include <cstdlib>

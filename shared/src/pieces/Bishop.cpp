@@ -14,7 +14,7 @@ char Bishop::getSymbol() const noexcept
     return this->SYMBOL;
 }
 
-bool Bishop::validateMove(const Move &move, const std::vector<std::vector<char>> &board) const
+bool Bishop::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
     //Check if correct piece is being moved
     if (move.getPiece() != this) return false;
@@ -23,7 +23,7 @@ bool Bishop::validateMove(const Move &move, const std::vector<std::vector<char>>
     std::pair<int, int> to = move.getTo();
 
     //Check if destination is valid (empty or other color)
-    if (board[to.first][to.second] != ' ' && std::isupper(board[to.first][to.second]) == std::isupper(this->SYMBOL)) 
+    if (board[to.first][to.second] != nullptr && std::isupper(board[to.first][to.second]->getSymbol()) == std::isupper(this->SYMBOL)) 
         return false;
 
     //Check if move is diagonal
@@ -37,7 +37,7 @@ bool Bishop::validateMove(const Move &move, const std::vector<std::vector<char>>
             i != 0;
             i+= i >= 0? -1: 1, j+= j >= 0? -1: 1)
     {
-        if (board[from.first + i][from.second + j] != ' ') return false;        
+        if (board[from.first + i][from.second + j] != nullptr) return false;        
     }
 
     return true;

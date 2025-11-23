@@ -14,7 +14,7 @@ char Pawn::getSymbol() const noexcept
     return this->SYMBOL;
 }
 
-bool Pawn::validateMove(const Move &move, const std::vector<std::vector<char>> &board) const
+bool Pawn::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
     //Check if correct piece is being moved
     if (move.getPiece() != this) return false;
@@ -30,7 +30,7 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<char>> &
     if ((dx == 1 || dx == 2) && dy == 0)
     {
         //Its a move space need to be free
-        if (board[to.first][to.second] != ' ') return false;
+        if (board[to.first][to.second] != nullptr) return false;
 
         //Check if move is valid
         if (firstMove == false && dx !=1) return false;
@@ -42,14 +42,14 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<char>> &
     if (dx == 1 && std::abs(dy) == 1)
     {
         //Check if space is same color
-        if (std::isupper(board[to.first][to.second]) == std::isupper(this->SYMBOL)) return false;
+        if (std::isupper(board[to.first][to.second]->getSymbol()) == std::isupper(this->SYMBOL)) return false;
         
         //Check for en passant
-        if (board[to.first][to.second] == ' ' && (1) /*check if pawn is next to this one*/ && (1) /*if its pawns 1st move*/)
+        if (board[to.first][to.second] == nullptr && (1) /*check if pawn is next to this one*/ && (1) /*if its pawns 1st move*/)
             return true;
             
         //Check if space is empty
-        if (board[to.first][to.second] == ' ') return false;
+        if (board[to.first][to.second] == nullptr) return false;
         return true;
     }
 }

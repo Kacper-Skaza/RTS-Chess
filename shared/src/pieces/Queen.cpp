@@ -14,7 +14,7 @@ char Queen::getSymbol() const noexcept
     return this->SYMBOL;
 }
 
-bool Queen::validateMove(const Move &move, const std::vector<std::vector<char>> &board) const
+bool Queen::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
     //Check if correct piece is being moved
     if (move.getPiece() != this) return false;
@@ -26,7 +26,7 @@ bool Queen::validateMove(const Move &move, const std::vector<std::vector<char>> 
     const int dy = to.second - from.second;
 
     //Check if destination is valid (empty or other color)
-    if (board[to.first][to.second] != ' ' && std::isupper(board[to.first][to.second]) == std::isupper(this->SYMBOL)) 
+    if (board[to.first][to.second] != nullptr && std::isupper(board[to.first][to.second]->getSymbol()) == std::isupper(this->SYMBOL)) 
         return false;
 
     //Check if move is diagonal or othogonal
@@ -37,7 +37,7 @@ bool Queen::validateMove(const Move &move, const std::vector<std::vector<char>> 
                 i != 0;
                 i+= i >= 0? -1: 1, j+= j >= 0? -1: 1)
         {
-            if (board[from.first + i][from.second + j] != ' ') return false;        
+            if (board[from.first + i][from.second + j] != nullptr) return false;        
         }
         return true;
     } 
@@ -46,7 +46,7 @@ bool Queen::validateMove(const Move &move, const std::vector<std::vector<char>> 
         //Check if there is piece in the way orthogonally
         for (int i = dx == 0? (dy >= 0? dy - 1: dy + 1): (dx >= 0? dx - 1: dx + 1); i != 0; i += i >= 0? -1: 1)
         {
-            if (board[from.first + (dx == 0? 0: i)][from.second + (dx == 0? i: 0)] != ' ') return false;
+            if (board[from.first + (dx == 0? 0: i)][from.second + (dx == 0? i: 0)] != nullptr) return false;
         }
         return true;
     } 

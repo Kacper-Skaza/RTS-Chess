@@ -10,10 +10,9 @@
 Board::Board()
 {
 	// Initialize board
-	// board.assign(SIZE, std::vector<std::unique_ptr<Piece>>(SIZE, nullptr));
 	board.resize(SIZE);
-    for (auto& row : board)
-        row.resize(SIZE); // wszystkie elementy są nullptr
+	for (int r = 0; r < SIZE; r++)
+		board[r].resize(SIZE);
 
 	// White pieces
 	board[0][0] = std::make_unique<Rook>('W');
@@ -63,7 +62,7 @@ const std::vector<std::vector<char>> Board::getBoardSymbol() const
 	return symbolBoard;
 }
 
-const int Board::getBoardSize() const noexcept
+int Board::getBoardSize() const noexcept
 {
 	return SIZE;
 }

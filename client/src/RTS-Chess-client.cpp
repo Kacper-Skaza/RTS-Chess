@@ -5,6 +5,6 @@
 int main()
 {
 	Board board = {};
-	std::cout << ((Pawn *)(board.getBoardFull()[1][1].get()))->enPassant ? 1 : 0;
+	std::cout << ((Pawn *)(board.getBoardFull()[1][1].get()))->enPassant;
 	return 0;
 }

@@ -18,7 +18,7 @@ public:
 
 	const std::vector<std::vector<std::unique_ptr<Piece>>> &getBoardFull() const noexcept;
 	const std::vector<std::vector<char>> getBoardSymbol() const;
-	const int getBoardSize() const noexcept;
+	int getBoardSize() const noexcept;
 
 	void makeMove(const Move &move);
 };

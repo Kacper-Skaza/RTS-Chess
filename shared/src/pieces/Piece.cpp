@@ -1,13 +1,13 @@
 #include "../../headers/pieces/Piece.hpp"
 
-Piece::Piece(): SYMBOL('P'){}
+Piece::Piece() : SYMBOL('P') {}
 
 char Piece::getSymbol() const noexcept
 {
-    return this->SYMBOL;
+	return SYMBOL;
 }
 
-bool Piece::validateMove(const Move &move, const std::vector<std::vector<char>> &board) const
+bool Piece::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
-    return true;
+	return false;
 }

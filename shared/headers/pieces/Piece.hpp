@@ -11,10 +11,11 @@
 class Piece
 {
 private:
-    const char SYMBOL;
+	const char SYMBOL;
+
 public:
-    Piece();
-    ~Piece() = default;
-    char getSymbol() const noexcept;
-    bool validateMove(const Move &move, const std::vector<std::vector<char>> &board) const;
+	Piece();
+	~Piece() = default;
+	char getSymbol() const noexcept;
+	bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const;
 };

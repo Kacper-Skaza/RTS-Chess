@@ -1,16 +1,26 @@
 #include "../../headers/pieces/Knight.hpp"
 
-char Knight::getSymbol() const noexcept
+Knight::Knight(const char side) : SYMBOL(std::toupper(side) == 'W' ? 'N' : 'n')
 {
-	return symbol;
+	// Throw exception when given wrong char for side
+	if (std::toupper(side) != 'W' || std::toupper(side) != 'B')
+	{
+		throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
+	}
 }
 
-bool Knight::validateMove(const Move &move, const std::vector<std::vector<char>> &board) const
+char Knight::getSymbol() const noexcept
 {
+	return SYMBOL;
+}
+
+bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
+{
+	const Piece *piece = move.getPiece();
 	std::pair<int, int> from = move.getFrom();
 	std::pair<int, int> to = move.getTo();
 
-	char target = board[to.first][to.second];
+	const Piece *target = board[to.first][to.second].get();
 	int dx = std::abs(to.first - from.first);
 	int dy = std::abs(to.second - from.second);
 
@@ -19,9 +29,9 @@ bool Knight::validateMove(const Move &move, const std::vector<std::vector<char>>
 		return false;
 
 	// Check if destination square is empty or colors are different
-	if (target == ' ')
+	if (target->getSymbol() == ' ')
 		return true;
-	if (std::isupper(move.getPiece()) != std::isupper(target))
+	if (std::isupper(piece->getSymbol()) != std::isupper(target->getSymbol()))
 		return true;
 
 	return false;

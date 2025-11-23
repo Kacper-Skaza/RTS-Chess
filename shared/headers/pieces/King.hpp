@@ -1,19 +1,20 @@
-#ifndef KING_HPP
-#define KING_HPP
+#pragma once
+
+#include "Piece.hpp"
 #include "../Move.hpp"
+
 #include <cstdlib>
 #include <utility>
 #include <cctype>
 #include <vector>
 
-class King
+class King : public Piece
 {
 private:
-	const char symbol = 'K';
+	const char SYMBOL;
 
 public:
+	King(const char side);
 	char getSymbol() const noexcept;
-	bool validateMove(const Move &move, const std::vector<std::vector<char>> &board) const;
+	bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const;
 };
-
-#endif // KING_HPP

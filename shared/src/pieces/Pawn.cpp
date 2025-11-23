@@ -52,4 +52,5 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<std::uni
         if (board[to.first][to.second] == nullptr) return false;
         return true;
     }
+    return false;
 }

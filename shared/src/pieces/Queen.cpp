@@ -33,7 +33,7 @@ bool Queen::validateMove(const Move &move, const std::vector<std::vector<std::un
     if (std::abs(dx) == std::abs(dy)) //diagonal
     {
         //Check if there is piece in the way diagonally
-        for (   int i = dx, int j = dy;
+        for (   int i = dx, j = dy;
                 i != 0;
                 i+= i >= 0? -1: 1, j+= j >= 0? -1: 1)
         {

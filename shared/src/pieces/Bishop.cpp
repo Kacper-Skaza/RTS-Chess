@@ -33,7 +33,7 @@ bool Bishop::validateMove(const Move &move, const std::vector<std::vector<std::u
     const int dx = to.first - from.first;
     const int dy = to.second - from.second;
 
-    for (   int i = dx >= 0? dx - 1: dx + 1, int j = dy >= 0? dy - 1: dy + 1;
+    for (   int i = dx >= 0? dx - 1: dx + 1, j = dy >= 0? dy - 1: dy + 1;
             i != 0;
             i+= i >= 0? -1: 1, j+= j >= 0? -1: 1)
     {

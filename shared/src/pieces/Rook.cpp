@@ -14,6 +14,11 @@ char Rook::getSymbol() const noexcept
 	return SYMBOL;
 }
 
+bool Rook::getFirstMove() const noexcept
+{
+	return firstMove;
+}
+
 bool Rook::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
 	const Piece *piece = move.getPiece();
@@ -69,4 +74,9 @@ bool Rook::validateMove(const Move &move, const std::vector<std::vector<std::uni
 		return true;
 
 	return false;
+}
+
+void Rook::makeMove()
+{
+	firstMove = false;
 }

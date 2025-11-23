@@ -7,7 +7,17 @@ char Piece::getSymbol() const noexcept
 	return SYMBOL;
 }
 
+bool Piece::getFirstMove() const noexcept
+{
+	return firstMove;
+}
+
 bool Piece::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
 	return false;
+}
+
+void Piece::makeMove()
+{
+	firstMove = false;
 }

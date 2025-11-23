@@ -1,6 +1,20 @@
 #include "../headers/Move.hpp"
 
-Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to) : piece(piece), from(from), to(to) {}
+Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to) : piece(piece), from(from), to(to)
+{
+	if (from.first < 0 || from.first >= 8 ||
+		from.second < 0 || from.second >= 8 ||
+		to.first < 0 || to.first >= 8 ||
+		to.second < 0 || to.second >= 8)
+	{
+		throw std::invalid_argument("[Move::Move] Coordinates out of range");
+	}
+
+	if (piece == nullptr)
+	{
+		throw std::invalid_argument("[Move::Move] Null piece pointer");
+	}
+}
 
 const Piece *Move::getPiece() const noexcept
 {

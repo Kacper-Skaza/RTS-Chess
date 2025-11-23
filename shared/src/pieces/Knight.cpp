@@ -14,6 +14,11 @@ char Knight::getSymbol() const noexcept
 	return SYMBOL;
 }
 
+bool Knight::getFirstMove() const noexcept
+{
+	return firstMove;
+}
+
 bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
 	const Piece *piece = move.getPiece();
@@ -23,6 +28,10 @@ bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::u
 	const Piece *target = board[to.first][to.second].get();
 	int dx = std::abs(to.first - from.first);
 	int dy = std::abs(to.second - from.second);
+
+	// Validate piece
+	if (piece != this)
+		return false;
 
 	// Check if move is in L-shape
 	if (!((dx == 2 && dy == 1) || (dx == 1 && dy == 2)))
@@ -35,4 +44,9 @@ bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::u
 		return true;
 
 	return false;
+}
+
+void Knight::makeMove()
+{
+	firstMove = false;
 }

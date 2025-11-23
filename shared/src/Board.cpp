@@ -7,8 +7,11 @@
 #include "../headers/pieces/Queen.hpp"
 #include "../headers/pieces/Rook.hpp"
 
-Board::Board() : board(SIZE, std::vector<std::unique_ptr<Piece>>(SIZE))
+Board::Board()
 {
+	// Initialize board
+	board.assign(SIZE, std::vector<std::unique_ptr<Piece>>(SIZE));
+
 	// White pieces
 	board[0][0] = std::make_unique<Rook>('W');
 	board[0][1] = std::make_unique<Knight>('W');
@@ -69,9 +72,13 @@ void Board::makeMove(const Move &move)
 	std::pair<int, int> to = move.getTo();
 
 	// Validate move
-	if (piece != board[from.first][from.second].get())
+	if (!board[from.first][from.second])
 	{
-		throw std::invalid_argument("[Board::makeMove] No target piece on starting square");
+		return;
+	}
+	if (board[from.first][from.second].get() != piece)
+	{
+		return;
 	}
 	if (!board[from.first][from.second]->validateMove(move, getBoardFull()))
 	{

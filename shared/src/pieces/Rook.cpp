@@ -1,12 +1,12 @@
 #include "../../headers/pieces/Rook.hpp"
 
-Rook::Rook(const char side) : SYMBOL(std::toupper(side) == 'W' ? 'R' : 'r')
+Rook::Rook(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'R' : 'r')
 {
-	// Throw exception when given wrong char for side
-	if (std::toupper(side) != 'W' || std::toupper(side) != 'B')
-	{
-		throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
-	}
+	//Throw exception when given wrong char for SIDE
+    if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')
+    {
+        throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
+    }
 }
 
 char Rook::getSymbol() const noexcept

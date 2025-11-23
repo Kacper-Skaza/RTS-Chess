@@ -2,8 +2,8 @@
 
 Pawn::Pawn(const char SIDE): SYMBOL(std::toupper(SIDE) == 'W'? 'P': 'p')
 {
-    //Throw exception when given wrong char for SIDE
-    if (std::toupper(SIDE) != 'W' || std::toupper(SIDE) != 'B')
+	//Throw exception when given wrong char for SIDE
+    if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')
     {
         throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
     }

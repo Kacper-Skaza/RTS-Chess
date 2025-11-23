@@ -1,12 +1,12 @@
 #include "../../headers/pieces/King.hpp"
 
-King::King(const char side) : SYMBOL(std::toupper(side) == 'W' ? 'K' : 'k')
+King::King(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'K' : 'k')
 {
-	// Throw exception when given wrong char for side
-	if (std::toupper(side) != 'W' || std::toupper(side) != 'B')
-	{
-		throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
-	}
+    //Throw exception when given wrong char for SIDE
+    if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')
+    {
+        throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
+    }
 }
 
 char King::getSymbol() const noexcept

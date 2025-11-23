@@ -16,8 +16,8 @@ char Pawn::getSymbol() const noexcept
 
 bool Pawn::validateMove(const Move &move, const std::vector<std::vector<char>> &board) const
 {
-    //Check if correct piece is being moved (may be redundant later)
-    if (move.getPiece() != this->SYMBOL) return false;
+    //Check if correct piece is being moved
+    if (move.getPiece() != this) return false;
 
     std::pair<int, int> from = move.getFrom();
     std::pair<int, int> to = move.getTo();

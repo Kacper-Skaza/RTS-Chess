@@ -22,6 +22,6 @@ public:
 	char getSymbol() const noexcept;
 	bool getFirstMove() const noexcept;
 
-	bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const;
 	void makeMove();
+	bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const;
 };

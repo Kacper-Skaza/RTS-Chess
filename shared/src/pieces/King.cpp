@@ -2,21 +2,11 @@
 
 King::King(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'K' : 'k')
 {
-    //Throw exception when given wrong char for SIDE
-    if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')
-    {
-        throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
-    }
-}
-
-char King::getSymbol() const noexcept
-{
-	return SYMBOL;
-}
-
-bool King::getFirstMove() const noexcept
-{
-	return firstMove;
+	// Throw exception when given wrong char for SIDE
+	if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')
+	{
+		throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
+	}
 }
 
 bool King::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
@@ -53,9 +43,4 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<std::uni
 		return true;
 
 	return false;
-}
-
-void King::makeMove()
-{
-	firstMove = false;
 }

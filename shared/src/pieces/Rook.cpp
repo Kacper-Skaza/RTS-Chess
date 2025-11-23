@@ -2,21 +2,11 @@
 
 Rook::Rook(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'R' : 'r')
 {
-	//Throw exception when given wrong char for SIDE
-    if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')
-    {
-        throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
-    }
-}
-
-char Rook::getSymbol() const noexcept
-{
-	return SYMBOL;
-}
-
-bool Rook::getFirstMove() const noexcept
-{
-	return firstMove;
+	// Throw exception when given wrong char for SIDE
+	if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')
+	{
+		throw std::invalid_argument("received different value in Bishop constructor than \'W\' or \'B\'");
+	}
 }
 
 bool Rook::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
@@ -74,9 +64,4 @@ bool Rook::validateMove(const Move &move, const std::vector<std::vector<std::uni
 		return true;
 
 	return false;
-}
-
-void Rook::makeMove()
-{
-	firstMove = false;
 }

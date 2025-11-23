@@ -10,7 +10,7 @@
 Board::Board()
 {
 	// Initialize board
-	board.assign(SIZE, std::vector<std::unique_ptr<Piece>>(SIZE));
+	board.assign(SIZE, std::vector<std::unique_ptr<Piece>>(SIZE, nullptr));
 
 	// White pieces
 	board[0][0] = std::make_unique<Rook>('W');

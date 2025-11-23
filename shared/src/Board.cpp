@@ -10,7 +10,10 @@
 Board::Board()
 {
 	// Initialize board
-	board.assign(SIZE, std::vector<std::unique_ptr<Piece>>(SIZE, nullptr));
+	// board.assign(SIZE, std::vector<std::unique_ptr<Piece>>(SIZE, nullptr));
+	board.resize(SIZE);
+    for (auto& row : board)
+        row.resize(SIZE); // wszystkie elementy są nullptr
 
 	// White pieces
 	board[0][0] = std::make_unique<Rook>('W');
@@ -80,12 +83,12 @@ void Board::makeMove(const Move &move)
 	{
 		return;
 	}
-	if (!board[from.first][from.second]->validateMove(move, getBoardFull()))
+	if (!board[from.first][from.second]->validateMove(move, this->board))
 	{
 		return;
 	}
 
 	// Make move
-	board[to.first][to.second] = std::move(board[from.first][from.second]);
-	board[from.first][from.second].reset();
+	this->board[to.first][to.second] = std::move(board[from.first][from.second]);
+	this->board[from.first][from.second].reset();
 }

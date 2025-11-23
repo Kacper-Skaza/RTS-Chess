@@ -1,22 +1,22 @@
-#ifndef MOVE_HPP
-#define MOVE_HPP
+#pragma once
+
+#include "pieces/Piece.hpp"
+
 #include <utility>
+#include <memory>
 
 class Move
 {
 private:
-	char piece;
+	Piece *piece;
 	std::pair<int, int> from;
 	std::pair<int, int> to;
 
 public:
-	// Constructor
-	Move(char piece, std::pair<int, int> from, std::pair<int, int> to);
+	Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to);
+	~Move() = default;
 
-	// Getters
-	char getPiece() const noexcept;
-	std::pair<int, int> getFrom() const noexcept;
-	std::pair<int, int> getTo() const noexcept;
+	const Piece *getPiece() const noexcept;
+	const std::pair<int, int> getFrom() const noexcept;
+	const std::pair<int, int> getTo() const noexcept;
 };
-
-#endif // MOVE_HPP

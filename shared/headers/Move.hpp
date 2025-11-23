@@ -1,7 +1,8 @@
 #pragma once
 
-#include "pieces/Piece.hpp"
+class Piece;
 
+#include <stdexcept>
 #include <utility>
 #include <memory>
 

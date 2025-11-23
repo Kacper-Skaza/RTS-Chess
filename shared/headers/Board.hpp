@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Move.hpp"
 #include "pieces/Piece.hpp"
+#include "Move.hpp"
 
 #include <vector>
 #include <memory>

@@ -88,6 +88,7 @@ void Board::makeMove(const Move &move)
 	}
 
 	// Make move
+	this->board[from.first][from.second]->makeMove();
 	this->board[to.first][to.second] = std::move(board[from.first][from.second]);
 	this->board[from.first][from.second].reset();
 }

@@ -33,6 +33,15 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<std::uni
 	if (piece != this)
 		return false;
 
+	// Check if move is castling
+	if (std::toupper(target->getSymbol()) == 'R' &&
+		std::isupper(piece->getSymbol()) == std::isupper(target->getSymbol()) &&
+		piece->getFirstMove() == true &&
+		target->getFirstMove() == true)
+	{
+		return true;
+	}
+
 	// Check if move is one square in any direction
 	if (!(dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)))
 		return false;

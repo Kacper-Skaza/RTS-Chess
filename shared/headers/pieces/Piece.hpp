@@ -17,7 +17,7 @@ private:
 
 public:
 	Piece();
-	~Piece() = default;
+	virtual ~Piece() = default;
 
 	char getSymbol() const noexcept;
 	bool getFirstMove() const noexcept;

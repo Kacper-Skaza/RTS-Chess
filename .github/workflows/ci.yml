@@ -1,0 +1,39 @@
+name: CI [Build & Static Analysis]
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  # ===== Static Analysis =====
+  static_analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install cppcheck
+        run: sudo apt-get update && sudo apt-get install -y cppcheck
+
+      - name: Run cppcheck
+        run: cppcheck --std=c++17 --enable=all --inconclusive --suppress=missingIncludeSystem --error-exitcode=1 ./shared ./client ./server
+
+  # ===== Build on Linux =====
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '4.0.1'
+
+      - name: Install SDL2 dependencies
+        run: sudo apt-get update && sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+
+      - name: Build project
+        run: |
+          chmod +x ./build.sh
+          ./build.sh

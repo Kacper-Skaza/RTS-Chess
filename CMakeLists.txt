@@ -5,9 +5,8 @@ project(RTSChess)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# ===== Compiler and linker flags =====
+# ===== Compiler flags =====
 set(COMPILE_FLAGS -Wall -Wextra -O2)
-set(LINK_FLAGS "-Wl,--stack,268435456")
 
 # ===== Shared =====
 file(GLOB_RECURSE SHARED_SOURCES "${CMAKE_SOURCE_DIR}/shared/src/*.cpp")
@@ -21,7 +20,6 @@ add_executable(RTSChessClient ${CMAKE_SOURCE_DIR}/client/src/RTS-Chess-client.cp
 
 target_include_directories(RTSChessClient PRIVATE ${SHARED_INCLUDE} ${CLIENT_INCLUDE})
 target_compile_options(RTSChessClient PRIVATE ${COMPILE_FLAGS})
-target_link_options(RTSChessClient PRIVATE ${LINK_FLAGS})
 set_target_properties(RTSChessClient PROPERTIES OUTPUT_NAME "RTS-Chess-client")
 
 # ===== Server =====
@@ -32,5 +30,4 @@ add_executable(RTSChessServer ${CMAKE_SOURCE_DIR}/server/src/RTS-Chess-server.cp
 
 target_include_directories(RTSChessServer PRIVATE ${SHARED_INCLUDE} ${SERVER_INCLUDE})
 target_compile_options(RTSChessServer PRIVATE ${COMPILE_FLAGS})
-target_link_options(RTSChessServer PRIVATE ${LINK_FLAGS})
 set_target_properties(RTSChessServer PROPERTIES OUTPUT_NAME "RTS-Chess-server")

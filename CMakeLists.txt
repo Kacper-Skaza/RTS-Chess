@@ -20,6 +20,7 @@ add_executable(RTSChessClient ${CMAKE_SOURCE_DIR}/client/src/RTS-Chess-client.cp
 
 target_include_directories(RTSChessClient PRIVATE ${SHARED_INCLUDE} ${CLIENT_INCLUDE})
 target_compile_options(RTSChessClient PRIVATE ${COMPILE_FLAGS})
+target_link_libraries(RTSChessClient PRIVATE SDL2 SDL2_ttf SDL2_image)
 set_target_properties(RTSChessClient PROPERTIES OUTPUT_NAME "RTS-Chess-client")
 
 # ===== Server =====
@@ -30,4 +31,5 @@ add_executable(RTSChessServer ${CMAKE_SOURCE_DIR}/server/src/RTS-Chess-server.cp
 
 target_include_directories(RTSChessServer PRIVATE ${SHARED_INCLUDE} ${SERVER_INCLUDE})
 target_compile_options(RTSChessServer PRIVATE ${COMPILE_FLAGS})
+target_link_libraries(RTSChessServer PRIVATE SDL2 SDL2_ttf SDL2_image)
 set_target_properties(RTSChessServer PROPERTIES OUTPUT_NAME "RTS-Chess-server")

@@ -5,8 +5,8 @@ mkdir build
 cd build
 @echo on
 
-cmake ..
-cmake --build . --config Release
+cmake -G "MinGW Makefiles" -DCMAKE_CXX_COMPILER=g++ -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
+cmake  --build .
 
 @echo off
 cd ..

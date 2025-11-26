@@ -1,9 +1,9 @@
 # IDE files and directories
 *.vscode/
+*.idea/
 
 # Compilation folders
 *build/
-*release/
 
 # Compilation files
 *.exe

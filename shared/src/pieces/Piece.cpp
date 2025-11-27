@@ -19,7 +19,7 @@ void Piece::makeMove()
 
 bool Piece::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
-	// Avoid warnings
+	// Suppress warnings
 	(void)move;
 	(void)board;
 

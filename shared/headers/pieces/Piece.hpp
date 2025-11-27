@@ -23,5 +23,5 @@ public:
 	bool getFirstMove() const noexcept;
 
 	void makeMove();
-	bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const;
+	virtual bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const;
 };

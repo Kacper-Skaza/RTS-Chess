@@ -14,6 +14,7 @@ private:
 	const char SYMBOL;
 
 public:
-	King(const char side);
+	explicit King(const char SIDE);
+
 	bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const override;
 };

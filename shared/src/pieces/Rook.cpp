@@ -22,7 +22,7 @@ bool Rook::validateMove(const Move &move, const std::vector<std::vector<std::uni
 	int ty = to.second;
 
 	// Validate piece
-	if (piece != this)
+	if (piece != this || piece == nullptr || target == nullptr)
 		return false;
 
 	// Check if move is in straight line
@@ -35,26 +35,30 @@ bool Rook::validateMove(const Move &move, const std::vector<std::vector<std::uni
 		// Horizontal move
 		// Right
 		for (int y = fy + 1; y < ty; y++)
-			if (board[fx][y]->getSymbol() != ' ')
-				return false;
+			if (board[fx][y])
+				if (board[fx][y]->getSymbol() != ' ')
+					return false;
 
 		// Left
 		for (int y = fy - 1; y > ty; y--)
-			if (board[fx][y]->getSymbol() != ' ')
-				return false;
+			if (board[fx][y])
+				if (board[fx][y]->getSymbol() != ' ')
+					return false;
 	}
 	else
 	{
 		// Vertical move
 		// Down
 		for (int x = fx + 1; x < tx; x++)
-			if (board[x][fy]->getSymbol() != ' ')
-				return false;
+			if (board[x][fy])
+				if (board[x][fy]->getSymbol() != ' ')
+					return false;
 
 		// Up
 		for (int x = fx - 1; x > tx; x--)
-			if (board[x][fy]->getSymbol() != ' ')
-				return false;
+			if (board[x][fy])
+				if (board[x][fy]->getSymbol() != ' ')
+					return false;
 	}
 
 	// Check if destination square is empty or colors are different

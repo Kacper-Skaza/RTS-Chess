@@ -20,7 +20,7 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<std::uni
 	int dy = std::abs(to.second - from.second);
 
 	// Validate piece
-	if (piece != this)
+	if (piece != this || piece == nullptr || target == nullptr)
 		return false;
 
 	// Check if move is castling

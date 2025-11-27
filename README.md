@@ -1,5 +1,21 @@
 # RTS Chess
 
+## 🔧 Building an Executable
+This will compile both the client and server executables and place them in the `release/` folder.
+* On *Ubuntu* or *Debian*:
+```sh
+sudo apt-get update
+sudo apt-get install -y build-essential libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+
+chmod +x ./build.sh
+./build.sh
+```
+* On *Windows 10* or *Windows 11*:
+```bash
+.\build.bat
+```
+
+## Other
 * Gracz łączy się do serwera i wysyła swój nick (nick jest dekoratywny).
 * Serwer odbiera informacje i odsyła przypisane mu ID.
 * Gracz trafia do lobby, w którym widzi listę pokoi, stany gier i ilość graczy w pokojach.

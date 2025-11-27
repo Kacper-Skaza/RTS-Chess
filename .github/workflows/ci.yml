@@ -12,28 +12,58 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Update package lists
+        run: sudo apt-get update
+
       - name: Install cppcheck
-        run: sudo apt-get update && sudo apt-get install -y cppcheck
+        run: sudo apt-get install -y cppcheck
 
       - name: Run cppcheck
         run: cppcheck --std=c++17 --enable=all --inconclusive --suppress=missingIncludeSystem --error-exitcode=1 ./shared ./client ./server
 
-  # ===== Build on Linux =====
-  build_linux:
+  # ===== Build on ubuntu =====
+  build_ubuntu:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup CMake
-        uses: jwlawson/actions-setup-cmake@v2
-        with:
-          cmake-version: '4.0.1'
+      - name: Update package lists
+        run: sudo apt-get update
+
+      - name: Install CMake
+        run: sudo apt-get install -y cmake=4.0.1
 
       - name: Install SDL2 dependencies
-        run: sudo apt-get update && sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+        run: sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+
+      - name: Make build script executable
+        run: chmod +x ./build.sh
 
       - name: Build project
-        run: |
-          chmod +x ./build.sh
-          ./build.sh
+        run: ./build.sh
+
+  # ===== Build on debian =====
+  build_debian:
+    runs-on: ubuntu-latest
+    container: 
+      image: debian:bookworm-slim 
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Update package lists
+        run: sudo apt-get update
+
+      - name: Install CMake
+        run: sudo apt-get install -y cmake=4.0.1
+
+      - name: Install SDL2 dependencies
+        run: sudo apt-get install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev
+
+      - name: Make build script executable
+        run: chmod +x ./build.sh
+
+      - name: Build project
+        run: ./build.sh

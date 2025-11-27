@@ -1,12 +1,8 @@
 #!/bin/bash
 set -e
-
 [ -d build ] && rm -rf build
 mkdir build
 
-cd build
-
-cmake ..
-cmake --build . --config Release
-
-cd ..
+cmake -S . -B build
+cmake --build build --config Release
+cmake --install build

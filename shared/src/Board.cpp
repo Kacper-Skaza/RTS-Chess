@@ -87,7 +87,38 @@ void Board::makeMove(const Move &move)
 		return;
 	}
 
-	// Make move
+	// Check if move is castling
+	if (std::toupper(board[from.first][from.second]->getSymbol()) == 'K' &&
+		std::toupper(board[to.first][to.second]->getSymbol()) == 'R' &&
+		std::isupper(board[from.first][from.second]->getSymbol()) == std::isupper(board[to.first][to.second]->getSymbol()))
+	{
+		// Make castling move
+		int kingFromCol = from.second, kingToCol = 0;
+		int rookFromCol = to.second, rookToCol = 0;
+
+		if (to.second > from.second)
+		{
+			kingToCol = kingFromCol + 2;
+			rookToCol = to.second - 1;
+		}
+		else
+		{
+			kingToCol = kingFromCol - 2;
+			rookToCol = to.second + 1;
+		}
+
+		// Move rook
+		this->board[from.first][rookFromCol]->makeMove();
+		this->board[to.first][rookToCol] = std::move(board[from.first][rookFromCol]);
+		this->board[from.first][rookFromCol].reset();
+		// Move king
+		this->board[from.first][kingFromCol]->makeMove();
+		this->board[to.first][kingToCol] = std::move(board[from.first][kingFromCol]);
+		this->board[from.first][kingFromCol].reset();
+		return;
+	}
+
+	// Make default move
 	this->board[from.first][from.second]->makeMove();
 	this->board[to.first][to.second] = std::move(board[from.first][from.second]);
 	this->board[from.first][from.second].reset();

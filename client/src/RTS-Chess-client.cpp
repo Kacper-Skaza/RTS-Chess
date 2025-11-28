@@ -7,7 +7,7 @@
 
 #include "../headers/SDLTextureManager.hpp"
 
-int main(int argc, char* argv[])
+int main()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 	}
 
 	// --- Texture Manager ---
-	SDLTextureManager texMgr(renderer, argv[0]);
+	SDLTextureManager texMgr(renderer);
 
 	// Try to get the texture; it will be loaded on demand
 	SDL_Texture *coconut = texMgr.getTexture("Coconut");

@@ -9,11 +9,6 @@ Queen::Queen(const char SIDE): SYMBOL(std::toupper(SIDE) == 'W'? 'Q': 'q')
     }
 }
 
-char Queen::getSymbol() const noexcept
-{
-    return this->SYMBOL;
-}
-
 bool Queen::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
     //Check if correct piece is being moved

@@ -15,6 +15,5 @@ private:
 public:
     bool enPassant = false;
     Pawn(const char SIDE);
-    char getSymbol() const noexcept;
-    bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const;
+    bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const override;
 };

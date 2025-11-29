@@ -9,11 +9,6 @@ Pawn::Pawn(const char SIDE): SYMBOL(std::toupper(SIDE) == 'W'? 'P': 'p')
     }
 }
 
-char Pawn::getSymbol() const noexcept
-{
-    return this->SYMBOL;
-}
-
 bool Pawn::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
     //Check if correct piece is being moved

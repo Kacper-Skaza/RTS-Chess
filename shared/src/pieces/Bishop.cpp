@@ -9,11 +9,6 @@ Bishop::Bishop(const char SIDE): SYMBOL(std::toupper(SIDE) == 'W'? 'B': 'b')
     }
 }
 
-char Bishop::getSymbol() const noexcept
-{
-    return this->SYMBOL;
-}
-
 bool Bishop::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
 {
     //Check if correct piece is being moved

@@ -15,6 +15,9 @@ private:
 	const char SYMBOL;
 	bool firstMove = true;
 
+	// TO BE DETERMINED LATER (INT COZ DEPENDANT ON MS)
+	int cooldown = 2000;
+
 public:
 	Piece();
 	virtual ~Piece() = default;

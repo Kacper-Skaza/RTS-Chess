@@ -40,4 +40,5 @@ public:
 
     // Operator overloading
     bool operator==(const User &user);
+    
 };

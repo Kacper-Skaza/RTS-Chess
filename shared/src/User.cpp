@@ -8,7 +8,8 @@ unsigned int User::generateID(const std::string &username)
     {
         id +=  (unsigned int) username[i];
     }
-    
+
+    // Add server side ID validation
     
     this->id = id;
 }

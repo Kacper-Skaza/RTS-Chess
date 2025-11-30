@@ -1,27 +1,29 @@
 #include "../headers/User.hpp"
 
 // Implement on server side as request to get ID (needs to be unique)
-unsigned int generateID(std::string username) 
+unsigned int User::generateID(const std::string &username) 
 {
     unsigned int id = 0;
     for (size_t i = 0; i < username.size(); i++)
     {
         id +=  (unsigned int) username[i];
     }
-    return id; 
+    
+    
+    this->id = id;
 }
 
-User::User(std::string username)
+User::User(const std::string &username)
 {
     this->username = username;
-    this->id = generateID(username);
+    this->generateID(username);
     this->player = false;
     this->ready = false;
     this->inRoom = false;
     this->side = WHITE;
 }
 
-bool User::operator==(const User &user)
+const bool User::operator==(const User &user) const
 {
     if (this->id == user.id) return true;
     return false;

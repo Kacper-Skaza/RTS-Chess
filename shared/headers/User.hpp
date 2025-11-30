@@ -22,7 +22,7 @@ private:
     ChessSide side;
 
 public:
-    User(std::string username);
+    explicit User(const std::string &username);
     ~User() = default;
 
     const unsigned int &getPlayerID() const noexcept;
@@ -39,6 +39,6 @@ public:
     void setSide(ChessSide side);
 
     // Operator overloading
-    bool operator==(const User &user);
+    const bool operator==(const User &user) const;
     
 };

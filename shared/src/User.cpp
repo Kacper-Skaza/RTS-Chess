@@ -3,15 +3,15 @@
 // Implement on server side as request to get ID (needs to be unique)
 unsigned int User::generateID(const std::string &username) 
 {
-    unsigned int id = 0;
+    unsigned int newID = 0;
     for (size_t i = 0; i < username.size(); i++)
     {
-        id +=  (unsigned int) username[i];
+        newID +=  (unsigned int) username[i];
     }
 
     // Add server side ID validation
     
-    this->id = id;
+    this->id = newID;
 }
 
 User::User(const std::string &username)

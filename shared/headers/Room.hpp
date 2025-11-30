@@ -25,7 +25,7 @@ private:
 
 public:
     // Constructor & Destructor
-    explicit Room(std::string name, User creator);
+    explicit Room(std::string &name, User &creator);
     ~Room() = default;
 
     // Get structure Data
@@ -41,8 +41,8 @@ public:
     std::unordered_map<unsigned int, User*> getPlayerList();
 
     // Set structure data
-    void addUserToRoom(User& joining);
-    void addPlayer(User& player);
+    void addUserToRoom(const User& joining);
+    void addPlayer(const User& player);
     void removePlayer(User& player, const bool quit = false);
     void removeUserFromRoom(User& player);
     void setMaxPlayerCount(const int count);

@@ -3,7 +3,7 @@
 #define MIN_PLAYER_COUNT 2
 #define MAX_PLAYER_COUNT 8
 
-Room::Room(std::string name, User creator): NAME(name)
+Room::Room(std::string &name, User &creator): NAME(name)
 {
     this->userList.insert({creator.getPlayerID(), creator});
     this->playerList.push_back(creator.getPlayerID());
@@ -88,12 +88,12 @@ void Room::setMaxPlayerCount(const int count)
     this->maxPlayerCount = count;
 }
 
-void Room::addUserToRoom(User& joining)
+void Room::addUserToRoom(const User& joining)
 {
     this->userList.insert({joining.getPlayerID(), joining});
 }
 
-void Room::addPlayer(User& player)
+void Room::addPlayer(const User& player)
 {
     if (this->userList.find(player.getPlayerID()) != this->userList.end())
     {
@@ -101,7 +101,7 @@ void Room::addPlayer(User& player)
     }
 }
 
-void Room::removePlayer(User& player, const bool quit)
+void Room::removePlayer(const User& player, const bool quit)
 {
     const unsigned int ToRemoveID = player.getPlayerID();
     for (size_t i = 0; i < this->playerList.size(); i++)
@@ -114,7 +114,7 @@ void Room::removePlayer(User& player, const bool quit)
     if (quit == true) this->userList.erase(ToRemoveID);
 }
 
-void Room::removeUserFromRoom(User& player)
+void Room::removeUserFromRoom(const User& player)
 {
     if (this->userList.find(player.getPlayerID()) != this->userList.end()) this->userList.erase(player.getPlayerID());   
 }

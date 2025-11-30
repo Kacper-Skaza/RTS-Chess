@@ -35,7 +35,7 @@ public:
     void setPlayer(bool player);
     void setReady(bool ready);
     void setInRoom(bool inRoom);
-    void setUsername(std::string username);
+    void setUsername(const std::string &username);
     void setSide(ChessSide side);
     
     // Operator overloading

@@ -25,7 +25,6 @@ bool User::operator==(const User &user)
 {
     if (this->id == user.id) return true;
     return false;
-    
 }
 
 const unsigned int& User::getPlayerID() const noexcept 

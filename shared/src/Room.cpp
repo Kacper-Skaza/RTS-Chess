@@ -4,8 +4,8 @@
 
 Room::Room(User creator)
 {
-    this->userList.push_back(creator);
-    this->playerList.push_back(0);
+    this->userList.insert({creator.getPlayerID(), creator});
+    this->playerList.push_back(creator.getPlayerID());
     this->maxPlayerCount = MIN_PLAYER_COUNT;
     this->matchStarted = false;
 }
@@ -13,97 +13,101 @@ Room::Room(User creator)
 
 bool Room::isMatchReady() const
 {
+    auto it = this->userList.find(1);
     for (auto &&i : this->playerList)
     {
-        if (this->userList[i].isReady() == false) return false;         
+        it = this->userList.find(i);
+        if (it != this->userList.end() && it->second.isReady() == false) return false; 
     }
     return true;
 }
 
-const bool Room::isMatchStarted() const noexcept
+bool Room::isMatchStarted() const noexcept
 {
     return this->matchStarted;
 }
 
-const unsigned int Room::getUserCount() const
+unsigned int Room::getUserCount() const
 {
     return this->userList.size();
 }
 
-const unsigned int Room::getPlayerCount() const
+unsigned int Room::getPlayerCount() const
 {
     return this->playerList.size();
 }
 
-const Board &Room::getBoard() const noexcept
+Board &Room::getBoard()
 {
     return this->board;
 }
 
-const unsigned int Room::getPlayerReadyCount() const
+unsigned int Room::getPlayerReadyCount() const
 {
     unsigned int readyPlayersCount = 0;
+    auto it = this->userList.find(1);
     for (auto &&i : this->playerList)
     {
-        readyPlayersCount += this->userList[i].isReady() == true? 1: 0; 
+        it = this->userList.find(i);
+        readyPlayersCount += (it != this->userList.end() && it->second.isReady() == true)? 1: 0; 
     }
     return readyPlayersCount;
 }
 
-const uint8_t Room::getMaxPlayerCount() const noexcept
+uint8_t Room::getMaxPlayerCount() const noexcept
 {
     return this->maxPlayerCount;
 }
 
-const std::vector<User> &Room::getUserList() const
+std::unordered_map<unsigned int, User> &Room::getUserList()
 {
     return this->userList;
 }
 
-const std::vector<User> &Room::getPlayerList() const
+std::unordered_map<unsigned int, User> &Room::getPlayerList()
 {
-    std::vector<User> tempUserList;
+    std::unordered_map<unsigned int, User> tempUserList;
+    auto it = this->userList.find(1);
     for (auto &&i : this->playerList)
     {
-        tempUserList.push_back(this->userList[i]);
+        it = this->userList.find(i);
+        if (it != this->userList.end()) tempUserList.insert(*it);
     }
     return tempUserList;
 }
 
 void Room::addUserToRoom(User& joining)
 {
-    this->userList.push_back(joining);
+    this->userList.insert({joining.getPlayerID(), joining});
 }
 
 void Room::addPlayer(User& player)
 {
-    for (unsigned int i = 0; i < this->userList.size(); i++)
+    if (this->userList.find(player.getPlayerID()) != this->userList.end())
     {
-        if (this->userList[i] == player) this->playerList.push_back(i);
+        this->playerList.push_back(player.getPlayerID());
     }
 }
 
 // TODO
 void Room::removePlayer(User& player, const bool quit)
 {
-
+    const unsigned int ToRemoveID = player.getPlayerID();
     for (size_t i = 0; i < this->playerList.size(); i++)
     {
-        //find player to remove
-        if (this->userList[this->playerList[i]] == player)
+        if (this->playerList[i] == ToRemoveID)
         {
             this->playerList.erase(this->playerList.begin() + i);
         }
-
-        //fix rest of players slots
     }
     
     for (auto &&i : this->playerList)
     {
-        if (this->userList[i] == player)
+        if (i == ToRemoveID)
         {
-
+            
         }
+        
     }
     
 }
@@ -114,10 +118,10 @@ void Room::removeUserFromRoom(User& player)
     for (size_t i = 0; i < this->userList.size(); i++)
     {
         //find player to remove
-        if (this->userList[i] == player)
-        {
+        // if (this->userList[i] == player)
+        // {
             
-        }
+        // }
         //fix player structure
 
     }

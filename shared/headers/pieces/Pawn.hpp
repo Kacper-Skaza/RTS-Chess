@@ -14,6 +14,6 @@ private:
     bool firstMove = true;
 public:
     bool enPassant = false;
-    Pawn(const char SIDE);
+    explicit Pawn(const char SIDE);
     bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const override;
 };

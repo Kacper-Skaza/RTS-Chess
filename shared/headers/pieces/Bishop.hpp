@@ -12,6 +12,6 @@ class Bishop: public Piece
 private:
     const char SYMBOL;
 public:
-    Bishop(const char SIDE);
+    explicit Bishop(const char SIDE);
     bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const override;
 };

@@ -12,6 +12,6 @@ class Queen : public Piece
 private:
     const char SYMBOL;
 public:
-    Queen(const char SIDE);
+    explicit Queen(const char SIDE);
     bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const override;
 };

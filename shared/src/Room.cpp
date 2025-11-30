@@ -1,8 +1,9 @@
 #include "../headers/Room.hpp"
 
 #define MIN_PLAYER_COUNT 2
+#define MAX_PLAYER_COUNT 8
 
-Room::Room(User creator)
+Room::Room(std::string name, User creator): NAME(name)
 {
     this->userList.insert({creator.getPlayerID(), creator});
     this->playerList.push_back(creator.getPlayerID());
@@ -20,6 +21,11 @@ bool Room::isMatchReady() const
         if (it != this->userList.end() && it->second.isReady() == false) return false; 
     }
     return true;
+}
+
+const std::string Room::getRoomName() const noexcept
+{
+    return this->NAME;
 }
 
 bool Room::isMatchStarted() const noexcept
@@ -64,16 +70,22 @@ std::unordered_map<unsigned int, User> &Room::getUserList()
     return this->userList;
 }
 
-std::unordered_map<unsigned int, User> &Room::getPlayerList()
+std::unordered_map<unsigned int, User*> Room::getPlayerList()
 {
-    std::unordered_map<unsigned int, User> tempUserList;
+    std::unordered_map<unsigned int, User*> tempUserList;
     auto it = this->userList.find(1);
     for (auto &&i : this->playerList)
     {
         it = this->userList.find(i);
-        if (it != this->userList.end()) tempUserList.insert(*it);
+        if (it != this->userList.end()) tempUserList.insert({it->first, &(it->second)});
     }
     return tempUserList;
+}
+
+void Room::setMaxPlayerCount(const int count)
+{
+    if (count >= MIN_PLAYER_COUNT && count <= MAX_PLAYER_COUNT) return;
+    this->maxPlayerCount = count;
 }
 
 void Room::addUserToRoom(User& joining)
@@ -89,7 +101,6 @@ void Room::addPlayer(User& player)
     }
 }
 
-// TODO
 void Room::removePlayer(User& player, const bool quit)
 {
     const unsigned int ToRemoveID = player.getPlayerID();
@@ -100,32 +111,12 @@ void Room::removePlayer(User& player, const bool quit)
             this->playerList.erase(this->playerList.begin() + i);
         }
     }
-    
-    for (auto &&i : this->playerList)
-    {
-        if (i == ToRemoveID)
-        {
-            
-        }
-        
-    }
-    
+    if (quit == true) this->userList.erase(ToRemoveID);
 }
 
-//  TODO
 void Room::removeUserFromRoom(User& player)
 {
-    for (size_t i = 0; i < this->userList.size(); i++)
-    {
-        //find player to remove
-        // if (this->userList[i] == player)
-        // {
-            
-        // }
-        //fix player structure
-
-    }
-    
+    if (this->userList.find(player.getPlayerID()) != this->userList.end()) this->userList.erase(player.getPlayerID());   
 }
 
 bool Room::startMatch()

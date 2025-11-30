@@ -16,6 +16,7 @@
 class Room
 {
 private:
+    const std::string NAME;
     bool matchStarted = false;
     uint8_t maxPlayerCount;
     Board board;
@@ -24,10 +25,11 @@ private:
 
 public:
     // Constructor & Destructor
-    Room(User creator);
+    explicit Room(std::string name, User creator);
     ~Room() = default;
 
     // Get structure Data
+    const std::string getRoomName() const noexcept;
     bool isMatchReady() const;
     bool isMatchStarted() const noexcept;
     Board &getBoard();
@@ -36,13 +38,14 @@ public:
     unsigned int getPlayerReadyCount() const;
     uint8_t getMaxPlayerCount() const noexcept;
     std::unordered_map<unsigned int, User> &getUserList();
-    std::unordered_map<unsigned int, User> &getPlayerList();
+    std::unordered_map<unsigned int, User*> getPlayerList();
 
     // Set structure data
     void addUserToRoom(User& joining);
     void addPlayer(User& player);
     void removePlayer(User& player, const bool quit = false);
     void removeUserFromRoom(User& player);
+    void setMaxPlayerCount(const int count);
 
     // Other metchods
     bool startMatch();

@@ -75,7 +75,7 @@ void User::setInRoom(bool inRoom)
     this->inRoom = inRoom;
 }
 
-void User::setUsername(std::string username)
+void User::setUsername(const std::string &username)
 {
     this->username = username;
 }

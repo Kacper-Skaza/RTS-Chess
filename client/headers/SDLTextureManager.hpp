@@ -13,8 +13,8 @@ private:
 	std::unordered_map<std::string, std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>> textures;
 
 public:
-	SDLTextureManager(SDL_Renderer *renderer);
+	explicit SDLTextureManager(SDL_Renderer *renderer);
 	~SDLTextureManager() = default;
 
-	SDL_Texture *getTexture(const std::string name) const;
+	SDL_Texture *getTexture(const std::string &name) const;
 };

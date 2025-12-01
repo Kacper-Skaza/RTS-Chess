@@ -32,7 +32,7 @@ SDLTextureManager::SDLTextureManager(SDL_Renderer *renderer) : textures()
 		throw std::runtime_error("Coconut.jpg file not found!");
 }
 
-SDL_Texture *SDLTextureManager::getTexture(const std::string name) const
+SDL_Texture *SDLTextureManager::getTexture(const std::string &name) const
 {
 	auto it = textures.find(name);
 

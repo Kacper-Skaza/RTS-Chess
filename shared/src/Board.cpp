@@ -10,9 +10,9 @@
 Board::Board()
 {
 	// Initialize board
-	board.resize(SIZE);
-	for (int r = 0; r < SIZE; r++)
-		board[r].resize(SIZE);
+	board.resize(BOARD_SIZE);
+	for (int r = 0; r < BOARD_SIZE; r++)
+		board[r].resize(BOARD_SIZE);
 
 	// White pieces
 	board[0][0] = std::make_unique<Rook>('W');
@@ -23,7 +23,7 @@ Board::Board()
 	board[0][5] = std::make_unique<Bishop>('W');
 	board[0][6] = std::make_unique<Knight>('W');
 	board[0][7] = std::make_unique<Rook>('W');
-	for (int c = 0; c < SIZE; c++)
+	for (int c = 0; c < BOARD_SIZE; c++)
 		board[1][c] = std::make_unique<Pawn>('W');
 
 	// Black pieces
@@ -35,7 +35,7 @@ Board::Board()
 	board[7][5] = std::make_unique<Bishop>('B');
 	board[7][6] = std::make_unique<Knight>('B');
 	board[7][7] = std::make_unique<Rook>('B');
-	for (int c = 0; c < SIZE; c++)
+	for (int c = 0; c < BOARD_SIZE; c++)
 		board[6][c] = std::make_unique<Pawn>('B');
 }
 
@@ -46,11 +46,11 @@ const std::vector<std::vector<std::unique_ptr<Piece>>> &Board::getBoardFull() co
 
 const std::vector<std::vector<char>> Board::getBoardSymbol() const
 {
-	std::vector<std::vector<char>> symbolBoard(SIZE, std::vector<char>(SIZE));
+	std::vector<std::vector<char>> symbolBoard(BOARD_SIZE, std::vector<char>(BOARD_SIZE));
 
-	for (int r = 0; r < SIZE; r++)
+	for (int r = 0; r < BOARD_SIZE; r++)
 	{
-		for (int c = 0; c < SIZE; c++)
+		for (int c = 0; c < BOARD_SIZE; c++)
 		{
 			if (board[r][c])
 				symbolBoard[r][c] = board[r][c]->getSymbol();
@@ -60,11 +60,6 @@ const std::vector<std::vector<char>> Board::getBoardSymbol() const
 	}
 
 	return symbolBoard;
-}
-
-int Board::getBoardSize() const noexcept
-{
-	return SIZE;
 }
 
 void Board::makeMove(const Move &move)

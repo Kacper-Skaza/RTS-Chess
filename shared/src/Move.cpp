@@ -2,10 +2,10 @@
 
 Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to) : piece(piece), from(from), to(to)
 {
-	if (from.first < 0 || from.first >= 8 ||
-		from.second < 0 || from.second >= 8 ||
-		to.first < 0 || to.first >= 8 ||
-		to.second < 0 || to.second >= 8)
+	if (from.first < 0 || from.first >= BOARD_SIZE ||
+		from.second < 0 || from.second >= BOARD_SIZE ||
+		to.first < 0 || to.first >= BOARD_SIZE ||
+		to.second < 0 || to.second >= BOARD_SIZE)
 	{
 		throw std::invalid_argument("[Move::Move] Coordinates out of range");
 	}

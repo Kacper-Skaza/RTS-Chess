@@ -2,6 +2,8 @@
 
 class Piece;
 
+#include "Structures.hpp"
+
 #include <stdexcept>
 #include <utility>
 #include <memory>

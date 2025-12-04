@@ -7,7 +7,9 @@ on:
 jobs:
   # ===== Static Analysis =====
   static_analysis:
+    if: "!contains(toLower(github.event.head_commit.message), '[skip-ci]')"
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,7 +25,9 @@ jobs:
 
   # ===== Build on ubuntu =====
   build_ubuntu:
+    if: "!contains(toLower(github.event.head_commit.message), '[skip-ci]')"
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -50,6 +54,7 @@ jobs:
 
   # ===== Build on debian =====
   build_debian:
+    if: "!contains(toLower(github.event.head_commit.message), '[skip-ci]')"
     runs-on: ubuntu-latest
     container:
       image: debian:bookworm-slim

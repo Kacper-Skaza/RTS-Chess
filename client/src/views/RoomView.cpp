@@ -7,7 +7,7 @@ RoomView::RoomView(SDL_Window *win, SDL_Renderer *rend) : window(win), renderer(
 
 void RoomView::updateRoom(std::unique_ptr<Room> room)
 {
-	rooms.push_back(room);
+	rooms.push_back(std::move(room));
 }
 
 void RoomView::render()

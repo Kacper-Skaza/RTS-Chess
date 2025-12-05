@@ -48,8 +48,6 @@ public:
     void setMaxPlayerCount(const int count);
 
     // Other metchods
-    bool startMatch();
-    bool stopMatch(MatchEndReasons reason);
-
-
+    void startMatch();
+    void stopMatch(MatchEndReasons reason);
 };

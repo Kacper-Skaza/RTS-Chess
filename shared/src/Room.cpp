@@ -119,12 +119,15 @@ void Room::removeUserFromRoom(const User& player)
     if (this->userList.find(player.getPlayerID()) != this->userList.end()) this->userList.erase(player.getPlayerID());   
 }
 
-bool Room::startMatch()
+void Room::startMatch()
 {
-
+    this->matchStarted = true;
+    //reinit board
 }
 
-bool Room::stopMatch(MatchEndReasons reason)
+void Room::stopMatch(MatchEndReasons reason)
 {
-
+    this->matchStarted = false;
+    //destroy board
+    //do not destroy room coz it will be done server side & client side elsewhere
 }

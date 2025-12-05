@@ -27,10 +27,10 @@ public:
     
     const unsigned int &getPlayerID() const noexcept;
     const std::string &getUsername() const noexcept;
-    const bool isPlayer() const noexcept;
-    const bool isReady() const noexcept;
-    const bool isInRoom() const noexcept;
-    const ChessSide getSide() const noexcept;
+    bool isPlayer() const noexcept;
+    bool isReady() const noexcept;
+    bool isInRoom() const noexcept;
+    ChessSide getSide() const noexcept;
     
     void setPlayer(bool player);
     void setReady(bool ready);
@@ -39,7 +39,7 @@ public:
     void setSide(ChessSide side);
     
     // Operator overloading
-    const bool operator==(const User &user) const;
+    bool operator==(const User &user) const;
     
     // GenerateID
     unsigned int generateID(const std::string &username);

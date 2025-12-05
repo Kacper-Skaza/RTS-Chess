@@ -24,7 +24,7 @@ User::User(const std::string &username)
     this->side = WHITE;
 }
 
-const bool User::operator==(const User &user) const
+bool User::operator==(const User &user) const
 {
     if (this->id == user.id) return true;
     return false;
@@ -40,22 +40,22 @@ const std::string& User::getUsername() const noexcept
     return this->username;
 }
 
-const bool User::isPlayer() const noexcept
+bool User::isPlayer() const noexcept
 {
     return this->player;
 }
 
-const bool User::isReady() const noexcept
+bool User::isReady() const noexcept
 {
     return this->ready;
 }
 
-const bool User::isInRoom() const noexcept
+bool User::isInRoom() const noexcept
 {
     return this->inRoom;
 }
 
-const ChessSide User::getSide() const noexcept
+ChessSide User::getSide() const noexcept
 {
     return this->side;
 }

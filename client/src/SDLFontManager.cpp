@@ -1,5 +1,4 @@
 #include "../headers/SDLFontManager.hpp"
-#include "SDLFontManager.hpp"
 
 SDLFontManager::SDLFontManager(SDL_Renderer* renderer)
 {
@@ -20,7 +19,7 @@ SDLFontManager::~SDLFontManager()
  * \param color color of text 
  * \returns SDL_Texture* on success, nullptr on errror
  */
-SDL_Texture* SDLFontManager::getFontTexture(std::string str, std::string font, int size, SDL_Color color)
+SDL_Texture* SDLFontManager::getFontTexture(std::string& str, std::string& font, int size, SDL_Color color)
 {
 
     auto it = this->fontTextures.find(this->createTextureString(str, font, size, color));
@@ -34,7 +33,7 @@ SDL_Texture* SDLFontManager::getFontTexture(std::string str, std::string font, i
  * \param fontTextureVector vector of tuples with structure (string string int SDL_Color)
  * \returns 0 successfully generated all of textures, n failed to load n textures
  */
-int SDLFontManager::preGenFontTextures(std::vector<std::tuple<std::string, std::string, int, SDL_Color>> fontTextureVector)
+int SDLFontManager::preGenFontTextures(std::vector<std::tuple<std::string, std::string, int, SDL_Color>>& fontTextureVector)
 {
     int fails = 0;
     for (auto &&i : fontTextureVector)
@@ -53,7 +52,7 @@ int SDLFontManager::preGenFontTextures(std::vector<std::tuple<std::string, std::
  * \param color color of text 
  * \returns TTF_Font*, or nullptr on error
  */
-SDL_Texture *SDLFontManager::createFontTexture(std::string str, std::string font, int size, SDL_Color color)
+SDL_Texture *SDLFontManager::createFontTexture(std::string& str, std::string& font, int size, SDL_Color color)
 {
     //Size must be bigger than 0
     if (size <= 0) return nullptr;
@@ -92,7 +91,7 @@ SDL_Texture *SDLFontManager::createFontTexture(std::string str, std::string font
  * \param color color of text 
  * \returns string that represents key value to fontTexture
  */
-std::string SDLFontManager::createTextureString(std::string str, std::string font, int size, SDL_Color color)
+std::string SDLFontManager::createTextureString(std::string& str, std::string& font, int size, SDL_Color color)
 {
     return std::string(
         str + font + std::to_string(size) + 

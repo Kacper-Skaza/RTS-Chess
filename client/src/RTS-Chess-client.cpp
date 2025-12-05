@@ -21,6 +21,12 @@ int main()
 		return 1;
 	}
 
+	if (TTF_Init() == -1)
+	{
+		std::cerr << "TTF_Init Error: " << TTF_GetError() << "\n";
+	}
+	
+
 	SDL_Window *window = SDL_CreateWindow("Puste Okno", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 800, 600, SDL_WINDOW_SHOWN);
 	if (!window)
 	{

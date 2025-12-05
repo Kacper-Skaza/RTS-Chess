@@ -19,7 +19,7 @@ SDLFontManager::~SDLFontManager()
  * \param color color of text 
  * \returns SDL_Texture* on success, nullptr on errror
  */
-SDL_Texture* SDLFontManager::getFontTexture(std::string& str, std::string& font, int size, SDL_Color color)
+SDL_Texture* SDLFontManager::getFontTexture(const std::string& str, const std::string& font, int size, SDL_Color color)
 {
 
     auto it = this->fontTextures.find(this->createTextureString(str, font, size, color));
@@ -52,7 +52,7 @@ int SDLFontManager::preGenFontTextures(std::vector<std::tuple<std::string, std::
  * \param color color of text 
  * \returns TTF_Font*, or nullptr on error
  */
-SDL_Texture *SDLFontManager::createFontTexture(std::string& str, std::string& font, int size, SDL_Color color)
+SDL_Texture *SDLFontManager::createFontTexture(const std::string& str, const std::string& font, int size, SDL_Color color)
 {
     //Size must be bigger than 0
     if (size <= 0) return nullptr;
@@ -91,7 +91,7 @@ SDL_Texture *SDLFontManager::createFontTexture(std::string& str, std::string& fo
  * \param color color of text 
  * \returns string that represents key value to fontTexture
  */
-std::string SDLFontManager::createTextureString(std::string& str, std::string& font, int size, SDL_Color color)
+std::string SDLFontManager::createTextureString(const std::string& str, const std::string& font, int size, SDL_Color color)
 {
     return std::string(
         str + font + std::to_string(size) + 

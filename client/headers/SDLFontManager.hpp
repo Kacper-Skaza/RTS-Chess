@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <string>
 #include <memory>
+#include <vector>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -12,7 +13,7 @@ class SDLFontManager
 {
 private:
     SDL_Renderer* renderer;
-    std::unordered_map<std::pair<std::string, int>, std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)>> fonts;
+    std::unordered_map<std::string, std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)>> fonts;
     std::unordered_map<std::string, std::unique_ptr<SDL_Texture,decltype(&SDL_DestroyTexture)>> fontTextures;
 
     static std::string createTextureString(const std::string& str, const std::string& font, int size, SDL_Color color);

@@ -38,7 +38,7 @@ int SDLFontManager::preGenFontTextures(std::vector<std::tuple<std::string, std::
     int fails = 0;
     for (auto &&i : fontTextureVector)
     {
-        if(this->getFontTexture(get<0>(i), get<1>(i), get<2>(i), get<3>(i)) == nullptr) fails++;
+        if(this->getFontTexture(std::get<0>(i), std::get<1>(i), std::get<2>(i), std::get<3>(i)) == nullptr) fails++;
     }
     return fails;
 }
@@ -57,20 +57,20 @@ SDL_Texture *SDLFontManager::createFontTexture(const std::string& str, const std
     //Size must be bigger than 0
     if (size <= 0) return nullptr;
 
-    //Try to find the font
-    if (this->fonts.find(std::pair<std::string, int>(str, size)) == this->fonts.end())
+    //Try to find the font 
+    if (this->fonts.find(std::string(str + std::to_string(size))) == this->fonts.end())
     {
         std::string pathToFont = "./resources/fonts" + font + ".ttf";
         TTF_Font* newFont = TTF_OpenFont(pathToFont.c_str(), size);
         if (newFont == nullptr) return nullptr;        
         this->fonts.emplace(
-            std::pair<std::string,int>(str, size), 
+            std::string(str + std::to_string(size)), 
             std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)>(newFont, TTF_CloseFont));
     }
 
     //Creating texture from font & size
     SDL_Surface* surface = TTF_RenderText_Solid(
-        this->fonts.find(std::pair<std::string, int>(str, size))->second.get(), 
+        this->fonts.find(std::string(str + std::to_string(size)))->second.get(), 
         str.c_str(), color);
     SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(this->renderer, surface);
 

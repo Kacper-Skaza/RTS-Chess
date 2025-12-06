@@ -1,4 +1,5 @@
 #include "../headers/SDLFontManager.hpp"
+#include "SDLFontManager.hpp"
 
 SDLFontManager::SDLFontManager(SDL_Renderer* renderer)
 {
@@ -44,13 +45,13 @@ int SDLFontManager::preGenFontTextures(std::vector<std::tuple<std::string, std::
 }
 
 /**
- * Creates new texture from font with specific font size 
- * 
+ * Creates new texture from font with specific font size
+ *
  * \param str string that will be presented
  * \param font used font as string
  * \param size int that represents size must be >0
  * \param color color of text 
- * \returns TTF_Font*, or nullptr on error
+ * \returns SDL_Texture* on success, nullptr on errror
  */
 SDL_Texture *SDLFontManager::createFontTexture(const std::string& str, const std::string& font, int size, SDL_Color color)
 {
@@ -60,25 +61,16 @@ SDL_Texture *SDLFontManager::createFontTexture(const std::string& str, const std
     //Try to find the font 
     if (this->fonts.find(std::string(str + std::to_string(size))) == this->fonts.end())
     {
-        std::string pathToFont = "./resources/fonts" + font + ".ttf";
-        TTF_Font* newFont = TTF_OpenFont(pathToFont.c_str(), size);
-        if (newFont == nullptr) return nullptr;        
-        this->fonts.emplace(
-            std::string(str + std::to_string(size)), 
-            std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)>(newFont, TTF_CloseFont));
+        if (this->addNewFont(font, size) == false) return nullptr;
     }
 
-    //Creating texture from font & size
-    SDL_Surface* surface = TTF_RenderText_Solid(
-        this->fonts.find(std::string(str + std::to_string(size)))->second.get(), 
-        str.c_str(), color);
-    SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(this->renderer, surface);
+    //Adding texture to map
+    SDL_Texture* fontTexture = this->createTextTexture(str, font, size, color);
 
     this->fontTextures.emplace(
         this->createTextureString(str, font, size, color), 
         std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>(fontTexture, SDL_DestroyTexture));
 
-    SDL_FreeSurface(surface);
     return fontTexture;
 }
 
@@ -97,3 +89,41 @@ std::string SDLFontManager::createTextureString(const std::string& str, const st
         str + font + std::to_string(size) + 
         std::to_string(color.r) + std::to_string(color.g) +std::to_string(color.b) + std::to_string(color.a));
 }
+
+/**
+ * Use if only adding font is needed, not texture else use getFontTexture
+ * \param font used font
+ * \param fontSize size of font in ptsize
+ * \returns true on success, false on error 
+ */
+bool SDLFontManager::addNewFont(const std::string &font, int fontSize)
+{
+    std::string pathToFont = "./resources/fonts/" + font + ".ttf";
+    TTF_Font* newFont = TTF_OpenFont(pathToFont.c_str(), fontSize);
+    if (newFont == nullptr) return false;        
+    this->fonts.emplace(
+        std::string(font + std::to_string(fontSize)), 
+        std::unique_ptr<TTF_Font, decltype(&TTF_CloseFont)>(newFont, TTF_CloseFont));
+    return true;
+}
+
+/**
+ * This is unsafe texture creating method do not use if speed and memory usage isn't a concern.
+ * No data validation is done.
+ * \param str string that will be presented
+ * \param font used font as string
+ * \param size int that represents size must be >0
+ * \param color color of text
+ * \returns SDL_Texture* on success, nullptr on errror
+ */
+SDL_Texture *SDLFontManager::createTextTexture(const std::string &str, const std::string &font, int size, SDL_Color color)
+{
+    //Creating texture
+    SDL_Surface* surface = TTF_RenderText_Solid(
+        this->fonts.find(std::string(str + std::to_string(size)))->second.get(), 
+        str.c_str(), color);
+    SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(this->renderer, surface);
+    
+    SDL_FreeSurface(surface);
+    return fontTexture;
+} 

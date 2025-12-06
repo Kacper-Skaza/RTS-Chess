@@ -6,11 +6,11 @@ SDLFontManager::SDLFontManager(SDL_Renderer* renderer)
     this->renderer = renderer;
 }
 
-SDLFontManager::~SDLFontManager()
-{
-    for (auto &&item : this->fontTextures) item.second.reset();
-    for (auto &&item : this->fonts) item.second.reset();
-}
+// SDLFontManager::~SDLFontManager()
+// {
+//     for (auto &&item : this->fontTextures) item.second.reset();
+//     for (auto &&item : this->fonts) item.second.reset();
+// }
 
 /**
  * Finds or creates a fontTexture
@@ -120,7 +120,7 @@ SDL_Texture *SDLFontManager::createTextTexture(const std::string &str, const std
 {
     //Creating texture
     SDL_Surface* surface = TTF_RenderText_Solid(
-        this->fonts.find(std::string(str + std::to_string(size)))->second.get(), 
+        this->fonts.find(std::string(font + std::to_string(size)))->second.get(), 
         str.c_str(), color);
     SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(this->renderer, surface);
     

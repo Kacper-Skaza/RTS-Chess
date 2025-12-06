@@ -20,7 +20,7 @@ private:
     SDL_Texture* createFontTexture(const std::string& str, const std::string& font, int size, SDL_Color color);
 public:
     explicit SDLFontManager(SDL_Renderer* renderer);
-    ~SDLFontManager();
+    ~SDLFontManager() = default;
 
     SDL_Texture* getFontTexture(const std::string& str, const  std::string& font, int size, SDL_Color color = {255,255,255,255});
     int preGenFontTextures(std::vector<std::tuple<std::string, std::string, int, SDL_Color>>& fontTextureVector);

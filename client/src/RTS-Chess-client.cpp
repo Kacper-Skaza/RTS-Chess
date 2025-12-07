@@ -9,6 +9,8 @@
 #include "../headers/SDLFontManager.hpp"
 #include "../headers/TextBox.hpp"
 
+#include "../../shared/headers/dependencies/Json.hpp"
+
 int main()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -123,6 +125,10 @@ int main()
 		}
 	}
 
+	{
+		
+
+	}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	IMG_Quit();

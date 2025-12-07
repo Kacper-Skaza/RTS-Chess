@@ -3,8 +3,8 @@
 
 
 
-TextBox::TextBox(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager, SDL_Rect &pos,
-                 std::string font, int size, SDL_Color color) : boxPos(pos), font(font), color(color), fontSize(size)   
+TextBox::TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
+        const std::string& font, int size, SDL_Color color) : boxPos(pos), font(font), color(color), fontSize(size)   
 {
     //set data
     this->window = window;
@@ -72,6 +72,11 @@ void TextBox::textListener(SDL_Event &e)
     default:
         break;
     }
+}
+
+std::string &TextBox::getString()
+{
+    return this->text;
 }
 
 void TextBox::handleSpecialKeyPress(SDL_Event &e)

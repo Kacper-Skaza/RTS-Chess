@@ -26,34 +26,49 @@ chmod +x ./build.sh
 * Gra kończy się, gdy któryś z króli zostanie zbity.
 * Po zakończeniu gry pokój przechodzi do stanu, w którym gra się nie rozpoczęła, gracze i obserwatorzy pozostają w pokoju.
 
-## Fazy
-
-### Faza 1
+## TODO
 
 * Shared
-	* move.cpp <- Kacpers100
-		* Pola skad dokad jaka figura
-		* Setter i gettery na wszystkie pola
+	* ~~move.cpp <- Kacpers100~~
+		* ~~Pola skad dokad jaka figura~~
+		* ~~Setter i gettery na wszystkie pola~~
 	* Logika gry
-		* Kazda `pieces (nazwa folderu)` z walidacja + ruchy i bicia
-			* `bool validateMove(class &move);`
-			* const swojej literki i getter
-			* Kacpers100
-				1. Knight.cpp
-				2. Rook.cpp
-				3. King.cpp
-			* destrojer
-				1. Queen.cpp
-				2. Bishop.cpp
-				3. Pawn.cpp
-		* board.cpp <- Kacpers100
-			* Pozycje figur, klasy figur, tablica null || figura
-	* room.cpp <- destrojer
-	* Obsługa JSON
-		* Poszukać biblioteki
-		* readJSON.cpp
-		* writeJSON.cpp
+		* ~~Kazda `pieces (nazwa folderu)` z walidacja + ruchy i bicia~~
+			* ~~`bool validateMove(class &move);`~~
+			* ~~const swojej literki i getter~~
+				1. ~~Knight.cpp~~
+				2. ~~Rook.cpp~~
+				3. ~~King.cpp~~
+				4. ~~Queen.cpp~~
+				5. ~~Bishop.cpp~~
+				6. ~~Pawn.cpp~~
+				7. Piece.cpp <- destrojer
+					* ID dodac (pole startowe)
+					* firstMove -> moveCount (int)
+		* ~~board.cpp <- Kacpers100~~
+			* ~~Pozycje figur, klasy figur, tablica null || figura~~
+	* ~~room.cpp <- destrojer~~
+	* User <- destrojer
+		* wskaznik do connectionmanager
+	* ConnectionManager (kontruktor bierze fd) <- Kacpers100
+		* Pola
+			* kolejke przychodzacych wiadomosci
+			* kolejke wychodzacych wiadomosci
+			* trzyma wskazniki polaczen
+			* kiedy byl ostatni ping
+		* Funkcje
+			* liczy czas (wlacza liczenie czasu od last ping)
+			* zamkniecie polaczenia
+
+			* wysyla wiadomosci 
+			* wysyla ping
+			
+			* odbiera wiadomosci
+			* odbiera ping
+	
 * Client
+	* Main Loop <- destrojer
+	* poll <- destrojer
 	* GUI - views folder
 		* Connect <- destrojer
 		* RoomSelect / RoomList <- Kacpers100
@@ -64,10 +79,10 @@ chmod +x ./build.sh
 			* Settings
 			* Credits
 	* Tekstury
-		* Bindowanie czcionek <- destrojer
-		* Bindowanie tesktur <- Kacpers100
+		* ~~Bindowanie czcionek <- destrojer~~
+		* ~~Bindowanie tesktur <- Kacpers100~~
 		* Pliki <- destrojer
-* Server
+* Server 
 	* Logika połączeń
 		* Zestawienie połączenia
 			* Nowe połączenie tworzy klase
@@ -75,26 +90,36 @@ chmod +x ./build.sh
 		* Obsługa danych
 		* Odsyłanie danych
 		* Zamknięcie połączenia
-	* Przerwania / Pętla zdarzeń
+	* poll z obsluga calosci <- Kacpers100
+	* nasluchujemy i przy nowym polaczeniu tworzymy nowy connectionmanager <- Kacpers100
 
-### Faza 2
+* client -> server dane
+	* utworz pokoj
+	* dolacz do pokoju
+	* wiadomosc jestem gotowy
+	* wiadomosc chce byc graczem 
+	* wiadomosc nie chce byc graczem
+	* chce wyslac wiadkomosc na chat
+	* chce wykonac ruch X
+	* chce sprawdzic czy dalej jest polaczenie z serwerem (ping)
 
-* Shared
-	* ...
-* Client
-	* Logika połączeń
-		* Zestawienie połączenia
-		* Wysyłanie danych
-		* Oczekiwanie na dane
-		* Odbieranie danych
-	* Zamknięcie połączenia / Wyjście z gry
-* Server
-	* Logika połączeń
-		* Obsługa danych
+* server -> client dane
+	* wysylam rozne ACK 
+	* wysylam liste pokoi (po kazdej aktualizacji -> broadcast, na start -> do jednego)
+	* wysylam stan pokoju
+	* wysyla startowe boarda
+	* wysylam update boarda (po kazdym ruchu dla kazdego w  pokoju)
+	* wysylam odebrane wiadomosci na chat do kazdego (po kazdej wiadkomosci)
+	* wysylam wiadomosc kto wygral (do kazdego w pokoju)
+	* wysylam nowy stan lobby po grze (wszyscy laduja w obserwatorach)
+	* wysylam informacje ze gracz sie zgubil w odmentach internetu
 
-### Faza 3
-
-* Testy na Linuksie
+* Przesylane uzywamy smiesznej biblioteki to jSONowo <- kazdy swoje
+	* piece(figury)
+	* board
+	* room
+	* user
+	* move
 
 ## Nazewnictwo
 

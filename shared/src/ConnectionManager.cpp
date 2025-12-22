@@ -1,5 +1,8 @@
 #include "../headers/ConnectionManager.hpp"
 
+#include <sys/socket.h>
+#include <unistd.h>
+
 ConnectionManager::ConnectionManager(int socketFd) : socketFd(socketFd), lastPing(std::chrono::steady_clock::now()) {}
 
 // Management
@@ -37,7 +40,7 @@ std::string ConnectionManager::recvMessage()
 {
 	recvRaw();
 	if (incomingQueue.empty())
-        return "";
+		return "";
 
 	std::string temp = incomingQueue.front();
 	incomingQueue.pop();

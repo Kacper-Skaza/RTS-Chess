@@ -9,13 +9,13 @@ Knight::Knight(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'N' : 'n')
 	}
 }
 
-bool Knight::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
+bool Knight::validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const
 {
 	const Piece *piece = move.getPiece();
 	std::pair<int, int> from = move.getFrom();
 	std::pair<int, int> to = move.getTo();
 
-	const Piece *target = board[to.first][to.second].get();
+	const Piece *target = board[to.first][to.second];
 	int dx = std::abs(to.first - from.first);
 	int dy = std::abs(to.second - from.second);
 

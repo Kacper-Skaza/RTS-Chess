@@ -9,13 +9,13 @@ Rook::Rook(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'R' : 'r')
 	}
 }
 
-bool Rook::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
+bool Rook::validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const
 {
 	const Piece *piece = move.getPiece();
 	std::pair<int, int> from = move.getFrom();
 	std::pair<int, int> to = move.getTo();
 
-	const Piece *target = board[to.first][to.second].get();
+	const Piece *target = board[to.first][to.second];
 	int fx = from.first;
 	int fy = from.second;
 	int tx = to.first;

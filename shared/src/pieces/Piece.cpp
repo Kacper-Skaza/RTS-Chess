@@ -17,7 +17,7 @@ void Piece::makeMove()
 	firstMove = false;
 }
 
-bool Piece::validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const
+bool Piece::validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const
 {
 	// Suppress warnings
 	(void)move;

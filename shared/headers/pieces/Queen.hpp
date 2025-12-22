@@ -13,5 +13,5 @@ private:
     const char SYMBOL;
 public:
     explicit Queen(const char SIDE);
-    bool validateMove(const Move &move, const std::vector<std::vector<std::unique_ptr<Piece>>> &board) const override;
+    bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const override;
 };

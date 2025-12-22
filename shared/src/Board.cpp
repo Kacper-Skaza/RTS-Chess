@@ -39,9 +39,22 @@ Board::Board()
 		board[6][c] = std::make_unique<Pawn>('B');
 }
 
-const std::vector<std::vector<std::unique_ptr<Piece>>> &Board::getBoardFull() const noexcept
+const std::vector<std::vector<Piece *>> &Board::getBoardFull() const
 {
-	return board;
+	std::vector<std::vector<Piece *>> pointerBoard(BOARD_SIZE, std::vector<Piece*>(BOARD_SIZE));
+
+	for (int r = 0; r < BOARD_SIZE; r++)
+	{
+		for (int c = 0; c < BOARD_SIZE; c++)
+		{
+			if (board[r][c])
+				pointerBoard[r][c] = board[r][c].get();
+			else
+				pointerBoard[r][c] = nullptr;
+		}
+	}
+
+	return pointerBoard;
 }
 
 const std::vector<std::vector<char>> Board::getBoardSymbol() const
@@ -77,7 +90,7 @@ void Board::makeMove(const Move &move)
 	{
 		return;
 	}
-	if (!board[from.first][from.second]->validateMove(move, this->board))
+	if (!board[from.first][from.second]->validateMove(move, this->getBoardFull()))
 	{
 		return;
 	}

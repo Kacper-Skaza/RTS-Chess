@@ -22,6 +22,8 @@
 
 #include "../../shared/headers/dependencies/Json.hpp"
 
+#include "RTS-Chess-MainLoop.hpp"
+
 int main()
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)

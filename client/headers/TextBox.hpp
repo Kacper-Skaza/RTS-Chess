@@ -16,12 +16,13 @@ private:
     const std::string font;
     const SDL_Color color;
     const int fontSize;
+    const bool editable;
     
     SDL_Window* window;
     SDL_Renderer* renderer;
     SDLFontManager* fontManager;
     SDL_Texture* texture;
-    
+
     // data for fontManager
     SDL_Rect textureSize;
     std::string text;
@@ -32,13 +33,14 @@ private:
     
 public:
     TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
-        const std::string& font, int size, SDL_Color color = {0,0,0,255});
+        const std::string& font, int size, const bool editable = false, SDL_Color color = {0,0,0,255});
     ~TextBox();
 
     bool checkIfClicked(int x, int y);
     void genTexture();
     SDL_Texture* getTexture();
     SDL_Rect& getTextureRect();
+    const SDL_Rect& getBoxPos();
 
     void setText(const std::string& text);
     void textListener(SDL_Event& e);

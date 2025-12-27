@@ -4,7 +4,7 @@
 
 
 TextBox::TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
-        const std::string& font, int size, SDL_Color color) : boxPos(pos), font(font), color(color), fontSize(size)   
+        const std::string& font, int size, bool editable, SDL_Color color) : boxPos(pos), font(font), color(color), fontSize(size), editable(editable)   
 {
     //set data
     this->window = window;
@@ -49,6 +49,11 @@ SDL_Rect& TextBox::getTextureRect()
     return this->textureSize;
 }
 
+const SDL_Rect &TextBox::getBoxPos()
+{
+    return this->boxPos;
+}
+
 void TextBox::setText(const std::string &text)
 {
     this->text = text;
@@ -57,6 +62,7 @@ void TextBox::setText(const std::string &text)
 
 void TextBox::textListener(SDL_Event &e)
 {
+    if (editable == false) return;
     switch (e.type)
     {
     case SDL_KEYDOWN:

@@ -1,4 +1,5 @@
 #include "../headers/User.hpp"
+#include "User.hpp"
 
 // Implement on server side as request to get ID (needs to be unique)
 unsigned int User::generateID(const std::string &username) 
@@ -60,6 +61,10 @@ ChessSide User::getSide() const noexcept
     return this->side;
 }
 
+ConnectionManager *User::getConnectionManager() const noexcept
+{
+    return connectionManager.get();
+}
 void User::setPlayer(bool player)
 {
     this->player = player;
@@ -83,4 +88,9 @@ void User::setUsername(const std::string &username)
 void User::setSide(ChessSide side)
 {
     this->side = side;
+}
+
+void User::setConnectionManager(int socket)
+{
+    this->connectionManager = std::make_unique<ConnectionManager>(socket);
 }

@@ -4,9 +4,9 @@
 #include <string>
 #include <queue>
 
-#if (defined (_WIN32) || defined (_WIN64))
+#if defined(_WIN32) || defined(_WIN64)
 	#include <WinSock2.h>
-#elif (defined (LINUX) || defined (__linux__))
+#elif defined(LINUX) || defined(__linux__)
 	#include <sys/socket.h>
 #endif
 

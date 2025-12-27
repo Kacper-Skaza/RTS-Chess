@@ -47,6 +47,7 @@ std::string ConnectionManager::recvMessage()
 }
 
 // Private
+#if defined(LINUX) || defined(__linux__)
 void ConnectionManager::sendRaw()
 {
 	while (!outgoingQueue.empty())
@@ -79,3 +80,12 @@ void ConnectionManager::recvRaw()
 			return;
 	}
 }
+#endif
+
+#if defined(_WIN32) || defined(_WIN64)
+void ConnectionManager::sendRaw()
+{}
+
+void ConnectionManager::recvRaw()
+{}
+#endif

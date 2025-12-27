@@ -10,11 +10,8 @@
 
 class King : public Piece
 {
-private:
-	const char SYMBOL;
-
 public:
-	explicit King(const char SIDE);
+	explicit King(const char SIDE, const int POS);
 
 	bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const override;
 };

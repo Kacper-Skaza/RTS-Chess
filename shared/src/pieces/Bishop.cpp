@@ -1,6 +1,6 @@
 #include "../../headers/pieces/Bishop.hpp"
 
-Bishop::Bishop(const char SIDE): SYMBOL(std::toupper(SIDE) == 'W'? 'B': 'b')
+Bishop::Bishop(const char SIDE, const int POS): Piece(SIDE, 'B', POS)
 {
     //Throw exception when given wrong char for SIDE
     if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')

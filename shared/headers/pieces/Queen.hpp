@@ -9,9 +9,7 @@
 
 class Queen : public Piece 
 {
-private:
-    const char SYMBOL;
 public:
-    explicit Queen(const char SIDE);
+    explicit Queen(const char SIDE, const int POS);
     bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const override;
 };

@@ -9,11 +9,8 @@
 
 class Pawn: public Piece
 {
-private:
-    const char SYMBOL;
-    bool firstMove = true;
 public:
     bool enPassant = false;
-    explicit Pawn(const char SIDE);
+    explicit Pawn(const char SIDE, const int POS);
     bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const override;
 };

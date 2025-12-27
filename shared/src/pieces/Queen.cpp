@@ -1,6 +1,6 @@
 #include "../../headers/pieces/Queen.hpp"
 
-Queen::Queen(const char SIDE): SYMBOL(std::toupper(SIDE) == 'W'? 'Q': 'q')
+Queen::Queen(const char SIDE, const int POS): Piece(SIDE, 'Q', POS)
 {
 	//Throw exception when given wrong char for SIDE
     if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')

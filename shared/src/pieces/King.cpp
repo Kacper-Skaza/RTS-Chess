@@ -1,6 +1,6 @@
 #include "../../headers/pieces/King.hpp"
 
-King::King(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'K' : 'k')
+King::King(const char SIDE, const int POS): Piece(SIDE, 'K', POS)
 {
 	// Throw exception when given wrong char for SIDE
 	if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')

@@ -1,6 +1,6 @@
 #include "../../headers/pieces/Rook.hpp"
 
-Rook::Rook(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'R' : 'r')
+Rook::Rook(const char SIDE, const int POS): Piece(SIDE, 'R', POS)
 {
 	// Throw exception when given wrong char for SIDE
 	if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')

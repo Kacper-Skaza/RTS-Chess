@@ -10,11 +10,8 @@
 
 class Rook : public Piece
 {
-private:
-	const char SYMBOL;
-
 public:
-	explicit Rook(const char SIDE);
+	explicit Rook(const char SIDE, const int POS);
 
 	bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const override;
 };

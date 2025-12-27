@@ -1,6 +1,6 @@
 #include "../../headers/pieces/Knight.hpp"
 
-Knight::Knight(const char SIDE) : SYMBOL(std::toupper(SIDE) == 'W' ? 'N' : 'n')
+Knight::Knight(const char SIDE, const int POS): Piece(SIDE, 'N', POS)
 {
 	// Throw exception when given wrong char for SIDE
 	if (std::toupper(SIDE) != 'W' && std::toupper(SIDE) != 'B')

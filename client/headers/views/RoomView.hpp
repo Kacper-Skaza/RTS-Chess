@@ -7,8 +7,9 @@
 #include <SDL2/SDL_ttf.h>
 
 #include "../../../shared/headers/Room.hpp"
+#include "View.hpp"
 
-class RoomView
+class RoomView: public View
 {
 private:
 	SDL_Window *window;

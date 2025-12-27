@@ -1,5 +1,4 @@
 #include "../../headers/pieces/Piece.hpp"
-#include "Piece.hpp"
 
 Piece::Piece() : SYMBOL('P'), ID(00) {}
 

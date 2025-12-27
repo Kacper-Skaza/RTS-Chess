@@ -15,7 +15,6 @@
 class User
 {
 private:
-    std::unique_ptr<ConnectionManager> connectionManager = nullptr;
     unsigned int id;
     std::string username;
     bool player = false;
@@ -33,16 +32,12 @@ public:
     bool isReady() const noexcept;
     bool isInRoom() const noexcept;
     ChessSide getSide() const noexcept;
-    ConnectionManager* getConnectionManager() const noexcept;
     
     void setPlayer(bool player);
     void setReady(bool ready);
     void setInRoom(bool inRoom);
     void setUsername(const std::string &username);
     void setSide(ChessSide side);
-
-    //possible windows difference
-    void setConnectionManager(int socket);
     
     // Operator overloading
     bool operator==(const User &user) const;

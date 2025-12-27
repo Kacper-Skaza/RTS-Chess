@@ -1,6 +1,5 @@
 #include "../headers/ConnectionManager.hpp"
 
-#include <sys/socket.h>
 #include <unistd.h>
 
 ConnectionManager::ConnectionManager(int socketFd) : socketFd(socketFd), lastPing(std::chrono::steady_clock::now()) {}

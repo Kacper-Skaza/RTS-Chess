@@ -9,6 +9,8 @@ class Move;
 #include <stdexcept>
 #include <memory>
 
+#define MAX_COOLDOWN 2000
+
 class Piece
 {
 protected:
@@ -17,7 +19,7 @@ protected:
 	const int ID; 
 
 	// TO BE DETERMINED LATER (INT COZ DEPENDANT ON MS)
-	int cooldown = 2000;
+	int cooldown = MAX_COOLDOWN;
 
 public:
 	Piece();
@@ -27,6 +29,7 @@ public:
 	int  getID() const noexcept;
 	char getSymbol() const noexcept;
 	bool getMoveCount() const noexcept;
+	int getCooldown() const noexcept;
 
 	void makeMove();
 	virtual bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const;

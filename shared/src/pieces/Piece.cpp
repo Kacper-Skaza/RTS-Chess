@@ -20,9 +20,15 @@ bool Piece::getMoveCount() const noexcept
 	return moveCount;
 }
 
+int Piece::getCooldown() const noexcept
+{
+    return cooldown;
+}
+
 void Piece::makeMove()
 {
 	moveCount++;
+	cooldown = MAX_COOLDOWN;
 }
 
 bool Piece::validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const

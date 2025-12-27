@@ -15,28 +15,28 @@ Board::Board()
 		board[r].resize(BOARD_SIZE);
 
 	// White pieces
-	board[0][0] = std::make_unique<Rook>('W');
-	board[0][1] = std::make_unique<Knight>('W');
-	board[0][2] = std::make_unique<Bishop>('W');
-	board[0][3] = std::make_unique<Queen>('W');
-	board[0][4] = std::make_unique<King>('W');
-	board[0][5] = std::make_unique<Bishop>('W');
-	board[0][6] = std::make_unique<Knight>('W');
-	board[0][7] = std::make_unique<Rook>('W');
+	board[0][0] = std::make_unique<Rook>    ('W', 0);
+	board[0][1] = std::make_unique<Knight>  ('W', 1);
+	board[0][2] = std::make_unique<Bishop>  ('W', 2);
+	board[0][3] = std::make_unique<Queen>   ('W', 3);
+	board[0][4] = std::make_unique<King>    ('W', 4);
+	board[0][5] = std::make_unique<Bishop>  ('W', 5);
+	board[0][6] = std::make_unique<Knight>  ('W', 6);
+	board[0][7] = std::make_unique<Rook>    ('W', 7);
 	for (int c = 0; c < BOARD_SIZE; c++)
-		board[1][c] = std::make_unique<Pawn>('W');
+		board[1][c] = std::make_unique<Pawn>('W', 10+c);
 
 	// Black pieces
-	board[7][0] = std::make_unique<Rook>('B');
-	board[7][1] = std::make_unique<Knight>('B');
-	board[7][2] = std::make_unique<Bishop>('B');
-	board[7][3] = std::make_unique<Queen>('B');
-	board[7][4] = std::make_unique<King>('B');
-	board[7][5] = std::make_unique<Bishop>('B');
-	board[7][6] = std::make_unique<Knight>('B');
-	board[7][7] = std::make_unique<Rook>('B');
+	board[7][0] = std::make_unique<Rook>    ('B', 70);
+	board[7][1] = std::make_unique<Knight>  ('B', 71);
+	board[7][2] = std::make_unique<Bishop>  ('B', 72);
+	board[7][3] = std::make_unique<Queen>   ('B', 73);
+	board[7][4] = std::make_unique<King>    ('B', 74);
+	board[7][5] = std::make_unique<Bishop>  ('B', 75);
+	board[7][6] = std::make_unique<Knight>  ('B', 76);
+	board[7][7] = std::make_unique<Rook>    ('B', 77);
 	for (int c = 0; c < BOARD_SIZE; c++)
-		board[6][c] = std::make_unique<Pawn>('B');
+		board[6][c] = std::make_unique<Pawn>('B', 60+c);
 }
 
 const std::vector<std::vector<Piece *>> &Board::getBoardFull() const

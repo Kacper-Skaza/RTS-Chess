@@ -32,7 +32,7 @@ chmod +x ./build.sh
 	* ~~move.cpp <- Kacpers100~~
 		* ~~Pola skad dokad jaka figura~~
 		* ~~Setter i gettery na wszystkie pola~~
-	* Logika gry
+	* ~~Logika gry~~
 		* ~~Kazda `pieces (nazwa folderu)` z walidacja + ruchy i bicia~~
 			* ~~`bool validateMove(class &move);`~~
 			* ~~const swojej literki i getter~~
@@ -70,7 +70,7 @@ chmod +x ./build.sh
 	* Main Loop <- destrojer
 	* poll <- destrojer
 	* GUI - views folder
-		* Connect <- destrojer
+		* Connect <- destrojer (initially done)
 		* RoomSelect / RoomList <- Kacpers100
 		* Lobby <- Kacpers100
 		* Game <- destrojer

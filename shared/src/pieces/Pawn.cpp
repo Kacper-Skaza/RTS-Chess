@@ -17,8 +17,10 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<Piece *>
     std::pair<int, int> from = move.getFrom();
     std::pair<int, int> to = move.getTo();
 
-    const int dx = to.first - from.first;
-    const int dy = to.second - from.second;
+    //dx is top down movement where lower number is more to the bottom
+    //dy is left right movement where lower number is more to the left
+    const int dx = std::abs(to.first - from.first);
+    const int dy = std::abs(to.second - from.second);
 
     //Check for move forward
     //THIS PROBABLY IS INCORRECT DUE TO BOARD DECLARATION
@@ -28,19 +30,21 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<Piece *>
         if (board[to.first][to.second] != nullptr) return false;
 
         //Check if move is valid
-        if (firstMove == false && dx !=1) return false;
-        if (firstMove == true && dx != 2 && dx != 1) return false;
-        return true;        
+        if (moveCount != 0 && dx !=1) return false;
+        if (moveCount == 0 && dx != 2 && dx != 1) return false;
+        return true;
     }
     
     //Check for capture move
-    if (dx == 1 && std::abs(dy) == 1)
+    if (dx == 1 && dy == 1)
     {
         //Check if space is same color
         if (std::isupper(board[to.first][to.second]->getSymbol()) == std::isupper(this->SYMBOL)) return false;
         
         //Check for en passant
-        if (board[to.first][to.second] == nullptr && (1) /*check if pawn is next to this one*/ && (1) /*if its pawns 1st move*/)
+        if (board[to.first][to.second] == nullptr 
+            && (board[to.first][from.second]->getSymbol() == 'P' || board[to.first][from.second]->getSymbol() == 'p') 
+            && (board[to.first][from.second]->getMoveCount() == 1))
             return true;
             
         //Check if space is empty

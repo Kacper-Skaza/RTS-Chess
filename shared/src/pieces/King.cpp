@@ -26,8 +26,8 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<Piece *>
 	// Check if move is castling
 	if (std::toupper(target->getSymbol()) == 'R' &&
 		std::isupper(piece->getSymbol()) == std::isupper(target->getSymbol()) &&
-		piece->getFirstMove() == true &&
-		target->getFirstMove() == true)
+		piece->getMoveCount() == 0 &&
+		target->getMoveCount() == 0)
 	{
 		return true;
 	}

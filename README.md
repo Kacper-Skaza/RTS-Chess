@@ -42,14 +42,14 @@ chmod +x ./build.sh
 				4. ~~Queen.cpp~~
 				5. ~~Bishop.cpp~~
 				6. ~~Pawn.cpp~~
-				7. Piece.cpp <- destrojer
-					* ID dodac (pole startowe)
-					* firstMove -> moveCount (int)
+				7. ~~Piece.cpp <- destrojer~~
+					* ~~ID dodac (pole startowe)~~
+					* ~~firstMove -> moveCount (int)~~
 		* ~~board.cpp <- Kacpers100~~
 			* ~~Pozycje figur, klasy figur, tablica null || figura~~
 	* ~~room.cpp <- destrojer~~
-	* User <- destrojer
-		* wskaznik do connectionmanager
+	* ~~User <- destrojer~~
+		* ~~wskaznik do connectionmanager~~
 	* ConnectionManager (kontruktor bierze fd) <- Kacpers100
 		* Pola
 			* kolejke przychodzacych wiadomosci

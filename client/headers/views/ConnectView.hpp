@@ -10,26 +10,26 @@
 #include "../SDLFontManager.hpp"
 #include "../SDLTextureManager.hpp"
 #include "../TextBox.hpp"
+#include "View.hpp"
 
-class ConnectView
+class ConnectView: public View
 {
 private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     
     TextBox connectionBox;
-    SDL_Rect connectButton;
+    TextBox connectButton;
 
     static const std::regex connectionRule;
-
-    void drawButton();
 public:
     explicit ConnectView(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager);
     ~ConnectView() = default;
 
-    void render();
-    void inputSanatizer();
+    TextBox& getConnectionBox();
+    TextBox& getConnectButton();
 
+    void render();
     bool validateConnectionData();
     bool connect();
 };

@@ -6,12 +6,6 @@ SDLFontManager::SDLFontManager(SDL_Renderer* renderer)
     this->renderer = renderer;
 }
 
-// SDLFontManager::~SDLFontManager()
-// {
-//     for (auto &&item : this->fontTextures) item.second.reset();
-//     for (auto &&item : this->fonts) item.second.reset();
-// }
-
 /**
  * Finds or creates a fontTexture
  * \param str string that will be presented

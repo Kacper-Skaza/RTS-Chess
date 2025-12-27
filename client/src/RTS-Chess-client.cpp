@@ -9,6 +9,17 @@
 #include "../headers/SDLFontManager.hpp"
 #include "../headers/TextBox.hpp"
 
+#include "../../shared/headers/Board.hpp"
+#include "../../shared/headers/Move.hpp"
+#include "../../shared/headers/User.hpp"
+#include "../../shared/headers/Room.hpp"
+
+#include "../headers/views/View.hpp"
+#include "../headers/views/ConnectView.hpp"
+#include "../headers/views/GameView.hpp"
+#include "../headers/views/LobbyView.hpp"
+#include "../headers/views/RoomView.hpp"
+
 #include "../../shared/headers/dependencies/Json.hpp"
 
 int main()
@@ -62,15 +73,13 @@ int main()
 	int w, h;
 	SDL_QueryTexture(coconut, nullptr, nullptr, &w, &h);
 
-	SDL_Rect dst{100, 100, w, h};
-
 	//Test for textbox
 	//Scope to satisfy destructor
 	{
 		SDLFontManager fontMan(renderer);
-		SDL_Rect rect{100, 100, 200, 50};
 		int x, y;
-		TextBox box(window, renderer, &fontMan, rect, "Roboto/Roboto-Medium", 20);
+
+		std::unique_ptr<View> currentView = std::make_unique<ConnectView>(window, renderer, &fontMan);
 
 		// --- Main loop ---
 		bool running = true;
@@ -89,36 +98,42 @@ int main()
 				if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
 				{
 					SDL_GetMouseState(&x, &y);
-					if (box.checkIfClicked(x, y))
+					//check if connectView
+					if (ConnectView* conView = dynamic_cast<ConnectView*>(currentView.get()))
 					{
-						SDL_StartTextInput();
-					}
-					else
-					{
-						SDL_StopTextInput();
+						if (conView->getConnectionBox().checkIfClicked(x, y))
+						{
+							SDL_StartTextInput();
+						}
+						else
+						{
+							SDL_StopTextInput();
+						}
+						if (conView->getConnectButton().checkIfClicked(x,y))
+						{
+							if (conView->validateConnectionData())
+							{
+								currentView.release();
+								currentView = std::make_unique<LobbyView>();
+							}
+							else
+							{
+								conView->getConnectionBox().setText("");
+							}							
+						}
+						
 					}
 				}
 				if (SDL_IsTextInputActive() == SDL_TRUE)
 				{
-					box.textListener(event);
+					if (ConnectView* conView = dynamic_cast<ConnectView*>(currentView.get()))
+					{
+						conView->getConnectionBox().textListener(event);
+					}
 				}
 			}
 
-			// Clear screen
-			SDL_RenderClear(renderer);
-
-			// Draw texture
-			SDL_RenderCopy(renderer, coconut, nullptr, &dst);
-			
-			//Test for textBox
-			SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
-			SDL_RenderFillRect(renderer, &rect);
-			SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-			box.genTexture();
-			SDL_RenderCopy(renderer, box.getTexture(), nullptr, &(box.getTextureRect()));
-
-			// Present to screen
-			SDL_RenderPresent(renderer);
+			currentView.get()->render();			
 
 			// 60 FPS <- should implement delta time for more stable fps
 			SDL_Delay(16);

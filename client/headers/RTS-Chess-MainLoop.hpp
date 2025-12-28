@@ -7,11 +7,11 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
-#include "../views/View.hpp"
-#include "../views/ConnectView.hpp"
-#include "../views/GameView.hpp"
-#include "../views/LobbyView.hpp"
-#include "../views/RoomView.hpp"
+#include "views/View.hpp"
+#include "views/ConnectView.hpp"
+#include "views/GameView.hpp"
+#include "views/LobbyView.hpp"
+#include "views/RoomView.hpp"
 
 #include "SDLFontManager.hpp"
 #include "SDLTextureManager.hpp"

@@ -24,6 +24,7 @@ TextBox& ConnectView::getConnectButton()
 void ConnectView::render()
 {
     //Clear screen
+    SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
     SDL_RenderClear(renderer);
 
     //connetion box render code

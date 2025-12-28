@@ -26,7 +26,7 @@
 #include "../../shared/headers/dependencies/Json.hpp"
 
 //Controll variables
-bool running = true;
+extern bool running;
 const int TARGET_FPS = 60;
 
 void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, 

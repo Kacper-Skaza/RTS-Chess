@@ -21,13 +21,14 @@ bool Piece::getMoveCount() const noexcept
 
 int Piece::getCooldown() const noexcept
 {
-    return cooldown;
+	auto timeDif = std::chrono::duration_cast<std::chrono::milliseconds>(lastMoveTime - std::chrono::system_clock::now()).count();
+	return  timeDif - MAX_COOLDOWN;
 }
 
 void Piece::makeMove()
 {
 	moveCount++;
-	cooldown = MAX_COOLDOWN;
+	lastMoveTime = std::chrono::system_clock::now();
 }
 
 bool Piece::validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const

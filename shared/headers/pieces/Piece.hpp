@@ -8,6 +8,7 @@ class Move;
 #include <vector>
 #include <stdexcept>
 #include <memory>
+#include <chrono>
 
 #define MAX_COOLDOWN 2000
 
@@ -18,8 +19,7 @@ protected:
 	int moveCount = 0;
 	const int ID; 
 
-	// TO BE DETERMINED LATER (INT COZ DEPENDANT ON MS)
-	int cooldown = MAX_COOLDOWN;
+	std::chrono::system_clock::time_point lastMoveTime = std::chrono::system_clock::now();
 
 public:
 	Piece();

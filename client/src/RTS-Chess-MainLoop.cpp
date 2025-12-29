@@ -99,7 +99,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             SDL_GetMouseState(&mousePosX, &mousePosY);
             if(between(mousePosX, 40, 1064) && between(mousePosY, 40, 1064))
             {
-                //this no work throws seq faults
                 if (gameView->getSelected() != std::make_pair(-1, -1))
                 {
                     //do move
@@ -108,10 +107,17 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                         Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second], 
                                   gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
                         gameView->getBoard()->makeMove(move);
-
+                        gameView->setSelected(-1, -1);
+                    }
+                    else
+                    {
+                        gameView->setSelected((mousePosY - 40) / 128, (mousePosX - 40) / 128);
                     }
                 }
-                gameView->setSelected((mousePosY - 40) / 128, (mousePosX - 40) / 128);
+                else
+                {
+                    gameView->setSelected((mousePosY - 40) / 128, (mousePosX - 40) / 128);
+                }
             }
         }
         if (event.type == SDL_MOUSEBUTTONDOWN && SDL_MOUSEMOTION)

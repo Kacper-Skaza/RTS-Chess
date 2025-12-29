@@ -14,4 +14,5 @@ public:
 	explicit Rook(const char SIDE, const int POS);
 
 	bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const override;
+    static Rook from_json(nlohmann::json &j);
 };

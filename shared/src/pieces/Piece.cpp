@@ -1,6 +1,6 @@
 #include "../../headers/pieces/Piece.hpp"
 
-Piece::Piece() : SYMBOL('P'), ID(00) {}
+Piece::Piece() : SYMBOL('p'), ID(-1) {}
 
 Piece::Piece(const char SIDE, const char SYMBOL, const int ID): SYMBOL(std::toupper(SIDE) == 'W'? std::toupper(SYMBOL): std::tolower(SYMBOL)), ID(ID) {}
 
@@ -25,6 +25,11 @@ int Piece::getCooldown() const noexcept
 	return  timeDif - MAX_COOLDOWN;
 }
 
+void Piece::setMoveCount(int count)
+{
+	this->moveCount = count;
+}
+
 void Piece::makeMove()
 {
 	moveCount++;
@@ -39,4 +44,35 @@ bool Piece::validateMove(const Move &move, const std::vector<std::vector<Piece *
 
 	// Return
 	return false;
+}
+
+void to_json(nlohmann::json& j, const Piece* p)
+{
+	if (p == nullptr)
+	{
+		j = Piece();
+		return;
+	}
+	
+	j = nlohmann::json{
+		{"symbol", p->getSymbol()},
+		{"id", p->getID()},
+		{"moveCount", p->moveCount}
+	};
+}
+
+void to_json(nlohmann::json &j, const Piece &p)
+{
+	j = nlohmann::json{
+		{"symbol", p.getSymbol()},
+		{"id", p.getID()},
+		{"moveCount", p.moveCount}
+	};
+}
+
+Piece Piece::from_json(const nlohmann::json &j)
+{
+	Piece p(std::isupper(j.at("symbol").get<char>()) == true? 'W': 'B', j.at("symbol").get<char>(), j.at("id").get<const int>());
+	p.setMoveCount(j.at("moveCount").get<int>());
+	return p;
 }

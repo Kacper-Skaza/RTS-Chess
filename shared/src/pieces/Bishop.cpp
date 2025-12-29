@@ -40,3 +40,8 @@ bool Bishop::validateMove(const Move &move, const std::vector<std::vector<Piece 
 
     return true;
 }
+
+Bishop Bishop::from_json(nlohmann::json &j)
+{
+    return Bishop(std::isupper(j.at("symbol").get<char>())? 'W': 'B', j.at("id").get<int>());
+}

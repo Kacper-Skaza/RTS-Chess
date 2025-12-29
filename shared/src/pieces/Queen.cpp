@@ -50,3 +50,8 @@ bool Queen::validateMove(const Move &move, const std::vector<std::vector<Piece *
     
     return false;
 }
+
+Queen Queen::from_json(nlohmann::json &j)
+{
+    return Queen(std::isupper(j.at("symbol").get<char>())? 'W': 'B', j.at("id").get<int>());
+}

@@ -3,6 +3,8 @@
 #include "Structures.hpp"
 #include "ConnectionManager.hpp"
 
+#include "dependencies/Json.hpp"
+
 #include <cstdlib>
 #include <utility>
 #include <cctype>
@@ -23,6 +25,7 @@ private:
     ChessSide side;
 
 public:
+    explicit User();
     explicit User(const std::string &username);
     ~User() = default;
 
@@ -44,4 +47,7 @@ public:
 
     // GenerateID
     void generateID(const std::string &username);
+
+    friend void from_json(const nlohmann::json& j, User& p);
+	friend void to_json(nlohmann::json& j, const User& p);
 };

@@ -35,3 +35,8 @@ bool Knight::validateMove(const Move &move, const std::vector<std::vector<Piece 
 
 	return false;
 }
+
+Knight Knight::from_json(nlohmann::json &j)
+{
+    return Knight(std::isupper(j.at("symbol").get<char>())? 'W': 'B', j.at("id").get<int>());
+}

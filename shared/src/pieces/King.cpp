@@ -44,3 +44,8 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<Piece *>
 
 	return false;
 }
+
+King King::from_json(nlohmann::json &j)
+{
+    return King(std::isupper(j.at("symbol").get<char>())? 'W': 'B', j.at("id").get<int>());
+}

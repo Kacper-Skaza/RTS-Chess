@@ -9,6 +9,7 @@ class Move;
 #include <stdexcept>
 #include <memory>
 #include <chrono>
+#include "../dependencies/Json.hpp"
 
 #define MAX_COOLDOWN 2000
 
@@ -30,7 +31,13 @@ public:
 	char getSymbol() const noexcept;
 	bool getMoveCount() const noexcept;
 	int getCooldown() const noexcept;
+	
+	void setMoveCount(int count);
 
 	void makeMove();
 	virtual bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const;
+
+	friend void to_json(nlohmann::json& j, const Piece& p);
+	friend void to_json(nlohmann::json& j, const Piece* p);
+	static Piece from_json(const nlohmann::json &j);
 };

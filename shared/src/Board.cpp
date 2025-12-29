@@ -146,3 +146,40 @@ void Board::makeMove(const Move &move)
 	this->board[to.first][to.second] = std::move(board[from.first][from.second]);
 	this->board[from.first][from.second].reset();
 }
+
+void Board::from_json(const nlohmann::json &j, Board& b)
+{
+	int i = 0, k = 0;
+	for (const auto &row : j.at("board"))
+	{
+		k = 0;
+		for (const auto &cell : row)
+		{
+			b.board[i][k].reset();
+			if (cell.at("id").get<const int>() != -1)
+			{
+				b.board[i][k] = std::make_unique<Piece>(
+					std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B', 
+					cell.at("symbol").get<char>(), cell.at("id").get<int>());
+			}
+			k++;
+		}
+		i++;
+	}
+}
+
+void to_json(nlohmann::json &j, const Board &p)
+{
+	// nlohmann::json jpart = nlohmann::json::array();
+	// for (auto& p : p.getBoardFull())
+	// {
+	// 	jpart.push_back(nlohmann::json::array());
+	// 	for (auto &&pp : p)
+	// 	{
+	// 		jpart.push_back(pp);
+	// 	}
+	// }
+	
+	// j = nlohmann::json{{"board", jpart}};
+	j = nlohmann::json{{"board", p.getBoardFull()}};
+}

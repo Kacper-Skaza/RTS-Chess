@@ -14,4 +14,6 @@ public:
 	explicit Knight(const char SIDE, const int POS);
 
 	bool validateMove(const Move &move, const std::vector<std::vector<Piece *>> &board) const override;
+    
+	static Knight from_json(nlohmann::json &j);
 };

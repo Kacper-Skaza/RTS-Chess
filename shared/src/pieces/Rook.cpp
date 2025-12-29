@@ -69,3 +69,8 @@ bool Rook::validateMove(const Move &move, const std::vector<std::vector<Piece *>
 
 	return false;
 }
+
+Rook Rook::from_json(nlohmann::json &j)
+{
+    return Rook(std::isupper(j.at("symbol").get<char>())? 'W': 'B', j.at("id").get<int>());
+}

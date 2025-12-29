@@ -3,38 +3,59 @@
 #include <chrono>
 #include <string>
 #include <queue>
+#include <unistd.h>
 
-#if defined(_WIN32) || defined(_WIN64)
-	#include <WinSock2.h>
-#elif defined(LINUX) || defined(__linux__)
-	#include <sys/socket.h>
+#include "Structures.hpp"
+
+#if PLATFORM == PLATFORM_WINDOWS
+    #include <WinSock2.h>
+    #define MSG_NOSIGNAL_PLATFORM 0
+    #define INVALID_SOCKET_HANDLE INVALID_SOCKET
+    using SocketResult = int;
+    using SocketLen = int;
+    // SOCKET is already defined by <WinSock2.h>
+#endif
+
+#if PLATFORM == PLATFORM_LINUX
+    #include <sys/socket.h>
+    #include <fcntl.h>
+    #define MSG_NOSIGNAL_PLATFORM MSG_NOSIGNAL
+    #define INVALID_SOCKET_HANDLE -1
+    using SocketResult = ssize_t;
+    using SocketLen = socklen_t;
+    using SOCKET = int;
 #endif
 
 class ConnectionManager
 {
 private:
-	int socketFd;
-	std::chrono::steady_clock::time_point lastPing;
+    SOCKET socketFd;
 
-	std::queue<std::string> incomingQueue;
-	std::queue<std::string> outgoingQueue;
+    std::chrono::steady_clock::time_point lastPingSend;
+    std::chrono::steady_clock::time_point lastPingRecv;
 
-	void sendRaw();
-	void recvRaw();
+    std::string incomingBuffer;
+    std::queue<std::string> incomingQueue;
+    std::queue<std::string> outgoingQueue;
+
+    void sendRaw();
+    void recvRaw();
 
 public:
-	explicit ConnectionManager(int socketFd);
-	~ConnectionManager() = default;
+    explicit ConnectionManager(SOCKET socketFd);
+    ~ConnectionManager() = default;
 
-	// Management
-	void closeConnection();
-	void update();
+    // ===== Management =====
+    void setNonBlocking(SOCKET fd);
+    void closeConnection();
+    void update();
 
-	// Ping
-	void sendNewPing();
-	std::chrono::steady_clock::time_point getLastPing();
+    // ===== Ping =====
+    void sendNewPing();
+    std::chrono::seconds getTimeSinceLastPingSend();
+    std::chrono::seconds getTimeSinceLastPingRecv();
 
-	// Communication
-	void sendMessage(const std::string &msg);
-	std::string recvMessage();
+    // ===== Communication =====
+    void sendMessage(const std::string &msg);
+    std::string recvMessage();
 };

@@ -38,18 +38,25 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<Piece *>
     //Check for capture move
     if (dx == 1 && dy == 1)
     {
-        //Check if space is same color
-        if (std::isupper(board[to.first][to.second]->getSymbol()) == std::isupper(this->SYMBOL)) return false;
+        //Check if there is something and that thing is different color
+        if (board[to.first][to.second] != nullptr && std::isupper(board[to.first][to.second]->getSymbol()) != std::isupper(this->SYMBOL)) return true;
         
         //Check for en passant
-        if (board[to.first][to.second] == nullptr 
-            && (board[to.first][from.second]->getSymbol() == 'P' || board[to.first][from.second]->getSymbol() == 'p') 
-            && (board[to.first][from.second]->getMoveCount() == 1))
-            return true;
-            
-        //Check if space is empty
-        if (board[to.first][to.second] == nullptr) return false;
-        return true;
+        if (board[to.first][to.second] == nullptr && board[from.first][to.second] != nullptr)
+        {
+            if (Pawn* pawn = dynamic_cast<Pawn*>(board[from.first][to.second])) /*check if it is a pawn*/
+            {
+                if (std::isupper(pawn->getSymbol()) != std::isupper(this->SYMBOL)  /*is different color*/
+                    && pawn->getMoveCount() == 1 /*its move count is 1*/
+                    && pawn->getID() / 10 - 2 == from.first || pawn->getID() / 10 + 2 == from.first) /*was move far*/
+                    return true;
+            }
+        }
     }
     return false;
+}
+
+bool Pawn::getEnPassant()
+{
+    return this->enPassant;
 }

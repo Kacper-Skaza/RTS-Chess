@@ -1,8 +1,21 @@
 #pragma once
 
+#define PLATFORM_UNKNOWN 1
+#define PLATFORM_WINDOWS 2
+#define PLATFORM_LINUX 3
+
+#if defined(_WIN32) || defined(_WIN64)
+	#define PLATFORM PLATFORM_WINDOWS
+#elif defined(LINUX) || defined(__linux__)
+	#define PLATFORM PLATFORM_LINUX
+#else
+	#define PLATFORM PLATFORM_UNKNOWN
+	#error "Unknown platform!"
+#endif
+
 constexpr int BOARD_SIZE = 8;
 
-enum MatchEndReasons
+enum class MatchEndReasons
 {
 	WHITE_WON = 1,
 	BLACK_WON = 2,
@@ -13,7 +26,7 @@ enum MatchEndReasons
 	UNKNOWN = 2048
 };
 
-enum ChessSide
+enum class ChessSide
 {
 	WHITE = 0,
 	BLACK = 1

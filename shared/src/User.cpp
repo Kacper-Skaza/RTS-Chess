@@ -22,7 +22,7 @@ User::User(const std::string &username)
     this->player = false;
     this->ready = false;
     this->inRoom = false;
-    this->side = WHITE;
+    this->side = ChessSide::WHITE;
 }
 
 bool User::operator==(const User &user) const

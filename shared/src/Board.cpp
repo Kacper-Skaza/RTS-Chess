@@ -130,6 +130,7 @@ void Board::makeMove(const Move &move)
 	if (this->board[to.first][to.second] == nullptr && 
 		this->board[from.first][to.second] != nullptr &&
 		std::toupper(this->board[from.first][to.second].get()->getSymbol()) == 'P' &&
+		std::toupper(this->board[from.first][from.second].get()->getSymbol()) == 'P' &&
 		std::isupper(this->board[from.first][to.second].get()->getSymbol()) != std::isupper(this->board[from.first][from.second].get()->getSymbol()) &&
 		this->board[from.first][to.second].get()->getMoveCount() == 1)
 	{

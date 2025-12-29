@@ -67,13 +67,13 @@ chmod +x ./build.sh
 			* odbiera ping
 	
 * Client
-	* Main Loop <- destrojer
+	* Main Loop <- destrojer (2 views functionality done)
 	* poll <- destrojer
 	* GUI - views folder
 		* Connect <- destrojer (initially done)
 		* RoomSelect / RoomList <- Kacpers100
 		* Lobby <- Kacpers100
-		* Game <- destrojer
+		* ~~Game <- destrojer~~
 		* Opcjonalne:
 			* Menu
 			* Settings
@@ -81,7 +81,7 @@ chmod +x ./build.sh
 	* Tekstury
 		* ~~Bindowanie czcionek <- destrojer~~
 		* ~~Bindowanie tesktur <- Kacpers100~~
-		* Pliki <- destrojer
+		* Pliki <- destrojer (temporary files done)
 * Server 
 	* Logika połączeń
 		* Zestawienie połączenia
@@ -114,8 +114,120 @@ chmod +x ./build.sh
 	* wysylam nowy stan lobby po grze (wszyscy laduja w obserwatorach)
 	* wysylam informacje ze gracz sie zgubil w odmentach internetu
 
+* standaryzacja przesylow
+	* przesylam nick
+		* SEND
+			* type: REQUEST_NICK
+			* data: `std::string` nick
+		* RECEIVE
+			* type: ACK_REQUEST_NICK
+			* data: `unsigned int` id
+	* utworz pokoj
+		* SEND
+			* type: ROOM_CREATE
+			* data: `std::string` room_name
+		* RECEIVE
+			* type: ACK_ROOM_CREATE
+			* data: `null`
+		* RECEIVE
+			* type: ERR_ROOM_CREATE
+			* data: `std::string` reason
+	* lista pokoi
+		* SEND
+			* type: REQUEST_ROOMS
+			* data: `null`
+		* RECEIVE
+			* type: ACK_REQUEST_ROOMS
+			* data: `vector<Room>` rooms
+	* dolacz do pokoju
+		* SEND
+			* type: ROOM_JOIN
+			* data: `std::string` room_name
+		* RECEIVE
+			* type: ACK_ROOM_JOIN
+			* data: `Room` room
+	* wiadomosc jestem gotowy
+		* SEND
+			* type: PLAYER_READY
+			* data: `null`
+		* RECEIVE
+			* type: ACK_PLAYER_READY
+			* data: `null`
+	* wiadomosc chce/nie chce byc graczem
+		* SEND
+			* type: PLAYER_WANT
+			* data: `bool` true/false
+		* RECEIVE
+			* type: ACK_PLAYER_WANT
+			* data: `null`
+		* RECEIVE
+			* type: ERR_PLAYER_WANT
+			* data: `std::string` reason  
+	* chce wyslac wiadkomosc na chat
+		* SEND
+			* type: CHAT_MESSAGE
+			* data: `std::string` wiadomosc
+		* RECEIVE
+			* type: ACK_CHAT_MESSAGE
+			* data: `null`
+	* chce wykonac ruch X
+		* SEND
+			* type: MAKE_MOVE
+			* data: `Move` move
+		* RECEIVE
+			* type: ACK_MAKE_MOVE
+			* data: `null`
+		* RECEIVE
+			* type: ERR_MAKE_MOVE
+			* data: `Board` board
+	* chce sprawdzic czy dalej jest polaczenie z serwerem (ping) (`connectionManager` robi to)
+		* SEND
+			* type: PING
+			* data: `null`
+		* RECEIVE
+			* type: ACK_PING
+			* data: `null`
+	* wysylam liste pokoi (po kazdej aktualizacji -> broadcast, na start -> do jednego)
+		* SEND
+			* type: UPDATE_ROOMS
+			* data: `vector<Room>` rooms
+		* RECEIVE
+			* type: ACK_UPDATE_ROOMS
+			* data: `null`
+	* wysylam stan pokoju -> jedno wyzej
+	* wysylam update boarda (po kazdym ruchu dla kazdego w  pokoju)
+		* SEND
+			* type: MOVE_MADE
+			* data: `Move` move
+		* RECEIVE
+			* type: ACK_MOVE_MADE
+			* data: `null`
+		* RECEIVE
+			* type: ERR_MOVE_MADE
+			* data: `null`
+		* SEND 
+			* type: ACK_ERR_MOVE_MADE
+			* data: `Board` board
+	* wysylam odebrane wiadomosci na chat do kazdego (po kazdej wiadkomosci)
+		* SEND
+			* type: UPDATE_CHAT
+			* data: `std::string` message, `User` user
+		* RECEIVE
+			* type: ACK_UPDATE_CHAT
+			* data: `null`
+	* wysylam wiadomosc kto wygral (do kazdego w pokoju)
+		* SEND
+			* type: GAME_FINALE
+			* data: `MatchEndReasons` endReason
+		* RECEIVE
+			* type: ACK_GAME_FINALE
+			* data: `null`
+	* wysylam nowy stan lobby po grze (wszyscy laduja w obserwatorach) -> wysylam liste pokoi
+
+	* wysylam informacje ze gracz sie zgubil w odmentach internetu -> wysylam wiadomosc kto wygral
+
 * Przesylane uzywamy smiesznej biblioteki to jSONowo <- kazdy swoje
-	* piece(figury)
+	* ~~piece(figury)~~
 	* board
 	* room
 	* user

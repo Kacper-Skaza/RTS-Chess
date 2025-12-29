@@ -48,15 +48,10 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<Piece *>
             {
                 if (std::isupper(pawn->getSymbol()) != std::isupper(this->SYMBOL)  /*is different color*/
                     && pawn->getMoveCount() == 1 /*its move count is 1*/
-                    && pawn->getID() / 10 - 2 == from.first || pawn->getID() / 10 + 2 == from.first) /*was move far*/
+                    && (pawn->getID() / 10 - 2 == from.first || pawn->getID() / 10 + 2 == from.first)) /*was move far*/
                     return true;
             }
         }
     }
     return false;
-}
-
-bool Pawn::getEnPassant()
-{
-    return this->enPassant;
 }

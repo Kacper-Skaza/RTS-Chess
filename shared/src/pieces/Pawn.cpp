@@ -17,6 +17,9 @@ bool Pawn::validateMove(const Move &move, const std::vector<std::vector<Piece *>
     std::pair<int, int> from = move.getFrom();
     std::pair<int, int> to = move.getTo();
 
+    if (to.first - from.first < 0 && std::isupper(this->SYMBOL) == true) return false;
+    if (to.first - from.first > 0 && std::isupper(this->SYMBOL) == false) return false;
+
     //dx is top down movement where lower number is more to the bottom
     //dy is left right movement where lower number is more to the left
     const int dx = std::abs(to.first - from.first);

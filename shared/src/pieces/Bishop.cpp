@@ -21,8 +21,11 @@ bool Bishop::validateMove(const Move &move, const std::vector<std::vector<Piece 
     if (board[to.first][to.second] != nullptr && std::isupper(board[to.first][to.second]->getSymbol()) == std::isupper(this->SYMBOL)) 
         return false;
 
+    //Check if move in place
+    if ((from.first - to.first == 0) || (from.second - to.second == 0)) return false;
+
     //Check if move is diagonal
-    if ((std::abs(from.first - to.first) != std::abs(from.second - to.second)) && (from.first - to.first != 0)) return false;
+    if ((std::abs(from.first - to.first) != std::abs(from.second - to.second))) return false;
 
     //Check if there is piece in the way
     const int dx = to.first - from.first;

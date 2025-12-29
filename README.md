@@ -228,10 +228,10 @@ chmod +x ./build.sh
 
 * Przesylane uzywamy smiesznej biblioteki to jSONowo <- kazdy swoje
 	* ~~piece(figury)~~
-	* board
+	* ~~board~~
 	* room
-	* user
-	* move
+	* ~~user~~
+	* ~~move~~
 
 ## Nazewnictwo
 

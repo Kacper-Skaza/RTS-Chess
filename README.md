@@ -60,12 +60,12 @@ chmod +x ./build.sh
 			* liczy czas (wlacza liczenie czasu od last ping)
 			* zamkniecie polaczenia
 
-			* wysyla wiadomosci 
+			* wysyla wiadomosci
 			* wysyla ping
-			
+
 			* odbiera wiadomosci
 			* odbiera ping
-	
+
 * Client
 	* Main Loop <- destrojer (2 views functionality done)
 	* poll <- destrojer
@@ -82,7 +82,7 @@ chmod +x ./build.sh
 		* ~~Bindowanie czcionek <- destrojer~~
 		* ~~Bindowanie tesktur <- Kacpers100~~
 		* Pliki <- destrojer (temporary files done)
-* Server 
+* Server
 	* Logika połączeń
 		* Zestawienie połączenia
 			* Nowe połączenie tworzy klase
@@ -97,14 +97,14 @@ chmod +x ./build.sh
 	* utworz pokoj
 	* dolacz do pokoju
 	* wiadomosc jestem gotowy
-	* wiadomosc chce byc graczem 
+	* wiadomosc chce byc graczem
 	* wiadomosc nie chce byc graczem
 	* chce wyslac wiadkomosc na chat
 	* chce wykonac ruch X
 	* chce sprawdzic czy dalej jest polaczenie z serwerem (ping)
 
 * server -> client dane
-	* wysylam rozne ACK 
+	* wysylam rozne ACK
 	* wysylam liste pokoi (po kazdej aktualizacji -> broadcast, na start -> do jednego)
 	* wysylam stan pokoju
 	* wysyla startowe boarda
@@ -146,6 +146,16 @@ chmod +x ./build.sh
 		* RECEIVE
 			* type: ACK_ROOM_JOIN
 			* data: `Room` room
+		* RECEIVE
+			* type: ERR_ROOM_JOIN
+			* data: `std::string` reason
+	* wyjdz z pokoju
+		* SEND
+			* type: ROOM_LEAVE
+			* data: `std::string` room_name
+		* RECEIVE
+			* type: ACK_ROOM_LEAVE
+			* data: `Room` room
 	* wiadomosc jestem gotowy
 		* SEND
 			* type: PLAYER_READY
@@ -162,7 +172,7 @@ chmod +x ./build.sh
 			* data: `null`
 		* RECEIVE
 			* type: ERR_PLAYER_WANT
-			* data: `std::string` reason  
+			* data: `std::string` reason
 	* chce wyslac wiadkomosc na chat
 		* SEND
 			* type: CHAT_MESSAGE
@@ -205,7 +215,7 @@ chmod +x ./build.sh
 		* RECEIVE
 			* type: ERR_MOVE_MADE
 			* data: `null`
-		* SEND 
+		* SEND
 			* type: ACK_ERR_MOVE_MADE
 			* data: `Board` board
 	* wysylam odebrane wiadomosci na chat do kazdego (po kazdej wiadkomosci)
@@ -236,7 +246,7 @@ chmod +x ./build.sh
 ## Nazewnictwo
 
 * -Wall -Wextra -O2
-* Biale figury dostaja wilekie litery 
+* Biale figury dostaja wilekie litery
 * Czarne figury dostaja male litery
 * Używamy znaczków
 * `isThatFun()`

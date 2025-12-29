@@ -14,6 +14,7 @@
 
 #include "../../../shared/headers/Board.hpp"
 #include "../../../shared/headers/User.hpp"
+#include "../../../shared/headers/Structures.hpp"
 #include "View.hpp"
 
 class GameView: public View
@@ -34,6 +35,7 @@ private:
     Board* board;
     bool nullBoard;
     std::pair<int, int> selected;
+    MatchEndReasons gameState = MatchEndReasons::NOT_ENDED;
     
 
 

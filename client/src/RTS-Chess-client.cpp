@@ -5,6 +5,8 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_image.h>
 
+#include "../../shared/headers/dependencies/Json.hpp"
+
 #include "../headers/SDLTextureManager.hpp"
 #include "../headers/SDLFontManager.hpp"
 #include "../headers/TextBox.hpp"
@@ -19,8 +21,6 @@
 #include "../headers/views/GameView.hpp"
 #include "../headers/views/LobbyView.hpp"
 #include "../headers/views/RoomView.hpp"
-
-#include "../../shared/headers/dependencies/Json.hpp"
 
 #include "RTS-Chess-MainLoop.hpp"
 
@@ -88,6 +88,16 @@ int main()
 
 		// --- Main loop ---
 		SDL_Event event;
+
+		//test
+		Board b;
+
+		nlohmann::json j = b;
+
+		std::cout << j.dump(2) << "\n";
+
+		Board m;
+		Board::from_json(j, m);
 
 		while (running)
 		{

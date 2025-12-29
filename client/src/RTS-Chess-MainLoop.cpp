@@ -1,9 +1,16 @@
 #include "../headers/RTS-Chess-MainLoop.hpp"
 
+bool running = true;
+
 namespace
 {
     int mousePosX;
     int mousePosY;
+}
+
+template<typename T> bool between(T x, T a, T b) 
+{
+    return x >= a && x <= b;
 }
 
 void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, ConnectView* connectView, SDL_Event& event)
@@ -89,11 +96,27 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
         }
         if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
         {
-            //here add some texture checking what was clicked and interact with it
+            SDL_GetMouseState(&mousePosX, &mousePosY);
+            if(between(mousePosX, 40, 1064) && between(mousePosY, 40, 1064))
+            {
+                //this no work throws seq faults
+                if (gameView->getSelected() != std::make_pair(-1, -1))
+                {
+                    //do move
+                    if(gameView->checkPiece() != ' ')
+                    {
+                        Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second], 
+                                  gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
+                        gameView->getBoard()->makeMove(move);
+
+                    }
+                }
+                gameView->setSelected((mousePosY - 40) / 128, (mousePosX - 40) / 128);
+            }
         }
         if (event.type == SDL_MOUSEBUTTONDOWN && SDL_MOUSEMOTION)
         {
-            /* code */
+            //maybe implemented later
         }
         
     }

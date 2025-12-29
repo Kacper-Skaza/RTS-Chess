@@ -7,7 +7,8 @@ ConnectionManager::ConnectionManager(SOCKET socketFd) : socketFd(socketFd), last
     this->update();
 }
 
-// Management
+// ===== Management =====
+
 void ConnectionManager::setNonBlocking(SOCKET fd)
 {
 #if PLATFORM == PLATFORM_WINDOWS
@@ -39,7 +40,8 @@ void ConnectionManager::update()
     this->sendRaw();
 }
 
-// Ping
+// ===== Ping =====
+
 void ConnectionManager::sendNewPing()
 {
     this->sendMessage("{PING}");
@@ -61,7 +63,8 @@ std::chrono::seconds ConnectionManager::getTimeSinceLastPingRecv()
     return elapsed;
 }
 
-// Communication
+// ===== Communication =====
+
 void ConnectionManager::sendMessage(const std::string &msg)
 {
     this->outgoingQueue.push(msg + '\n');
@@ -79,7 +82,8 @@ std::string ConnectionManager::recvMessage()
     return temp;
 }
 
-// Private
+// ===== Private =====
+
 void ConnectionManager::sendRaw()
 {
     while (!this->outgoingQueue.empty())

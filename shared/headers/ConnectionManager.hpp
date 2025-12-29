@@ -13,7 +13,7 @@
     #define INVALID_SOCKET_HANDLE INVALID_SOCKET
     using SocketResult = int;
     using SocketLen = int;
-    // SOCKET is already defined by WinSock2.h
+    // SOCKET is already defined by <WinSock2.h>
 #endif
 
 #if PLATFORM == PLATFORM_LINUX
@@ -45,17 +45,17 @@ public:
     explicit ConnectionManager(SOCKET socketFd);
     ~ConnectionManager() = default;
 
-    // Management
+    // ===== Management =====
     void setNonBlocking(SOCKET fd);
     void closeConnection();
     void update();
 
-    // Ping
+    // ===== Ping =====
     void sendNewPing();
     std::chrono::seconds getTimeSinceLastPingSend();
     std::chrono::seconds getTimeSinceLastPingRecv();
 
-    // Communication
+    // ===== Communication =====
     void sendMessage(const std::string &msg);
     std::string recvMessage();
 };

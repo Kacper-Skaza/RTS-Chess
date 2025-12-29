@@ -17,6 +17,8 @@ bool Queen::validateMove(const Move &move, const std::vector<std::vector<Piece *
     std::pair<int, int> from = move.getFrom();
     std::pair<int, int> to = move.getTo();
 
+    if (from == to) return false;
+
     const int dx = to.first - from.first;
     const int dy = to.second - from.second;
 
@@ -28,7 +30,7 @@ bool Queen::validateMove(const Move &move, const std::vector<std::vector<Piece *
     if (std::abs(dx) == std::abs(dy)) //diagonal
     {
         //Check if there is piece in the way diagonally
-        for (   int i = dx, j = dy;
+        for (   int i = dx > 0? dx-1: dx+1, j = dy > 0? dy-1: dy+1;
                 i != 0;
                 i+= i >= 0? -1: 1, j+= j >= 0? -1: 1)
         {

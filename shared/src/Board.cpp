@@ -39,7 +39,7 @@ Board::Board()
 		board[6][c] = std::make_unique<Pawn>('B', 60+c);
 }
 
-const std::vector<std::vector<Piece *>> &Board::getBoardFull() const
+const std::vector<std::vector<Piece *>> Board::getBoardFull() const
 {
 	std::vector<std::vector<Piece *>> pointerBoard(BOARD_SIZE, std::vector<Piece*>(BOARD_SIZE));
 

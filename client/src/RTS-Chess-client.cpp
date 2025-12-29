@@ -87,7 +87,6 @@ int main()
 		std::unique_ptr<View> currentView = std::make_unique<GameView>(window, renderer, &fontMan, &texMgr);
 
 		// --- Main loop ---
-		bool running = true;
 		SDL_Event event;
 
 		while (running)

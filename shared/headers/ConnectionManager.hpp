@@ -18,6 +18,7 @@
 
 #if PLATFORM == PLATFORM_LINUX
     #include <sys/socket.h>
+    #include <fcntl.h>
     #define MSG_NOSIGNAL_PLATFORM MSG_NOSIGNAL
     #define INVALID_SOCKET_HANDLE -1
     using SocketResult = ssize_t;

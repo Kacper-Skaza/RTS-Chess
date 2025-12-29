@@ -59,6 +59,13 @@ void GameView::render()
     //make it side dependent
     //here smart placing textures on board
     const std::vector<std::vector<char>> charBoard = board->getBoardSymbol();
+
+    if (selected.first != -1 || selected.second != -1)
+    {
+        destinationRectangles.at("piece_universal") = {40 + (int)selected.second*128, 40 + (int)selected.first*128, 128, 128};
+        SDL_RenderCopy(renderer, textures.at("piece_marker"), nullptr, &destinationRectangles.at("piece_universal"));
+    }
+
     for (size_t i = 0; i < BOARD_SIZE; i++)
     {
         for (size_t j = 0; j < BOARD_SIZE; j++)
@@ -66,8 +73,6 @@ void GameView::render()
             if (charBoard[i][j] == ' ') continue;
 
             destinationRectangles.at("piece_universal") = {40 + (int)j*128, 40 + (int)i*128, 128, 128};
-            SDL_RenderCopy(renderer, textures.at("piece_marker"), nullptr, &destinationRectangles.at("piece_universal"));
-
             switch (charBoard[i][j])
             {
             case 'P':

@@ -126,6 +126,20 @@ void Board::makeMove(const Move &move)
 		return;
 	}
 
+	//Check if move is en passant
+	if (this->board[to.first][to.second] == nullptr && 
+		this->board[from.first][to.second] != nullptr &&
+		std::toupper(this->board[from.first][to.second].get()->getSymbol()) == 'P' &&
+		std::isupper(this->board[from.first][to.second].get()->getSymbol()) != std::isupper(this->board[from.first][from.second].get()->getSymbol()) &&
+		this->board[from.first][to.second].get()->getMoveCount() == 1)
+	{
+		this->board[from.first][from.second]->makeMove();
+		this->board[to.first][to.second] = std::move(board[from.first][from.second]);
+		this->board[from.first][from.second].reset();
+		this->board[from.first][to.second].reset();
+		return;
+	}
+
 	// Make default move
 	this->board[from.first][from.second]->makeMove();
 	this->board[to.first][to.second] = std::move(board[from.first][from.second]);

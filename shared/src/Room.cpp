@@ -1,16 +1,24 @@
 #include "../headers/Room.hpp"
 
+//Player count 
 #define MIN_PLAYER_COUNT 2
 #define MAX_PLAYER_COUNT 8
 
-Room::Room(std::string &name, User &creator): NAME(name)
+Room::Room(): name(""), board()
+{
+    this->userList.clear();
+    this->playerList.clear();
+    this->maxPlayerCount = 0;
+    this->matchStarted = false;
+}
+
+Room::Room(std::string name, User &creator): name(name), board()
 {
     this->userList.insert({creator.getPlayerID(), creator});
     this->playerList.push_back(creator.getPlayerID());
     this->maxPlayerCount = MIN_PLAYER_COUNT;
     this->matchStarted = false;
 }
-
 
 bool Room::isMatchReady() const
 {
@@ -25,7 +33,7 @@ bool Room::isMatchReady() const
 
 const std::string Room::getRoomName() const noexcept
 {
-    return this->NAME;
+    return this->name;
 }
 
 bool Room::isMatchStarted() const noexcept
@@ -130,4 +138,29 @@ void Room::stopMatch(MatchEndReasons reason)
     this->matchStarted = false;
     //destroy board
     //do not destroy room coz it will be done server side & client side elsewhere
+}
+
+void Room::from_json(const nlohmann::json& j, Room& p)
+{
+    p.name = j.at("name").get<std::string>();
+    p.matchStarted = j.at("matchStarted").get<bool>();
+    p.maxPlayerCount = static_cast<uint8_t>(j.at("maxPlayerCount").get<int>());
+    p.playerList = j.at("playerList").get<std::vector<unsigned int>>();
+    Board::from_json(j.at("board"), p.board);
+    // p.userList.clear();
+    // for (auto &i : j.at("userList").items())
+    //     p.userList.emplace(std::stoul(i.key()), i.value().get<User>());
+    p.userList = j.at("userList").get<std::unordered_map<unsigned int, User>>();
+}
+
+void to_json(nlohmann::json& j, const Room& p)
+{
+    j = nlohmann::json{
+        {"name", p.name},
+        {"matchStarted", p.matchStarted},
+        {"maxPlayerCount", p.maxPlayerCount},
+        {"board", p.board},
+        {"playerList", p.playerList},
+        {"userList", p.userList}
+    };
 }

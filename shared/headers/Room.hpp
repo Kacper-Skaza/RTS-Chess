@@ -16,7 +16,7 @@
 class Room
 {
 private:
-    const std::string NAME;
+    std::string name;
     bool matchStarted = false;
     uint8_t maxPlayerCount;
     Board board;
@@ -25,7 +25,8 @@ private:
 
 public:
     // Constructor & Destructor
-    explicit Room(std::string &name, User &creator);
+    explicit Room();
+    explicit Room(std::string name, User &creator);
     ~Room() = default;
 
     // Get structure Data
@@ -50,4 +51,7 @@ public:
     // Other metchods
     void startMatch();
     void stopMatch(MatchEndReasons reason);
+
+    static void from_json(const nlohmann::json& j, Room& p);
+	friend void to_json(nlohmann::json& j, const Room& p);
 };

@@ -15,6 +15,7 @@
 
 #include "SDLFontManager.hpp"
 #include "SDLTextureManager.hpp"
+#include "MessageHandler.hpp"
 
 #include "../../shared/headers/Board.hpp"
 #include "../../shared/headers/Move.hpp"
@@ -31,3 +32,5 @@ const int TARGET_FPS = 60;
 
 void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, 
               SDL_Event& event);
+
+void mainLoopDestroy();

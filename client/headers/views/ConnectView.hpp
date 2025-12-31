@@ -10,6 +10,9 @@
 #include "../SDLFontManager.hpp"
 #include "../SDLTextureManager.hpp"
 #include "../TextBox.hpp"
+
+#include "../../../shared/headers/ConnectionManager.hpp"
+
 #include "View.hpp"
 
 class ConnectView: public View
@@ -19,6 +22,7 @@ private:
     SDL_Renderer* renderer;
     
     TextBox connectionBox;
+    TextBox userBox;
     TextBox connectButton;
 
     static const std::regex connectionRule;
@@ -27,9 +31,10 @@ public:
     ~ConnectView() = default;
 
     TextBox& getConnectionBox();
+    TextBox& getUserBox();
     TextBox& getConnectButton();
 
     void render();
     bool validateConnectionData();
-    bool connect();
+    SOCKET connectToServer();
 };

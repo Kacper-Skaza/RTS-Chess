@@ -84,21 +84,11 @@ int main()
 		SDLFontManager fontMan(renderer);
 		int x, y;
 
-		std::unique_ptr<View> currentView = std::make_unique<GameView>(window, renderer, &fontMan, &texMgr);
+		std::unique_ptr<View> currentView = std::make_unique<ConnectView>(window, renderer, &fontMan);
 
 		// --- Main loop ---
 		SDL_Event event;
-
-		//test
-		Board b;
-
-		nlohmann::json j = b;
-
-		std::cout << j.dump(2) << "\n";
-
-		Board m;
-		Board::from_json(j, m);
-
+		
 		while (running)
 		{
 			mainLoop(window, renderer, &fontMan, currentView, event);
@@ -175,10 +165,8 @@ int main()
 		}
 	}
 
-	{
-		
+	mainLoopDestroy();
 
-	}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	IMG_Quit();

@@ -4,6 +4,9 @@ bool running = true;
 
 namespace
 {
+    User* me = nullptr;
+    ConnectionManager* connectionManager = nullptr;
+    bool boxIp = true;
     int mousePosX;
     int mousePosY;
 }
@@ -25,16 +28,37 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
         {
             SDL_GetMouseState(&mousePosX, &mousePosY);
             if (connectView->getConnectionBox().checkIfClicked(mousePosX, mousePosY))
+            {
                 SDL_StartTextInput();
+                boxIp = true;
+            }
+            else if(connectView->getUserBox().checkIfClicked(mousePosX, mousePosY))
+            {
+                SDL_StartTextInput();
+                boxIp = false;
+            }
             else
                 SDL_StopTextInput();
             if (connectView->getConnectButton().checkIfClicked(mousePosX, mousePosY))
             {
-                if (connectView->validateConnectionData())
+                if (!connectView->getUserBox().getString().empty() &&
+                     connectView->validateConnectionData())
                 {
-                    //maybe should add some user or somethign to make it work with connect
-                    if(connectView->connect())
+                    SOCKET sock;
+                    if((sock = connectView->connectToServer()) != -1)
                     {
+                        if (connectionManager == nullptr)
+                            connectionManager = new ConnectionManager(sock);
+                        if (me == nullptr)
+                        {
+                            nlohmann::json j = nlohmann::json{
+                                {"type", "REQUEST_NICK"},
+                                {"data", {"nick", connectView->getUserBox().getString()}}
+                            };
+                            MessageHandler::handleView(connectView, connectionManager, j);
+                            unsigned long long id = 0;
+                            me = new User(id, connectView->getUserBox().getString());
+                        }
                         view.release();
                         view = std::make_unique<LobbyView>();
                     }
@@ -48,7 +72,13 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
             }
         }
         if (SDL_IsTextInputActive() == SDL_TRUE)
-            connectView->getConnectionBox().textListener(event);
+        {
+            if (boxIp)
+                connectView->getConnectionBox().textListener(event);
+            else
+                connectView->getUserBox().textListener(event);  
+
+        }
     }
 }
 
@@ -151,4 +181,12 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     view.get()->render();
     delay();
     return;
+}
+
+void mainLoopDestroy()
+{
+    if (me != nullptr)
+        delete me;
+    if (connectionManager != nullptr)
+        delete connectionManager;    
 }

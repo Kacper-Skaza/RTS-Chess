@@ -23,7 +23,7 @@ public:
 	const std::vector<std::vector<Piece *>> getBoardFull() const;
 	const std::vector<std::vector<char>> getBoardSymbol() const;
 
-	void makeMove(const Move &move);
+	bool makeMove(const Move &move);
 
 	static void from_json(const nlohmann::json& j, Board& b);
 	friend void to_json(nlohmann::json& j, const Board& p);

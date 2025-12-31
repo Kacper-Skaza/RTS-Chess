@@ -75,7 +75,7 @@ const std::vector<std::vector<char>> Board::getBoardSymbol() const
 	return symbolBoard;
 }
 
-void Board::makeMove(const Move &move)
+bool Board::makeMove(const Move &move)
 {
 	const Piece *piece = move.getPiece();
 	std::pair<int, int> from = move.getFrom();
@@ -84,15 +84,15 @@ void Board::makeMove(const Move &move)
 	// Validate move
 	if (!board[from.first][from.second])
 	{
-		return;
+		return false;
 	}
 	if (board[from.first][from.second].get() != piece)
 	{
-		return;
+		return false;
 	}
 	if (!board[from.first][from.second]->validateMove(move, this->getBoardFull()))
 	{
-		return;
+		return false;
 	}
 
 	// Check if move is castling
@@ -123,11 +123,11 @@ void Board::makeMove(const Move &move)
 		this->board[from.first][kingFromCol]->makeMove();
 		this->board[to.first][kingToCol] = std::move(board[from.first][kingFromCol]);
 		this->board[from.first][kingFromCol].reset();
-		return;
+		return true;
 	}
 
-	//Check if move is en passant
-	if (this->board[to.first][to.second] == nullptr && 
+	// Check if move is en passant
+	if (this->board[to.first][to.second] == nullptr &&
 		this->board[from.first][to.second] != nullptr &&
 		std::toupper(this->board[from.first][to.second].get()->getSymbol()) == 'P' &&
 		std::toupper(this->board[from.first][from.second].get()->getSymbol()) == 'P' &&
@@ -138,13 +138,14 @@ void Board::makeMove(const Move &move)
 		this->board[to.first][to.second] = std::move(board[from.first][from.second]);
 		this->board[from.first][from.second].reset();
 		this->board[from.first][to.second].reset();
-		return;
+		return true;
 	}
 
 	// Make default move
 	this->board[from.first][from.second]->makeMove();
 	this->board[to.first][to.second] = std::move(board[from.first][from.second]);
 	this->board[from.first][from.second].reset();
+    return true;
 }
 
 void Board::from_json(const nlohmann::json &j, Board& b)
@@ -159,7 +160,7 @@ void Board::from_json(const nlohmann::json &j, Board& b)
 			if (cell.at("id").get<const int>() != -1)
 			{
 				b.board[i][k] = std::make_unique<Piece>(
-					std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B', 
+					std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',
 					cell.at("symbol").get<char>(), cell.at("id").get<int>());
 			}
 			k++;
@@ -179,7 +180,7 @@ void to_json(nlohmann::json &j, const Board &p)
 	// 		jpart.push_back(pp);
 	// 	}
 	// }
-	
+
 	// j = nlohmann::json{{"board", jpart}};
 	j = nlohmann::json{{"board", p.getBoardFull()}};
 }

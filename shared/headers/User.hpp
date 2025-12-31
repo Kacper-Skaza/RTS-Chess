@@ -17,7 +17,7 @@
 class User
 {
 private:
-    unsigned int id;
+    unsigned long long id;
     std::string username;
     bool player = false;
     bool ready = false;
@@ -25,11 +25,10 @@ private:
     ChessSide side;
 
 public:
-    explicit User();
-    explicit User(const std::string &username);
+    explicit User(const unsigned long long &ID, const std::string &username);
     ~User() = default;
 
-    const unsigned int &getPlayerID() const noexcept;
+    const unsigned long long &getPlayerID() const noexcept;
     const std::string &getUsername() const noexcept;
     bool isPlayer() const noexcept;
     bool isReady() const noexcept;
@@ -45,9 +44,6 @@ public:
     // Operator overloading
     bool operator==(const User &user) const;
 
-    // GenerateID
-    void generateID(const std::string &username);
-
-    friend void from_json(const nlohmann::json& j, User& p);
-	friend void to_json(nlohmann::json& j, const User& p);
+    friend void from_json(const nlohmann::json &j, User &p);
+    friend void to_json(nlohmann::json &j, const User &p);
 };

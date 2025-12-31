@@ -1,37 +1,14 @@
 #include "../headers/User.hpp"
 #include "User.hpp"
 
-// Implement on server side as request to get ID (needs to be unique)
-void User::generateID(const std::string &username)
+User::User(const unsigned long long &id, const std::string &username)
 {
-    unsigned int newID = 0;
-    for (size_t i = 0; i < username.size(); i++)
-    {
-        newID += (unsigned int)username[i];
-    }
-
-    // Add server side ID validation
-    this->id = newID;
-}
-
-User::User()
-{
-    this->username = "";
-    this->generateID(username);
-    this->player = false;
-    this->ready = false;
-    this->inRoom = false;
-    this->side = ChessSide::WHITE;
-}
-
-User::User(const std::string &username)
-{
+    this->id = id;
     this->username = username;
-    this->generateID(username);
     this->player = false;
     this->ready = false;
     this->inRoom = false;
-    this->side = ChessSide::WHITE;
+    this->side = ChessSide::UNKNOWN;
 }
 
 bool User::operator==(const User &user) const
@@ -40,7 +17,7 @@ bool User::operator==(const User &user) const
     return false;
 }
 
-const unsigned int& User::getPlayerID() const noexcept
+const unsigned long long& User::getPlayerID() const noexcept
 {
     return this->id;
 }
@@ -97,11 +74,11 @@ void User::setSide(ChessSide side)
 
 void from_json(const nlohmann::json& j, User& p)
 {
-    p.id = j.at("id").get<unsigned int>();
+    p.id = j.at("id").get<unsigned long long>();
     p.username = j.at("username").get<std::string>();
     p.player = j.at("player").get<bool>();
     p.ready = j.at("ready").get<bool>();
-    p.inRoom = j.at("inRoom").get<bool>(); 
+    p.inRoom = j.at("inRoom").get<bool>();
     p.side = j.at("side").get<ChessSide>();
 }
 

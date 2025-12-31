@@ -15,25 +15,31 @@ using json = nlohmann::json;
 class MessageHandler
 {
 private:
+    // ===== Pointers to server data =====
+    static std::unordered_map<SOCKET, std::unique_ptr<Client>> *clientsPtr;
+    static std::unordered_map<std::string, std::unique_ptr<Room>> *roomsPtr;
+
     // ===== Incoming messages =====
-    void handleRequestNick(Client *client, const json &data);
-    void handleRoomCreate(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
-    void handleRequestRooms(Client *client, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
-    void handleRoomJoin(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
-    void handleRoomLeave(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
-    void handlePlayerReady(Client *client, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
-    void handlePlayerWant(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
-    void handleChatMessage(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
-    void handleMakeMove(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
+    static void handleRequestNick(Client *client, const json &data);
+    static void handleRoomCreate(Client *client, const json &data);
+    static void handleRequestRooms(Client *client);
+    static void handleRoomJoin(Client *client, const json &data);
+    static void handleRoomLeave(Client *client, const json &data);
+    static void handlePlayerReady(Client *client);
+    static void handlePlayerWant(Client *client, const json &data);
+    static void handleChatMessage(Client *client, const json &data);
+    static void handleMakeMove(Client *client, const json &data);
 
     // ===== Outgoing messages =====
-    void broadcastUpdateMove(const Room* room, const Move &newMove);
-    void broadcastUpdateChat(const Room* room, const std::string &newMessage);
+    static void broadcastMoveMade(const Room *room, const User *user, const Move &newMove);
+    static void broadcastUpdateChat(const Room *room, const User *user, const std::string &newMessage);
 
 public:
-    MessageHandler() = default;
-    ~MessageHandler() = default;
+    MessageHandler() = delete;
+
+    // ===== Init pointers =====
+    static void init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &clientsRef, std::unordered_map<std::string, std::unique_ptr<Room>> &roomsRef);
 
     // ===== Main entry point =====
-    void handle(Client *client, const std::string &jsonText, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms);
+    static void handle(Client *client, const std::string &jsonText);
 };

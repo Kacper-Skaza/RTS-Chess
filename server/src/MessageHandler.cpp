@@ -1,9 +1,23 @@
 #include "../headers/MessageHandler.hpp"
 
+// ===== Init pointers =====
+
+std::unordered_map<SOCKET, std::unique_ptr<Client>> *MessageHandler::clientsPtr = nullptr;
+std::unordered_map<std::string, std::unique_ptr<Room>> *MessageHandler::roomsPtr = nullptr;
+
+void MessageHandler::init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &clientsRef, std::unordered_map<std::string, std::unique_ptr<Room>> &roomsRef)
+{
+    clientsPtr = &clientsRef;
+    roomsPtr = &roomsRef;
+}
+
 // ===== Main entry point =====
 
-void MessageHandler::handle(Client *client, const std::string &jsonText, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handle(Client *client, const std::string &jsonText)
 {
+    if (!clientsPtr || !roomsPtr)
+        return;
+
     try
     {
         // Parse incoming string to JSON
@@ -25,35 +39,35 @@ void MessageHandler::handle(Client *client, const std::string &jsonText, std::un
         }
         else if (type == "ROOM_CREATE")
         {
-            handleRoomCreate(client, data, rooms);
+            handleRoomCreate(client, data);
         }
         else if (type == "REQUEST_ROOMS")
         {
-            handleRequestRooms(client, rooms);
+            handleRequestRooms(client);
         }
         else if (type == "ROOM_JOIN")
         {
-            handleRoomJoin(client, data, rooms);
+            handleRoomJoin(client, data);
         }
         else if (type == "ROOM_LEAVE")
         {
-            handleRoomLeave(client, data, rooms);
+            handleRoomLeave(client, data);
         }
         else if (type == "PLAYER_READY")
         {
-            handlePlayerReady(client, rooms);
+            handlePlayerReady(client);
         }
         else if (type == "PLAYER_WANT")
         {
-            handlePlayerWant(client, data, rooms);
+            handlePlayerWant(client, data);
         }
         else if (type == "CHAT_MESSAGE")
         {
-            handleChatMessage(client, data, rooms);
+            handleChatMessage(client, data);
         }
         else if (type == "MAKE_MOVE")
         {
-            handleMakeMove(client, data, rooms);
+            handleMakeMove(client, data);
         }
         else
         {
@@ -97,10 +111,11 @@ void MessageHandler::handleRequestNick(Client *client, const json &data)
     }
 }
 
-void MessageHandler::handleRoomCreate(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handleRoomCreate(Client *client, const json &data)
 {
     try
     {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string newRoomName = data["roomName"];
 
         // Check if room name is already taken
@@ -136,10 +151,11 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data, std::uno
     }
 }
 
-void MessageHandler::handleRequestRooms(Client *client, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handleRequestRooms(Client *client)
 {
     try
     {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         json roomsArray = json::array();
 
         for (const auto &[name, roomPtr] : rooms)
@@ -161,10 +177,11 @@ void MessageHandler::handleRequestRooms(Client *client, std::unordered_map<std::
     }
 }
 
-void MessageHandler::handleRoomJoin(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handleRoomJoin(Client *client, const json &data)
 {
     try
     {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string roomName = data["roomName"];
         Room *targetRoom = nullptr;
 
@@ -202,10 +219,11 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data, std::unord
     }
 }
 
-void MessageHandler::handleRoomLeave(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handleRoomLeave(Client *client, const json &data)
 {
     try
     {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string roomName = data["roomName"];
         Room *targetRoom = nullptr;
 
@@ -251,10 +269,11 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data, std::unor
     }
 }
 
-void MessageHandler::handlePlayerReady(Client *client, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handlePlayerReady(Client *client)
 {
     try
     {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         if (client->room)
         {
             client->user->setReady(!client->user->isReady());
@@ -262,7 +281,7 @@ void MessageHandler::handlePlayerReady(Client *client, std::unordered_map<std::s
             // Prepare ACK_PLAYER_READY response
             json response = {
                 {"type", "ACK_PLAYER_READY"},
-                {"data", nullptr}};
+                {"data", {"ready", client->user->isReady()}}};
 
             client->connection->sendMessage(response.dump());
             std::cout << "[DEBUG] User " << client->user->getUsername() << " is ready? " << client->user->isReady() << std::endl;
@@ -274,10 +293,11 @@ void MessageHandler::handlePlayerReady(Client *client, std::unordered_map<std::s
     }
 }
 
-void MessageHandler::handlePlayerWant(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handlePlayerWant(Client *client, const json &data)
 {
     try
     {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         bool player = data["player"];
 
         if (client->room)
@@ -299,14 +319,15 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data, std::uno
     }
 }
 
-void MessageHandler::handleChatMessage(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
+void MessageHandler::handleChatMessage(Client *client, const json &data)
 {
     try
     {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string newMessage = data["message"];
 
         // Broadcast to all in room
-        broadcastUpdateChat(client->room, newMessage);
+        broadcastUpdateChat(client->room, client->user.get(), newMessage);
 
         // Prepare ACK_CHAT_MESSAGE response
         json response = {
@@ -322,89 +343,104 @@ void MessageHandler::handleChatMessage(Client *client, const json &data, std::un
     }
 }
 
-// void MessageHandler::handleMakeMove(Client *client, const json &data, std::unordered_map<std::string, std::unique_ptr<Room>> &rooms)
-// {
-//     try
-//     {
-//         Move newMove = data["move"];
+void MessageHandler::handleMakeMove(Client *client, const json &data)
+{
+    try
+    {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
+        Move newMove = data["move"];
 
-//         if (!client->room || !client->room->isMatchStarted())
-//         {
-//             json response = {
-//                 {"type", "ERR_MAKE_MOVE"},
-//                 {"data", {"reason", "Move not allowed at this time.+ !!!"}}};
+        if (!client->room || !client->room->isMatchStarted())
+        {
+            json response = {
+                {"type", "ERR_MAKE_MOVE"},
+                {"data", {"reason", "Move not allowed at this time.+ !!!"}}};
 
-//             client->connection->sendMessage(response.dump());
-//             return;
-//         }
+            client->connection->sendMessage(response.dump());
+            return;
+        }
 
-//         if (client->room->getBoard().makeMove(newMove))
-//         {
-//             client->connection->sendMessage(json({{"type", "ACK_MAKE_MOVE"}, {"data", nullptr}}).dump());
-//             // TODO: broadcastMoveMade(*targetRoom, data);
-//         }
-//         else
-//         {
-//             json errorResponse = {
-//                 {"type", "ERR_MAKE_MOVE"},
-//                 {"data", targetRoom->getBoardState()}};
-//             client->connection->sendMessage(errorResponse.dump());
-//         }
-//     }
-//     catch (const std::exception &e)
-//     {
-//         std::cerr << "[ERR] Error in handleMakeMove: " << e.what() << std::endl;
-//     }
-// }
+        if (client->room->getBoard().makeMove(newMove))
+        {
+            // Broadcast to all in room
+            broadcastMoveMade(client->room, client->user.get(), newMove);
 
-// // ===== Outgoing messages =====
+            // Prepare ACK_MAKE_MOVE response
+            json response = {
+                {"type", "ACK_MAKE_MOVE"},
+                {"data", nullptr}};
 
-// void MessageHandler::broadcastUpdateMove(const Room* room, const Move &newMove)
-// {
-//     try
-//     {
-//         json roomList = json::array();
-//         for (const auto &room : rooms)
-//         {
-//             roomList.push_back({{"name", room->getName()},
-//                                 {"players", room->getPlayerCount()},
-//                                 {"maxPlayers", 2},
-//                                 {"status", room->isGameStarted() ? "in_game" : "waiting"}});
-//         }
+            client->connection->sendMessage(response.dump());
+            std::cout << "[DEBUG] User " << client->user->getUsername() << " made move. " << std::endl;
+        }
+        else
+        {
+            json response = {
+                {"type", "ERR_MAKE_MOVE"},
+                {"data", {"board", client->room->getBoard()}}};
 
-//         std::string serializedMsg = json({{"type", "UPDATE_ROOMS"}, {"data", roomList}}).dump();
+            client->connection->sendMessage(response.dump());
+            return;
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in handleMakeMove: " << e.what() << std::endl;
+    }
+}
 
-//         for (const auto &c : allClients)
-//         {
-//             if (c && c->connection)
-//                 c->connection->sendMessage(serializedMsg);
-//         }
-//     }
-//     catch (const std::exception &e)
-//     {
-//         std::cerr << "[ERR] Error during broadcastUpdateRooms: " << e.what() << std::endl;
-//     }
-// }
+// ===== Outgoing messages =====
 
-// void MessageHandler::broadcastUpdateChat(const Room* room, const std::string &newMessage)
-// {
-//     try
-//     {
-//         json chatUpdate = {
-//             {"type", "UPDATE_CHAT"},
-//             {"data", {{"message", message}, {"user", {{"username", sender.getUsername()}, {"id", sender.getId()}}}}}};
+void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const Move &newMove)
+{
+    try
+    {
+        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        json broadcastData = {
+            {"type", "MOVE_MADE"},
+            {"data", {{"move", newMove}}}};
 
-//         std::string serializedMsg = chatUpdate.dump();
-//         auto clientsInRoom = room.getAllClients();
+        const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
 
-//         for (auto *c : clientsInRoom)
-//         {
-//             if (c && c->connection)
-//                 c->connection->sendMessage(serializedMsg);
-//         }
-//     }
-//     catch (const std::exception &e)
-//     {
-//         std::cerr << "[ERR] Error in broadcastChat: " << e.what() << std::endl;
-//     }
-// }
+        // Send newMove to everyone
+        for (const auto &[id, roomUser] : roomUsers)
+        {
+            unsigned long long id = roomUser.getPlayerID();
+
+            if (id != user->getPlayerID())
+                clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+        }
+
+        std::cout << "[DEBUG] Broadcasted move in room: " << room->getRoomName() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in broadcastMoveMade: " << e.what() << std::endl;
+    }
+}
+
+void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, const std::string &newMessage)
+{
+    try
+    {
+        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        json broadcastData = {
+            {"type", "UPDATE_CHAT"},
+            {"data", {{"message", newMessage}, {"user", *user}}}};
+
+        const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
+
+        // Send newMessage to everyone
+        for (const auto &[id, roomUser] : roomUsers)
+        {
+            unsigned long long id = roomUser.getPlayerID();
+
+            if (id != user->getPlayerID())
+                clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in broadcastChat: " << e.what() << std::endl;
+    }
+}

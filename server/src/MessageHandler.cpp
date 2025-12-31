@@ -140,7 +140,7 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
         // Prepare ACK_ROOM_CREATE response
         json response = {
             {"type", "ACK_ROOM_CREATE"},
-            {"data", nullptr}};
+            {"data", {"room", *client->room}}};
 
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User " << client->user->getUsername() << " created room: " << newRoomName << std::endl;

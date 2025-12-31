@@ -119,7 +119,7 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
         std::string newRoomName = data["roomName"];
 
         // Check if room name is already taken
-        for (const auto &[name, roomPtr] : rooms)
+        for (const auto &[name, _] : rooms)
         {
             if (name == newRoomName)
             {
@@ -273,7 +273,6 @@ void MessageHandler::handlePlayerReady(Client *client)
 {
     try
     {
-        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         if (client->room)
         {
             client->user->setReady(!client->user->isReady());
@@ -297,7 +296,6 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
 {
     try
     {
-        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         bool player = data["player"];
 
         if (client->room)
@@ -323,7 +321,6 @@ void MessageHandler::handleChatMessage(Client *client, const json &data)
 {
     try
     {
-        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string newMessage = data["message"];
 
         // Broadcast to all in room
@@ -347,7 +344,6 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 {
     try
     {
-        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         Move newMove = data["move"];
 
         if (!client->room || !client->room->isMatchStarted())
@@ -403,7 +399,7 @@ void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const
         const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
 
         // Send newMove to everyone
-        for (const auto &[id, roomUser] : roomUsers)
+        for (const auto &[_, roomUser] : roomUsers)
         {
             unsigned long long id = roomUser.getPlayerID();
 
@@ -431,7 +427,7 @@ void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, con
         const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
 
         // Send newMessage to everyone
-        for (const auto &[id, roomUser] : roomUsers)
+        for (const auto &[_, roomUser] : roomUsers)
         {
             unsigned long long id = roomUser.getPlayerID();
 

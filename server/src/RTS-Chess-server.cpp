@@ -48,7 +48,7 @@ int main()
     serverAddr.sin_addr.s_addr = INADDR_ANY;
 
     // Bind socket
-    if (bind(listenSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR)
+    if (bind(listenSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR_PLATFORM)
     {
         std::cout << ">> RTS Chess Server failed to bind server socket on port " << PORT << std::endl;
         return 1;
@@ -94,13 +94,13 @@ int main()
 
                 SOCKET newSock = accept(listenSocket, (struct sockaddr *)&clientAddr, &addrLen);
 
-                if (newSock != INVALID_SOCKET_HANDLE)
+                if (newSock != INVALID_SOCKET_PLATFORM)
                 {
                     ConnectionManager::setNonBlocking(newSock);
 
                     std::unique_ptr<Client> newClient = std::make_unique<Client>();
                     newClient->connection = std::make_unique<ConnectionManager>(newSock);
-                    newClient->user = std::make_unique<User>("Guest", static_cast<unsigned long long>(newSock));
+                    newClient->user = std::make_unique<User>(static_cast<unsigned long long>(newSock), "Guest");
                     newClient->room = nullptr;
 
                     std::cout << "[SERVER] Client " << newClient->user->getUsername() << " on FD " << newSock << " connected :)" << std::endl;

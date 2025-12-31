@@ -3,6 +3,7 @@
 #include <memory>
 class ConnectionManager;
 class User;
+class Room;
 
 // Platform identifiers
 #define PLATFORM_UNKNOWN 1
@@ -25,8 +26,9 @@ constexpr int BOARD_SIZE = 8;
 // Structures
 struct Client
 {
-    std::unique_ptr<User> user;
     std::unique_ptr<ConnectionManager> connection;
+    std::unique_ptr<User> user;
+    Room *room;
 };
 
 // Enums
@@ -45,6 +47,7 @@ enum class MatchEndReasons
 
 enum class ChessSide
 {
-    WHITE = 0,
-    BLACK = 1
+    UNKNOWN = 0,
+    WHITE = 1,
+    BLACK = 2
 };

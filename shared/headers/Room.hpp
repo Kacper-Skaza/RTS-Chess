@@ -38,8 +38,8 @@ public:
     unsigned int getPlayerCount() const;
     unsigned int getPlayerReadyCount() const;
     uint8_t getMaxPlayerCount() const noexcept;
-    std::unordered_map<unsigned int, User> &getUserList();
-    std::unordered_map<unsigned int, User*> getPlayerList();
+    const std::unordered_map<unsigned int, User> &getUserList() const;
+    const std::unordered_map<unsigned int, User*> getPlayerList();
 
     // Set structure data
     void addUserToRoom(const User& joining);

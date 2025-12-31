@@ -1,6 +1,6 @@
 #include "../headers/Room.hpp"
 
-//Player count 
+//Player count
 #define MIN_PLAYER_COUNT 2
 #define MAX_PLAYER_COUNT 8
 
@@ -26,7 +26,7 @@ bool Room::isMatchReady() const
     for (auto &&i : this->playerList)
     {
         it = this->userList.find(i);
-        if (it != this->userList.end() && it->second.isReady() == false) return false; 
+        if (it != this->userList.end() && it->second.isReady() == false) return false;
     }
     return true;
 }
@@ -63,7 +63,7 @@ unsigned int Room::getPlayerReadyCount() const
     for (auto &&i : this->playerList)
     {
         it = this->userList.find(i);
-        readyPlayersCount += (it != this->userList.end() && it->second.isReady() == true)? 1: 0; 
+        readyPlayersCount += (it != this->userList.end() && it->second.isReady() == true)? 1: 0;
     }
     return readyPlayersCount;
 }
@@ -73,12 +73,12 @@ uint8_t Room::getMaxPlayerCount() const noexcept
     return this->maxPlayerCount;
 }
 
-std::unordered_map<unsigned int, User> &Room::getUserList()
+const std::unordered_map<unsigned int, User> &Room::getUserList() const
 {
     return this->userList;
 }
 
-std::unordered_map<unsigned int, User*> Room::getPlayerList()
+const std::unordered_map<unsigned int, User*> Room::getPlayerList()
 {
     std::unordered_map<unsigned int, User*> tempUserList;
     auto it = this->userList.find(1);
@@ -124,7 +124,7 @@ void Room::removePlayer(const User& player, const bool quit)
 
 void Room::removeUserFromRoom(const User& player)
 {
-    if (this->userList.find(player.getPlayerID()) != this->userList.end()) this->userList.erase(player.getPlayerID());   
+    if (this->userList.find(player.getPlayerID()) != this->userList.end()) this->userList.erase(player.getPlayerID());
 }
 
 void Room::startMatch()

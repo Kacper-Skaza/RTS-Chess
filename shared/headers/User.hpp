@@ -25,6 +25,7 @@ private:
     ChessSide side;
 
 public:
+    explicit User();
     explicit User(const unsigned long long &ID, const std::string &username);
     ~User() = default;
 

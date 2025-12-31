@@ -1,6 +1,16 @@
 #include "../headers/User.hpp"
 #include "User.hpp"
 
+User::User()
+{
+    this->id = 0;
+    this->username = "";
+    this->player = false;
+    this->ready = false;
+    this->inRoom = false;
+    this->side = ChessSide::UNKNOWN;
+}
+
 User::User(const unsigned long long &id, const std::string &username)
 {
     this->id = id;

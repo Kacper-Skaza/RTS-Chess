@@ -46,7 +46,7 @@ public:
     ~ConnectionManager() = default;
 
     // ===== Management =====
-    void setNonBlocking(SOCKET fd);
+    static void setNonBlocking(SOCKET fd);
     void closeConnection();
     void update();
 

@@ -106,7 +106,7 @@ bool Board::makeMove(const Move &move)
 	}
 
 	// Check if move is castling
-	if (board[to.first][to.second] != nullptr &&
+	if (board[to.first][to.second] &&
 		std::toupper(board[from.first][from.second]->getSymbol()) == 'K' &&
 		std::toupper(board[to.first][to.second]->getSymbol()) == 'R' &&
 		std::isupper(board[from.first][from.second]->getSymbol()) == std::isupper(board[to.first][to.second]->getSymbol()))
@@ -118,12 +118,12 @@ bool Board::makeMove(const Move &move)
 		if (to.second > from.second)
 		{
 			kingToCol = kingFromCol + 2;
-			rookToCol = to.second - 1;
+			rookToCol = rookFromCol - 2;
 		}
 		else
 		{
 			kingToCol = kingFromCol - 2;
-			rookToCol = to.second + 1;
+			rookToCol = rookFromCol + 3;
 		}
 
 		// Move rook

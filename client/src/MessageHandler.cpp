@@ -1,16 +1,6 @@
 #include "../headers/MessageHandler.hpp"
 #include <iostream>
 
-void MessageHandler::handlePing(ConnectionManager* connectionManager)
-{
-    //call connection manager to send ping 
-}
-
-void MessageHandler::handleReceivePing(ConnectionManager* connectionManager)
-{
-    //call connection manager to receive ping 
-}
-
 void MessageHandler::handleIgnore()
 {
     //ignore message (maybe call comething from connection manager)
@@ -71,14 +61,26 @@ void MessageHandler::handleFlipPlayerWant(ConnectionManager *connectionManager, 
     handleGeneralSend(connectionManager, jsonText);
 }
 
-void MessageHandler::handleSetReady(User *user, const nlohmann::json &data)
-{
-    user->setReady(data.at("ready").get<bool>());
-}
-
 void MessageHandler::handleSetPlayerWant(User *user, const nlohmann::json &data)
 {
-    user->setPlayer(data.at("player").get<bool>());
+    PlayerWant want = data.at("result").get<PlayerWant>();
+    switch (want)
+    {
+    case PlayerWant::SPECTATOR:
+        user->setPlayer(false);
+        user->setReady(false);
+        break;
+    case PlayerWant::PLAYER_READY:
+        user->setPlayer(true);
+        user->setReady(true);
+        break;
+    case PlayerWant::PLAYER_NOT_READY:
+        user->setPlayer(true);
+        user->setReady(false);
+        break;
+    default:
+        break;
+    }
 }
 
 void MessageHandler::handleErrPlayerWant(User *user, const nlohmann::json &data)
@@ -112,22 +114,7 @@ void MessageHandler::handleChatMessage(GameView* view, ConnectionManager* connec
     connectionManager->sendMessage(response.dump());
 }
 
-void MessageHandler::handleBoardMissmatch(ConnectionManager* connectionManager, const std::string &jsonText)
-{
-    handleGeneralSend(connectionManager, jsonText);
-}
-
-void MessageHandler::handleMove(GameView *view, const nlohmann::json &data)
-{
-    view->getBoard()->makeMove(data.at("move").get<Move>());
-}
-
-void MessageHandler::handleGameFinale(GameView *view, const nlohmann::json &data)
-{
-    view->setGameState(data.at("reason").get<MatchEndReasons>());
-}
-
-void MessageHandler::handleAckErrMoveMade(GameView *view, const nlohmann::json &data)
+void MessageHandler::handleBoardMissmatch(GameView *view, const nlohmann::json &data)
 {
     Board newBoard;
     Board::from_json(data.at("board"), newBoard);
@@ -139,6 +126,30 @@ void MessageHandler::handleAckErrMoveMade(GameView *view, const nlohmann::json &
             view->getBoard()->setSpace(i, j, newBoard.getSpace(i, j));
         }
     }
+}
+
+void MessageHandler::handleMove(GameView *view, ConnectionManager* connectionManager, const nlohmann::json &data)
+{
+    nlohmann::json response;
+    if (view->getBoard()->makeMove(data.at("move").get<Move>()))
+    {
+        response = {
+            {"type", "ACK_MOVE_MADE"},
+            {"data", nullptr}};
+    }
+    else
+    {
+        response = {
+            {"type", "ERR_MOVE_MADE"},
+            {"data", nullptr}};
+    }
+    connectionManager->sendMessage(response.dump());
+
+}
+
+void MessageHandler::handleGameFinale(GameView *view, const nlohmann::json &data)
+{
+    view->setGameState(data.at("reason").get<MatchEndReasons>());
 }
 
 void MessageHandler::handleView(View* view, ConnectionManager* connectionManager, User* user, const std::string &jsonText)
@@ -154,8 +165,6 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
         {
             if (type == "REQUEST_NICK") handleGetUsernameID(connectionManager, jsonText);
             else if (type == "ACK_REQUEST_NICK") handleSetUsernameID(connectView, connectionManager, user, data);
-            else if (type == "PING") handlePing(connectionManager);
-            else if (type == "ACK_PING") handleReceivePing(connectionManager);
             else handleIgnore();
         }
         else if (LobbyView* lobbyView = dynamic_cast<LobbyView*>(view))
@@ -164,39 +173,27 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "ROOM_CREATE") handleCreateRoom(connectionManager, jsonText);
             else if (type == "ROOM_JOIN") handleJoinRoom(connectionManager, jsonText);
             else if (type == "ROOM_LEAVE") handleExitRoom(connectionManager, jsonText);
-            else if (type == "UPDATE_ROOMS") handleReceiveRooms(lobbyView, connectionManager, data); // maybe should be different handler function
             else if (type == "ACK_REQUEST_ROOMS") handleReceiveRooms(lobbyView, connectionManager, data);
             else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(lobbyView, connectionManager, data);
             else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(lobbyView, connectionManager, data);
-            else if (type == "ACK_ROOM_LEAVE") handleReceiveRoom(lobbyView, connectionManager, data); //potencially somethig different coz u leave or ignore
-            else if (type == "PING") handlePing(connectionManager);
-            else if (type == "ACK_PING") handleReceivePing(connectionManager);
             else handleIgnore();
         }
         else if (RoomView* roomView = dynamic_cast<RoomView*>(view))
         {
-            if (type == "PLAYER_READY") handleFlipReady(connectionManager, jsonText);
-            else if (type == "PLAYER_WANT") handleFlipPlayerWant(connectionManager, jsonText);
-            else if (type == "ACK_PLAYER_READY") handleSetReady(user, data);
+            if (type == "PLAYER_WANT") handleFlipPlayerWant(connectionManager, jsonText);
             else if (type == "ACK_PLAYER_WANT") handleSetPlayerWant(user, data);
             else if (type == "ERR_PLAYER_WANT") handleErrPlayerWant(user, data);
-            else if (type == "PING") handlePing(connectionManager);
-            else if (type == "ACK_PING") handleReceivePing(connectionManager);
             else handleIgnore();
         }
         else if(GameView* gameView = dynamic_cast<GameView*>(view))
         {
             if (type == "CHAT_MESSAGE") handleSendMessage(connectionManager, jsonText);
             else if (type == "MAKE_MOVE") handleMakeMove(connectionManager, jsonText);
-            else if (type == "MOVE_MADE") handleMove(gameView, data); // mayube different handler function
-            else if (type == "UPDATE_CHAT") handleChatMessage(gameView, connectionManager, data); //meybe different handler function
+            else if (type == "MOVE_MADE") handleMove(gameView, connectionManager, data);
+            else if (type == "UPDATE_CHAT") handleChatMessage(gameView, connectionManager, data);
             else if (type == "GAME_FINALE") handleGameFinale(gameView, data);
-            else if (type == "ACK_CHAT_MESSAGE") handleChatMessage(gameView, connectionManager, data);
-            else if (type == "ACK_MAKE_MOVE") handleMove(gameView, data); //must be different function call
-            else if (type == "ERR_MAKE_MOVE") handleBoardMissmatch(connectionManager, jsonText);
-            else if (type == "ACK_ERR_MOVE_MADE") handleAckErrMoveMade(gameView, data);
-            else if (type == "PING") handlePing(connectionManager);
-            else if (type == "ACK_PING") handleReceivePing(connectionManager);
+            else if (type == "ERR_MAKE_MOVE") handleBoardMissmatch(gameView, data);
+            else if (type == "ACK_ERR_MOVE_MADE") handleBoardMissmatch(gameView, data);
             else handleIgnore();
         }
         else throw std::logic_error("Handling this view is not supported");

@@ -14,8 +14,6 @@
 class MessageHandler
 {
 private:
-    static void handlePing(ConnectionManager* connectionManager);
-    static void handleReceivePing(ConnectionManager* connectionManager);
     static void handleIgnore();
     static void handleGeneralSend(ConnectionManager* connectionManager, const std::string &jsonText);
 
@@ -40,7 +38,6 @@ private:
     static void handleFlipReady(ConnectionManager* connectionManager, const std::string &jsonText);
     static void handleFlipPlayerWant(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
-    static void handleSetReady(User* user, const nlohmann::json &data);
     static void handleSetPlayerWant(User* user, const nlohmann::json &data);
     static void handleErrPlayerWant(User* user, const nlohmann::json &data);
 
@@ -50,10 +47,9 @@ private:
     static void handleMakeMove(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
     static void handleChatMessage(GameView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
-    static void handleBoardMissmatch(ConnectionManager* connectionManager, const std::string &jsonText);
-    static void handleMove(GameView* view, const nlohmann::json &data);
+    static void handleBoardMissmatch(GameView *view, const nlohmann::json &data);
+    static void handleMove(GameView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
     static void handleGameFinale(GameView* view, const nlohmann::json &data);
-    static void handleAckErrMoveMade(GameView* view, const nlohmann::json &data);
 public:
     MessageHandler() = default;
     ~MessageHandler() = default;

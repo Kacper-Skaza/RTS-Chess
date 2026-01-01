@@ -1,67 +1,140 @@
 #include "../../headers/views/RoomView.hpp"
-
 #include <iostream>
-#include <string>
 
-RoomView::RoomView(SDL_Window *win, SDL_Renderer *rend) : window(win), renderer(rend) {}
-
-void RoomView::updateRoom(std::unique_ptr<Room> room)
+RoomView::RoomView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager)
+    : window(window), renderer(renderer), fontManager(fontManager)
 {
-	rooms.push_back(std::move(room));
+}
+
+void RoomView::updateRoom(Room *newRoom)
+{
+    this->room = newRoom;
+}
+
+void RoomView::updateUser(User *newUser)
+{
+    this->user = newUser;
+}
+
+std::string RoomView::getButtonClicked()
+{
+    int mx, my;
+    uint32_t mouseState = SDL_GetMouseState(&mx, &my);
+
+    if (mouseState & SDL_BUTTON(SDL_BUTTON_LEFT))
+    {
+        for (const auto &btn : joinButtons)
+        {
+            if (mx >= btn.rect.x && mx <= btn.rect.x + btn.rect.w &&
+                my >= btn.rect.y && my <= btn.rect.y + btn.rect.h)
+            {
+                return btn.name;
+            }
+        }
+    }
+    return "";
 }
 
 void RoomView::render()
 {
-	SDL_SetRenderDrawColor(renderer, 30, 30, 30, 255);
-	SDL_RenderClear(renderer);
+    if (!room)
+        return;
 
-	int y = 50;
-	for (size_t i = 0; i < rooms.size(); i++)
-	{
-		SDL_Rect rect = {50, y, 500, 60};
+    // Tło
+    SDL_SetRenderDrawColor(renderer, 30, 30, 35, 255);
+    SDL_RenderClear(renderer);
 
-		if (rooms[i]->isMatchStarted())
-			SDL_SetRenderDrawColor(renderer, 200, 100, 100, 255);
-		else if (rooms[i]->isMatchReady())
-			SDL_SetRenderDrawColor(renderer, 100, 200, 100, 255);
-		else
-			SDL_SetRenderDrawColor(renderer, 100, 100, 200, 255);
+    joinButtons.clear();
+    int windowW, windowH;
+    SDL_GetWindowSize(window, &windowW, &windowH);
 
-		SDL_RenderFillRect(renderer, &rect);
+    // --- 1. Nagłówek i Dane Pokoju ---
+    SDL_Color white = {255, 255, 255, 255};
+    SDL_Color green = {0, 255, 100, 255};
 
-		std::string text = "Room " + std::to_string(i) + ": " + std::to_string(rooms[i]->getPlayerCount()) + "/" + std::to_string(rooms[i]->getMaxPlayerCount()) + " players";
+    SDL_Texture *titleTex = fontManager->getFontTexture("Room: " + room->getRoomName(), "Roboto/Roboto-Medium", 32, white);
+    if (titleTex)
+    {
+        SDL_Rect dst = {50, 50, 0, 0};
+        SDL_QueryTexture(titleTex, nullptr, nullptr, &dst.w, &dst.h);
+        SDL_RenderCopy(renderer, titleTex, nullptr, &dst);
+    }
 
-		// SDL_Color white = {255, 255, 255, 255};
-		// SDL_Surface *surf = TTF_RenderText_Blended(font, text.c_str(), white);
-		// SDL_Texture *tex = SDL_CreateTextureFromSurface(renderer, surf);
-		// SDL_Rect textRect = {rect.x + 10, rect.y + 10, surf->w, surf->h};
-		// SDL_RenderCopy(renderer, tex, nullptr, &textRect);
-		// SDL_FreeSurface(surf);
-		// SDL_DestroyTexture(tex);
+    // --- 2. Lista Graczy ---
+    int startY = 150;
+    auto userList = room->getUserList();
+    for (size_t i = 0; i < userList.size(); ++i)
+    {
+        std::string status = userList[i].isReady() ? "[READY]" : "[NOT READY]";
+        std::string role = userList[i].isPlayer() ? "(Player)" : "(Spectator)";
+        std::string userLine = userList[i].getUsername() + " " + role + " " + status;
 
-		y += 80;
-	}
+        SDL_Texture *userTex = fontManager->getFontTexture(userLine, "Roboto/Roboto-Medium", 20, white);
+        if (userTex)
+        {
+            SDL_Rect dst = {70, startY + (static_cast<int>(i) * 35), 0, 0};
+            SDL_QueryTexture(userTex, nullptr, nullptr, &dst.w, &dst.h);
+            SDL_RenderCopy(renderer, userTex, nullptr, &dst);
+        }
+    }
 
-	SDL_RenderPresent(renderer);
-}
+    // --- 3. Przyciski na dole ---
+    // Definiujemy 3 przyciski: Ready/Unready, Role, Leave
 
-void RoomView::handleEvent(const SDL_Event &e)
-{
-	if (e.type == SDL_MOUSEBUTTONDOWN)
-	{
-		int mx = e.button.x;
-		int my = e.button.y;
-		int y = 50;
+    // Pobieramy dane lokalnego gracza (załóżmy, że to pierwszy na liście lub masz metodę by go znaleźć)
+    // Na potrzeby UI musimy wiedzieć co wyświetlić. Załóżmy, że sprawdzamy stan "nasz" z obiektu pokoju.
+    bool isReady = user->isReady();
+    bool isPlayer = user->isPlayer();
+    // Logika wyciągnięcia stanu 'self' powinna być tu dodana zależnie od Twojej klasy Room/User
 
-		for (size_t i = 0; i < rooms.size(); i++)
-		{
-			SDL_Rect rect = {50, y, 500, 60};
-			if (mx >= rect.x && mx <= rect.x + rect.w &&
-				my >= rect.y && my <= rect.y + rect.h)
-			{
-				std::cout << "Clicked on room " << i << "\n";
-			}
-			y += 80;
-		}
-	}
+    struct BtnDef
+    {
+        std::string label;
+        std::string id;
+        SDL_Color color;
+    };
+    std::vector<BtnDef> btnDefs = {
+        {(isReady ? "NOT READY" : "READY"), "toggle_ready", {100, 100, 250, 255}},
+        {(isPlayer ? "BE SPECTATOR" : "BE PLAYER"), "toggle_role", {150, 150, 150, 255}},
+        {"LEAVE ROOM", "leave_room", {200, 50, 50, 255}}};
+
+    int btnW = 200;
+    int btnH = 50;
+    int totalWidth = (btnW * 3) + (20 * 2); // 3 przyciski + odstępy
+    int currentX = (windowW - totalWidth) / 2;
+    int btnY = windowH - 100;
+
+    for (const auto &def : btnDefs)
+    {
+        SDL_Rect r = {currentX, btnY, btnW, btnH};
+
+        // Hover
+        int mx, my;
+        SDL_GetMouseState(&mx, &my);
+        if (mx >= r.x && mx <= r.x + r.w && my >= r.y && my <= r.y + r.h)
+        {
+            SDL_SetRenderDrawColor(renderer, def.color.r + 30, def.color.g + 30, def.color.b + 30, 255);
+        }
+        else
+        {
+            SDL_SetRenderDrawColor(renderer, def.color.r, def.color.g, def.color.b, 255);
+        }
+
+        SDL_RenderFillRect(renderer, &r);
+
+        SDL_Texture *bTex = fontManager->getFontTexture(def.label, "Roboto/Roboto-Medium", 18, white);
+        if (bTex)
+        {
+            SDL_Rect tDst;
+            SDL_QueryTexture(bTex, nullptr, nullptr, &tDst.w, &tDst.h);
+            tDst.x = r.x + (r.w - tDst.w) / 2;
+            tDst.y = r.y + (r.h - tDst.h) / 2;
+            SDL_RenderCopy(renderer, bTex, nullptr, &tDst);
+        }
+
+        joinButtons.push_back({r, def.id});
+        currentX += btnW + 20;
+    }
+
+    SDL_RenderPresent(renderer);
 }

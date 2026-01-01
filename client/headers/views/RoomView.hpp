@@ -1,27 +1,43 @@
 #pragma once
 
-#include <vector>
-#include <memory>
-
 #include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
+#include <vector>
+#include <string>
 
-#include "../../../shared/headers/Room.hpp"
 #include "View.hpp"
+#include "../SDLFontManager.hpp"
+#include "../../../shared/headers/Room.hpp"
+#include "../../../shared/headers/User.hpp"
 
-class RoomView: public View
+class RoomView : public View
 {
 private:
-	SDL_Window *window;
-	SDL_Renderer *renderer;
-	std::vector<std::unique_ptr<Room>> rooms;
+    SDL_Window *window;
+    SDL_Renderer *renderer;
+    SDLFontManager *fontManager;
+
+    // List of rooms received from server
+    Room *room;
+    User *user;
+
+    // Helper structure used for detecting clicks on "Join" buttons
+    struct Button
+    {
+        SDL_Rect rect;
+        std::string name;
+    };
+    std::vector<Button> joinButtons;
 
 public:
-	RoomView(SDL_Window *window, SDL_Renderer *renderer);
-	~RoomView() = default;
+    explicit RoomView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager);
+    virtual ~RoomView() = default;
 
-	void render();
-	void handleEvent(const SDL_Event &e);
+    void render() override;
 
-	void updateRoom(std::unique_ptr<Room> room);
+    // Updates list of rooms displayed in the lobby
+    void updateRoom(Room *newRoom);
+    void updateUser(User *newUser);
+
+    // Returns the room that was clicked by the user (if any)
+    std::string getButtonClicked();
 };

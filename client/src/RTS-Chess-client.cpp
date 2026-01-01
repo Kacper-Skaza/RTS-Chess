@@ -26,6 +26,8 @@
 
 int main()
 {
+	SDL_SetHint(SDL_HINT_WINDOWS_DPI_AWARENESS, "permonitorv2");
+
 	if (SDL_Init(SDL_INIT_VIDEO) != 0)
 	{
 		std::cerr << "SDL_Init Error: " << SDL_GetError() << std::endl;

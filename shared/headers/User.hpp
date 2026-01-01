@@ -41,6 +41,7 @@ public:
     void setInRoom(bool inRoom);
     void setUsername(const std::string &username);
     void setSide(ChessSide side);
+    void setPlayerID(const unsigned long long &ID);
 
     // Operator overloading
     bool operator==(const User &user) const;

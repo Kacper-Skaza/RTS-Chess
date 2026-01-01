@@ -1,5 +1,4 @@
 #include "../headers/User.hpp"
-#include "User.hpp"
 
 User::User()
 {
@@ -80,6 +79,11 @@ void User::setUsername(const std::string &username)
 void User::setSide(ChessSide side)
 {
     this->side = side;
+}
+
+void User::setPlayerID(const unsigned long long &ID)
+{
+    this->id = ID;
 }
 
 void from_json(const nlohmann::json& j, User& p)

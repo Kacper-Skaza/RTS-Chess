@@ -55,7 +55,7 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
                                 {"type", "REQUEST_NICK"},
                                 {"data", {"nick", connectView->getUserBox().getString()}}
                             };
-                            MessageHandler::handleView(connectView, connectionManager, j);
+                            MessageHandler::handleView(connectView, connectionManager, me, j);
                             unsigned long long id = 0;
                             me = new User(id, connectView->getUserBox().getString());
                         }

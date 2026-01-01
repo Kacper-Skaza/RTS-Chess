@@ -106,7 +106,8 @@ bool Board::makeMove(const Move &move)
 	}
 
 	// Check if move is castling
-	if (std::toupper(board[from.first][from.second]->getSymbol()) == 'K' &&
+	if (board[to.first][to.second] != nullptr &&
+		std::toupper(board[from.first][from.second]->getSymbol()) == 'K' &&
 		std::toupper(board[to.first][to.second]->getSymbol()) == 'R' &&
 		std::isupper(board[from.first][from.second]->getSymbol()) == std::isupper(board[to.first][to.second]->getSymbol()))
 	{

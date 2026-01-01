@@ -51,3 +51,10 @@ enum class ChessSide
     WHITE = 1,
     BLACK = 2
 };
+
+enum class PlayerWant
+{
+    SPECTATOR = 0,
+    PLAYER_READY = 1,
+    PLAYER_NOT_READY = 2
+};

@@ -50,29 +50,29 @@ chmod +x ./build.sh
 	* ~~room.cpp <- destrojer~~
 	* ~~User <- destrojer~~
 		* ~~wskaznik do connectionmanager~~
-	* ConnectionManager (kontruktor bierze fd) <- Kacpers100
-		* Pola
-			* kolejke przychodzacych wiadomosci
-			* kolejke wychodzacych wiadomosci
-			* trzyma wskazniki polaczen
-			* kiedy byl ostatni ping
-		* Funkcje
-			* liczy czas (wlacza liczenie czasu od last ping)
-			* zamkniecie polaczenia
+	* ~~ConnectionManager (kontruktor bierze fd) <- Kacpers100~~
+		* ~~Pola~~
+			* ~~kolejke przychodzacych wiadomosci~~
+			* ~~kolejke wychodzacych wiadomosci~~
+			* ~~trzyma wskazniki polaczen~~
+			* ~~kiedy byl ostatni ping~~
+		* ~~Funkcje~~
+			* ~~liczy czas (wlacza liczenie czasu od last ping)~~
+			* ~~zamkniecie polaczenia~~
 
-			* wysyla wiadomosci
-			* wysyla ping
+			* ~~wysyla wiadomosci~~
+			* ~~wysyla ping~~
 
-			* odbiera wiadomosci
-			* odbiera ping
+			* ~~odbiera wiadomosci~~
+			* ~~odbiera ping~~
 
 * Client
 	* Main Loop <- destrojer (2 views functionality done)
 	* poll <- destrojer
 	* GUI - views folder
-		* Connect <- destrojer (initially done)
-		* RoomSelect / RoomList <- Kacpers100
-		* Lobby <- Kacpers100
+		* ~~Connect <- destrojer~~
+		* ~~RoomSelect / RoomList <- Kacpers100~~
+		* ~~Lobby <- Kacpers100~~
 		* ~~Game <- destrojer~~
 		* Opcjonalne:
 			* Menu
@@ -83,15 +83,15 @@ chmod +x ./build.sh
 		* ~~Bindowanie tesktur <- Kacpers100~~
 		* Pliki <- destrojer (temporary files done)
 * Server
-	* Logika połączeń
-		* Zestawienie połączenia
-			* Nowe połączenie tworzy klase
-		* Odbieranie danych
-		* Obsługa danych
-		* Odsyłanie danych
-		* Zamknięcie połączenia
-	* poll z obsluga calosci <- Kacpers100
-	* nasluchujemy i przy nowym polaczeniu tworzymy nowy connectionmanager <- Kacpers100
+	* ~~Logika połączeń~~
+		* ~~Zestawienie połączenia~~
+			* ~~Nowe połączenie tworzy klase~~
+		* ~~Odbieranie danych~~
+		* ~~Obsługa danych~~
+		* ~~Odsyłanie danych~~
+		* ~~Zamknięcie połączenia~~
+	* ~~poll z obsluga calosci <- Kacpers100~~
+	* ~~nasluchujemy i przy nowym polaczeniu tworzymy nowy connectionmanager <- Kacpers100~~
 
 * client -> server dane
 	* utworz pokoj

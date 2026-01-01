@@ -51,6 +51,9 @@ public:
 
     char checkPiece();
 
+    const MatchEndReasons& getGameState() const;
+    void setGameState(MatchEndReasons state);
+
     std::pair<int, int>& getSelected();
     void setSelected(int x, int y);
 

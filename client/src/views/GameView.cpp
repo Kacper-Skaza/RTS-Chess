@@ -160,6 +160,16 @@ char GameView::checkPiece()
     return this->board->getBoardSymbol()[selected.first][selected.second];
 }
 
+const MatchEndReasons &GameView::getGameState() const
+{
+    return this->gameState;
+}
+
+void GameView::setGameState(MatchEndReasons state)
+{
+    this->gameState = state;
+}
+
 std::pair<int, int> &GameView::getSelected()
 {
     return this->selected;

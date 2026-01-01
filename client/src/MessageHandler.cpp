@@ -1,6 +1,5 @@
 #include "../headers/MessageHandler.hpp"
 #include <iostream>
-#include "MessageHandler.hpp"
 
 void MessageHandler::handlePing(ConnectionManager* connectionManager)
 {

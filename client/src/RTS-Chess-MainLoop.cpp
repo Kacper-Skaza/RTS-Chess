@@ -242,8 +242,12 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
 
 void mainLoopDestroy()
 {
+    
     if (me != nullptr)
         delete me;
     if (connectionManager != nullptr)
         delete connectionManager;
+    #if PLATFORM == PLATFORM_WINDOWS
+    WSACleanup();
+    #endif
 }

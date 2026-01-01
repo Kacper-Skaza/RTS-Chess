@@ -20,16 +20,19 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<Piece *>
 	int dy = std::abs(to.second - from.second);
 
 	// Validate piece
-	if (piece != this || piece == nullptr || target == nullptr)
+	if (piece != this || piece == nullptr)
 		return false;
 
 	// Check if move is castling
-	if (std::toupper(target->getSymbol()) == 'R' &&
-		std::isupper(piece->getSymbol()) == std::isupper(target->getSymbol()) &&
-		piece->getMoveCount() == 0 &&
-		target->getMoveCount() == 0)
+	if (target != nullptr)
 	{
-		return true;
+		if (std::toupper(target->getSymbol()) == 'R' &&
+			std::isupper(piece->getSymbol()) == std::isupper(target->getSymbol()) &&
+			piece->getMoveCount() == 0 &&
+			target->getMoveCount() == 0)
+		{
+			return true;
+		}
 	}
 
 	// Check if move is one square in any direction
@@ -37,7 +40,7 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<Piece *>
 		return false;
 
 	// Check if destination square is empty or colors are different
-	if (target->getSymbol() == ' ')
+	if (target == nullptr)
 		return true;
 	if (std::isupper(piece->getSymbol()) != std::isupper(target->getSymbol()))
 		return true;

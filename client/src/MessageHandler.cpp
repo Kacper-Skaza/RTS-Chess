@@ -120,17 +120,26 @@ void MessageHandler::handleBoardMissmatch(ConnectionManager* connectionManager, 
 
 void MessageHandler::handleMove(GameView *view, const nlohmann::json &data)
 {
-
+    view->getBoard()->makeMove(data.at("move").get<Move>());
 }
 
 void MessageHandler::handleGameFinale(GameView *view, const nlohmann::json &data)
 {
-
+    view->setGameState(data.at("reason").get<MatchEndReasons>());
 }
 
 void MessageHandler::handleAckErrMoveMade(GameView *view, const nlohmann::json &data)
 {
-    
+    Board newBoard;
+    Board::from_json(data.at("board"), newBoard);
+
+    for (size_t i = 0; i < BOARD_SIZE; i++)
+    {
+        for (size_t j = 0; j < BOARD_SIZE; j++)
+        {
+            view->getBoard()->setSpace(i, j, newBoard.getSpace(i, j));
+        }
+    }
 }
 
 void MessageHandler::handleView(View* view, ConnectionManager* connectionManager, User* user, const std::string &jsonText)
@@ -184,7 +193,7 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "UPDATE_CHAT") handleChatMessage(gameView, connectionManager, data); //meybe different handler function
             else if (type == "GAME_FINALE") handleGameFinale(gameView, data);
             else if (type == "ACK_CHAT_MESSAGE") handleChatMessage(gameView, connectionManager, data);
-            else if (type == "ACK_MAKE_MOVE") handleMove(gameView, data);
+            else if (type == "ACK_MAKE_MOVE") handleMove(gameView, data); //must be different function call
             else if (type == "ERR_MAKE_MOVE") handleBoardMissmatch(connectionManager, jsonText);
             else if (type == "ACK_ERR_MOVE_MADE") handleAckErrMoveMade(gameView, data);
             else if (type == "PING") handlePing(connectionManager);

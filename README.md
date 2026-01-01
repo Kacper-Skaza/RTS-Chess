@@ -102,6 +102,7 @@ chmod +x ./build.sh
 	* chce wyslac wiadkomosc na chat
 	* chce wykonac ruch X
 	* chce sprawdzic czy dalej jest polaczenie z serwerem (ping)
+	* przycisk do odswiezania listy pokoi 
 
 * server -> client dane
 	* wysylam rozne ACK
@@ -128,7 +129,7 @@ chmod +x ./build.sh
 			* data: `std::string` room_name
 		* RECEIVE
 			* type: ACK_ROOM_CREATE
-			* data: `null`
+			* data: `Room` room
 		* RECEIVE
 			* type: ERR_ROOM_CREATE
 			* data: `std::string` reason
@@ -155,21 +156,21 @@ chmod +x ./build.sh
 			* data: `std::string` room_name
 		* RECEIVE
 			* type: ACK_ROOM_LEAVE
-			* data: `Room` room
+			* data: `null`
 	* wiadomosc jestem gotowy
 		* SEND
 			* type: PLAYER_READY
 			* data: `null`
 		* RECEIVE
 			* type: ACK_PLAYER_READY
-			* data: `null`
+			* data: `bool` true/false
 	* wiadomosc chce/nie chce byc graczem
 		* SEND
 			* type: PLAYER_WANT
-			* data: `bool` true/false
+			* data: `PlayerWant` wanted
 		* RECEIVE
 			* type: ACK_PLAYER_WANT
-			* data: `null`
+			* data: `PlayerWant` result
 		* RECEIVE
 			* type: ERR_PLAYER_WANT
 			* data: `std::string` reason
@@ -196,13 +197,6 @@ chmod +x ./build.sh
 			* data: `null`
 		* RECEIVE
 			* type: ACK_PING
-			* data: `null`
-	* wysylam liste pokoi (po kazdej aktualizacji -> broadcast, na start -> do jednego)
-		* SEND
-			* type: UPDATE_ROOMS
-			* data: `vector<Room>` rooms
-		* RECEIVE
-			* type: ACK_UPDATE_ROOMS
 			* data: `null`
 	* wysylam stan pokoju -> jedno wyzej
 	* wysylam update boarda (po kazdym ruchu dla kazdego w  pokoju)
@@ -236,10 +230,10 @@ chmod +x ./build.sh
 
 	* wysylam informacje ze gracz sie zgubil w odmentach internetu -> wysylam wiadomosc kto wygral
 
-* Przesylane uzywamy smiesznej biblioteki to jSONowo <- kazdy swoje
+* ~~Przesylane uzywamy smiesznej biblioteki to jSONowo <- kazdy swoje~~
 	* ~~piece(figury)~~
 	* ~~board~~
-	* room
+	* ~~room~~
 	* ~~user~~
 	* ~~move~~
 

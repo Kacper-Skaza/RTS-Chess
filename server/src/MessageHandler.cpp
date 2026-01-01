@@ -251,7 +251,7 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
         // Prepare ACK_ROOM_LEAVE response
         json response = {
             {"type", "ACK_ROOM_LEAVE"},
-            {"data", {"room", *targetRoom}}};
+            {"data", nullptr}};
 
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User " << client->user->getUsername() << " left room: " << roomName << std::endl;

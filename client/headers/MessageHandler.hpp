@@ -14,49 +14,49 @@
 class MessageHandler
 {
 private:
-    static void handlePing();
-    static void handleReceivePing();
+    static void handlePing(ConnectionManager* connectionManager);
+    static void handleReceivePing(ConnectionManager* connectionManager);
     static void handleIgnore();
+    static void handleGeneralSend(ConnectionManager* connectionManager, const std::string &jsonText);
 
     //Connect view handles
-    static void handleConnectView();
     //Outgoing
-    static void handleGetUsernameID(); 
+    static void handleGetUsernameID(ConnectionManager *connectionManager, const std::string &jsonText); 
     //Incomming
-    static void handleSetUsernameID();
-
-    //Room view handles
-    static void handleRoomView();
-    //Outgoing
-    static void handleListRooms();
-    static void handleCreateRoom();
-    static void handleJoinRoom();
-    static void handleExitRoom();
-    //Incomming
-    static void handleReceiveRooms();
-    static void handleReceiveRoom();
+    static void handleSetUsernameID(ConnectView *view, ConnectionManager *connectionManager, User* user, const nlohmann::json &data);
 
     //Lobby view handles
-    static void handleLobbyView();
     //Outgoing
-    static void handleFlipReady();
-    static void handleFlipPlayerWant();
+    static void handleListRooms(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleCreateRoom(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleJoinRoom(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleExitRoom(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
-    static void handleSetReady();
-    static void handleSetPlayerWant();
+    static void handleReceiveRooms(LobbyView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
+    static void handleReceiveRoom(LobbyView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
 
     //Room view handles
-    static void handleGameView();
     //Outgoing
-    static void handleSendMessage();
-    static void handleMakeMove();
+    static void handleFlipReady(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleFlipPlayerWant(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
-    static void handleChatMessage();
-    static void handleBoardMissmatch();
-    static void handleMove();
+    static void handleSetReady(User* user, const nlohmann::json &data);
+    static void handleSetPlayerWant(User* user, const nlohmann::json &data);
+    static void handleErrPlayerWant(User* user, const nlohmann::json &data);
+
+    //Game view handles
+    //Outgoing
+    static void handleSendMessage(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleMakeMove(ConnectionManager* connectionManager, const std::string &jsonText);
+    //Incomming
+    static void handleChatMessage(GameView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
+    static void handleBoardMissmatch(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleMove(GameView* view, const nlohmann::json &data);
+    static void handleGameFinale(GameView* view, const nlohmann::json &data);
+    static void handleAckErrMoveMade(GameView* view, const nlohmann::json &data);
 public:
     MessageHandler() = default;
     ~MessageHandler() = default;
 
-    static void handleView(View* view, ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleView(View* view, ConnectionManager* connectionManager, User* user, const std::string &jsonText);
 };

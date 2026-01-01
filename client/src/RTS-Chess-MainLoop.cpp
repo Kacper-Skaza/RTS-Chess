@@ -11,7 +11,7 @@ namespace
     int mousePosY;
 }
 
-template<typename T> bool between(T x, T a, T b) 
+template<typename T> bool between(T x, T a, T b)
 {
     return x >= a && x <= b;
 }
@@ -24,7 +24,7 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
         {
             running = false;
         }
-        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)  
+        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
         {
             SDL_GetMouseState(&mousePosX, &mousePosY);
             if (connectView->getConnectionBox().checkIfClicked(mousePosX, mousePosY))
@@ -60,7 +60,7 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
                             me = new User(id, connectView->getUserBox().getString());
                         }
                         view.release();
-                        view = std::make_unique<LobbyView>();
+                        view = std::make_unique<LobbyView>(window, renderer, fontManager);
                     }
                     else
                         connectView->getConnectionBox().setText("");
@@ -76,7 +76,7 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
             if (boxIp)
                 connectView->getConnectionBox().textListener(event);
             else
-                connectView->getUserBox().textListener(event);  
+                connectView->getUserBox().textListener(event);
 
         }
     }
@@ -84,35 +84,92 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
 
 void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, RoomView* roomView, SDL_Event& event)
 {
+    /*User dummyCreator(1ULL, "SystemAdmin");
+    User* me = new User(2ULL, "Me");
+    roomView->updateUser(me);
+
+    // 2. Create a vector of Rooms
+    Room* testRoom;
+
+    // 3. Add rooms to the vector
+    // We use emplace_back to construct the Room directly in the vector
+    testRoom = new Room("Pro Only 2000+", dummyCreator);
+    roomView->updateRoom(testRoom);*/
+
     while (SDL_PollEvent(&event) != 0)
     {
         if (event.type == SDL_QUIT)
         {
             running = false;
         }
-        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+        else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
         {
-            //here do some smart math to get what room to enter
+            std::string name = roomView->getButtonClicked();
+            if (name != "")
+            {
+                std::cout<<name<<std::endl;
+            }
         }
-        
     }
-    
-    
+
+
 }
 
 void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, LobbyView* lobbyView, SDL_Event& event)
 {
+    /*
+    User dummyCreator(1ULL, "SystemAdmin");
+
+    // 2. Create a vector of Rooms
+    std::vector<Room*> testRooms;
+
+    // 3. Add rooms to the vector
+    // We use emplace_back to construct the Room directly in the vector
+    testRooms.emplace_back(new Room("Pro Only 2000+", dummyCreator));
+    testRooms.emplace_back(new Room("Fast Blitz 3min", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    testRooms.emplace_back(new Room("Casual Game", dummyCreator));
+    lobbyView->updateRooms(testRooms);*/
+
     while (SDL_PollEvent(&event) != 0)
     {
         if (event.type == SDL_QUIT)
         {
             running = false;
         }
-        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+        else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
         {
-            //here add some texture checking what was clicked and interact with it
+            Room* room = lobbyView->getRoomClicked();
+            if (room != nullptr)
+            {
+                std::cout<<room->getRoomName()<<std::endl;
+            }
         }
-        
+        else if (event.type == SDL_MOUSEWHEEL)
+        {
+            // event.wheel.y to kierunek (1 w górę, -1 w dół)
+            lobbyView->handleScroll(event.wheel.y);
+        }
     }
 }
 
@@ -134,7 +191,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                     //do move
                     if(gameView->checkPiece() != ' ')
                     {
-                        Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second], 
+                        Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second],
                                   gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
                         gameView->getBoard()->makeMove(move);
                         gameView->setSelected(-1, -1);
@@ -154,13 +211,13 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
         {
             //maybe implemented later
         }
-        
+
     }
 }
 
 void delay()
 {
-    //add delta time 
+    //add delta time
 
 
     SDL_Delay(1000/TARGET_FPS);
@@ -188,5 +245,5 @@ void mainLoopDestroy()
     if (me != nullptr)
         delete me;
     if (connectionManager != nullptr)
-        delete connectionManager;    
+        delete connectionManager;
 }

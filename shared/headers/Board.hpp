@@ -20,6 +20,9 @@ public:
 	Board();
 	~Board() = default;
 
+	void setSpace(int row, int col, std::unique_ptr<Piece>& piece);
+	std::unique_ptr<Piece>& getSpace(int row, int col);
+
 	const std::vector<std::vector<Piece *>> getBoardFull() const;
 	const std::vector<std::vector<char>> getBoardSymbol() const;
 

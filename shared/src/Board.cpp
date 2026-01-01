@@ -39,6 +39,16 @@ Board::Board()
 		board[6][c] = std::make_unique<Pawn>('B', 60+c);
 }
 
+void Board::setSpace(int row, int col, std::unique_ptr<Piece>& piece)
+{
+	this->board[row][col] = std::move(piece);
+}
+
+std::unique_ptr<Piece> &Board::getSpace(int row, int col)
+{
+	return this->board[row][col];
+}
+
 const std::vector<std::vector<Piece *>> Board::getBoardFull() const
 {
 	std::vector<std::vector<Piece *>> pointerBoard(BOARD_SIZE, std::vector<Piece*>(BOARD_SIZE));

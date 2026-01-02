@@ -444,12 +444,12 @@ void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const
             {"type", "MOVE_MADE"},
             {"data", {{"move", newMove}}}};
 
-        const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
 
         // Send newMove to everyone
         for (const auto &[_, roomUser] : roomUsers)
         {
-            unsigned long long id = roomUser.getPlayerID();
+            unsigned long long id = roomUser->getPlayerID();
 
             // Do not send a move to the client making it
             if (id != user->getPlayerID())
@@ -473,12 +473,12 @@ void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, con
             {"type", "UPDATE_CHAT"},
             {"data", {{"message", newMessage}, {"user", *user}}}};
 
-        const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
 
         // Send newMessage to everyone
         for (const auto &[_, roomUser] : roomUsers)
         {
-            unsigned long long id = roomUser.getPlayerID();
+            unsigned long long id = roomUser->getPlayerID();
             clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
         }
     }
@@ -497,12 +497,12 @@ void MessageHandler::broadcastUpdateRoom(const Room *room, const User *user)
             {"type", "UPDATE_ROOM"},
             {"data", {{"room", *room}}}};
 
-        const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
 
         // Send newMessage to everyone
         for (const auto &[_, roomUser] : roomUsers)
         {
-            unsigned long long id = roomUser.getPlayerID();
+            unsigned long long id = roomUser->getPlayerID();
             clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
         }
     }

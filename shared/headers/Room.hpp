@@ -29,6 +29,11 @@ public:
     explicit Room(std::string name, User &creator);
     ~Room() = default;
 
+    Room(Room&& other) noexcept = default;
+    Room& operator=(Room&& other) noexcept = default;
+    Room(const Room &other) = delete;
+    Room& operator=(const Room &other) = delete;
+
     // Get structure Data
     const std::string getRoomName() const noexcept;
     bool isMatchReady() const;

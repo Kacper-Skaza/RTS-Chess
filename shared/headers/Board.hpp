@@ -20,6 +20,12 @@ public:
 	Board();
 	~Board() = default;
 
+	Board(Board&& other) noexcept = default;
+	Board& operator=(Board&& other) noexcept = default;
+	
+	Board(const Board &other) = delete;
+	Board& operator=(const Board &other) = delete;
+
 	void setSpace(int row, int col, std::unique_ptr<Piece>& piece);
 	std::unique_ptr<Piece>& getSpace(int row, int col);
 

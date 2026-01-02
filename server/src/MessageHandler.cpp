@@ -94,7 +94,7 @@ void MessageHandler::handleRequestNick(Client *client, const json &data)
 {
     try
     {
-        std::string newNick = data["nick"];
+        std::string newNick = data.at("nick").get<std::string>();
 
         if (client->user)
         {
@@ -120,7 +120,7 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
     try
     {
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string newRoomName = data["roomName"];
+        std::string newRoomName = data.at("roomName").get<std::string>();
 
         // Check if room name is already taken
         for (const auto &[name, _] : rooms)
@@ -214,7 +214,7 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
     try
     {
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string roomName = data["roomName"];
+        std::string roomName = data.at("roomName").get<std::string>();
         Room *targetRoom = nullptr;
 
         auto it = rooms.find(roomName);
@@ -259,7 +259,7 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
     try
     {
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string roomName = data["roomName"];
+        std::string roomName = data.at("roomName").get<std::string>();
         Room *targetRoom = nullptr;
 
         auto it = rooms.find(roomName);
@@ -337,7 +337,7 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
 {
     try
     {
-        bool player = data["player"];
+        bool player = data.at("player").get<bool>();
 
         if (client->room)
         {
@@ -365,7 +365,7 @@ void MessageHandler::handleChatMessage(Client *client, const json &data)
 {
     try
     {
-        std::string newMessage = data["message"];
+        std::string newMessage = data.at("message").get<std::string>();
 
         // Broadcast to all in room
         broadcastUpdateChat(client->room, client->user.get(), newMessage);
@@ -388,7 +388,7 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 {
     try
     {
-        Move newMove = data["move"];
+        Move newMove = data.at("move").get<Move>();
 
         if (!client->room || !client->room->isMatchStarted())
         {

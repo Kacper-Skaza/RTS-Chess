@@ -310,7 +310,7 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
 {
     try
     {
-        std::string player = data.at("player");
+        PlayerWant player = data.at("player");
 
         if (!client->room)
         {
@@ -322,20 +322,29 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
             return;
         }
 
-        if (player == "PLAYER_READY")
+        if (player == PlayerWant::PLAYER_READY)
         {
             client->user->setPlayer(true);
             client->user->setReady(true);
         }
-        else if (player == "PLAYER_NOT_READY")
+        else if (player == PlayerWant::PLAYER_NOT_READY)
         {
             client->user->setPlayer(true);
             client->user->setReady(false);
         }
-        else
+        else if (player == PlayerWant::SPECTATOR)
         {
             client->user->setPlayer(false);
             client->user->setReady(false);
+        }
+        else
+        {
+            json response = {
+                {"type", "ERR_PLAYER_WANT"},
+                {"data", {{"reason", "Wrong arguments !!!"}}}};
+
+            client->connection->sendMessage(response.dump());
+            return;
         }
 
         // Broadcast to all in room
@@ -347,7 +356,8 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
             {"data", {{"player", player}}}};
 
         client->connection->sendMessage(response.dump());
-        std::cout << "[DEBUG] User " << client->user->getUsername() << " is " << player << std::endl;
+        std::cout << "[DEBUG] User " << client->user->getUsername();
+        std::cout << " is [" << client->user->isPlayer() << client->user->isReady() << "]" << std::endl;
     }
     catch (const std::exception &e)
     {

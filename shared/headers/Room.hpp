@@ -56,6 +56,7 @@ public:
     // Other metchods
     void startMatch();
     void stopMatch(MatchEndReasons reason);
+    const User& getCreator() const;
 
     static void from_json(const nlohmann::json& j, Room& p);
 	friend void to_json(nlohmann::json& j, const Room& p);

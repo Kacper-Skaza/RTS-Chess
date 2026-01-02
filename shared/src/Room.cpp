@@ -117,6 +117,7 @@ void Room::removePlayer(const User& player, const bool quit)
         if (this->playerList[i] == ToRemoveID)
         {
             this->playerList.erase(this->playerList.begin() + i);
+            break;
         }
     }
     if (quit == true) this->userList.erase(ToRemoveID);
@@ -138,6 +139,11 @@ void Room::stopMatch(MatchEndReasons reason)
     this->matchStarted = false;
     //destroy board
     //do not destroy room coz it will be done server side & client side elsewhere
+}
+
+const User& Room::getCreator() const
+{
+    return this->userList.at(this->playerList[0]);
 }
 
 void Room::from_json(const nlohmann::json& j, Room& p)

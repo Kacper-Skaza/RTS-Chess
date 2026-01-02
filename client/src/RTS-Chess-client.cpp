@@ -80,95 +80,22 @@ int main()
 	int w, h;
 	SDL_QueryTexture(coconut, nullptr, nullptr, &w, &h);
 
-	//Test for textbox
 	//Scope to satisfy destructor
 	{
 		SDLFontManager fontMan(renderer);
-		int x, y;
 
-		std::unique_ptr<View> currentView = std::make_unique<ConnectView>(window, renderer, &fontMan);
+		std::unique_ptr<View> currentView = std::make_unique<LobbyView>(window, renderer, &fontMan);
 
 		// --- Main loop ---
 		SDL_Event event;
 		
 		while (running)
 		{
-			mainLoop(window, renderer, &fontMan, currentView, event);
-			// while (SDL_PollEvent(&event) != 0)
-			// {
-			// 	// Close window event
-			// 	if (event.type == SDL_QUIT)
-			// 	{
-			// 		running = false;
-			// 	}
-
-			// 	if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_F12)
-			// 	{
-			// 		if (SDL_GetWindowFlags(window) & SDL_WINDOW_FULLSCREEN_DESKTOP)
-			// 		{
-			// 			SDL_SetWindowFullscreen(window, 0);
-			// 			SDL_SetWindowSize(window, 1920, 1080);
-			// 			SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
-			// 		}
-			// 		else
-			// 		{
-			// 			SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-			// 		}
-			// 	}
-				
-				
-			// 	if(event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
-			// 	{
-			// 		SDL_GetMouseState(&x, &y);
-			// 		//check if connectView
-			// 		if (ConnectView* conView = dynamic_cast<ConnectView*>(currentView.get()))
-			// 		{
-			// 			if (conView->getConnectionBox().checkIfClicked(x, y))
-			// 			{
-			// 				SDL_StartTextInput();
-			// 			}
-			// 			else
-			// 			{
-			// 				SDL_StopTextInput();
-			// 			}
-			// 			if (conView->getConnectButton().checkIfClicked(x,y))
-			// 			{
-			// 				if (conView->validateConnectionData())
-			// 				{
-			// 					currentView.release();
-			// 					currentView = std::make_unique<LobbyView>();
-			// 				}
-			// 				else
-			// 				{
-			// 					conView->getConnectionBox().setText("");
-			// 				}							
-			// 			}
-						
-			// 		}
-			// 	}
-			// 	if (SDL_IsTextInputActive() == SDL_TRUE)
-			// 	{
-			// 		if (ConnectView* conView = dynamic_cast<ConnectView*>(currentView.get()))
-			// 		{
-			// 			conView->getConnectionBox().textListener(event);
-			// 		}
-			// 	}
-			// 	if (GameView* gameView = dynamic_cast<GameView*>(currentView.get()))
-			// 	{
-			// 		gameView->handleEvent(event);
-			// 	}
-				
-			// }
-
-			// currentView.get()->render();			
-
-			// // 60 FPS <- should implement delta time for more stable fps
-			// SDL_Delay(16);
+			mainLoop(window, renderer, &fontMan, &texMgr, currentView, event);
 		}
 	}
 
 	mainLoopDestroy();
-
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	IMG_Quit();

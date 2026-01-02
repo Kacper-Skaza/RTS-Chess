@@ -17,7 +17,7 @@ private:
     SDLFontManager *fontManager;
 
     // List of rooms received from server
-    Room *room;
+    Room room;
     User *user;
 
     // Helper structure used for detecting clicks on "Join" buttons
@@ -35,7 +35,7 @@ public:
     void render() override;
 
     // Updates list of rooms displayed in the lobby
-    void updateRoom(Room *newRoom);
+    void updateRoom(Room &newRoom);
     void updateUser(User *newUser);
 
     // Returns the room that was clicked by the user (if any)

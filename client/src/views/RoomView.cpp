@@ -6,9 +6,9 @@ RoomView::RoomView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *f
 {
 }
 
-void RoomView::updateRoom(Room *newRoom)
+void RoomView::updateRoom(Room& newRoom)
 {
-    this->room = newRoom;
+    this->room = std::move(newRoom);
 }
 
 void RoomView::updateUser(User *newUser)
@@ -37,8 +37,11 @@ std::string RoomView::getButtonClicked()
 
 void RoomView::render()
 {
-    if (!room)
+    if (room.getRoomName() != "")
+    {
+        //add temporary rendering
         return;
+    }
 
     // Tło
     SDL_SetRenderDrawColor(renderer, 30, 30, 35, 255);
@@ -52,7 +55,7 @@ void RoomView::render()
     SDL_Color white = {255, 255, 255, 255};
     SDL_Color green = {0, 255, 100, 255};
 
-    SDL_Texture *titleTex = fontManager->getFontTexture("Room: " + room->getRoomName(), "Roboto/Roboto-Medium", 32, white);
+    SDL_Texture *titleTex = fontManager->getFontTexture("Room: " + room.getRoomName(), "Roboto/Roboto-Medium", 32, white);
     if (titleTex)
     {
         SDL_Rect dst = {50, 50, 0, 0};
@@ -62,7 +65,7 @@ void RoomView::render()
 
     // --- 2. Lista Graczy ---
     int startY = 150;
-    auto userList = room->getUserList();
+    auto userList = room.getUserList();
     for (size_t i = 0; i < userList.size(); ++i)
     {
         std::string status = userList[i].isReady() ? "[READY]" : "[NOT READY]";

@@ -451,6 +451,7 @@ void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const
         {
             unsigned long long id = roomUser.getPlayerID();
 
+            // Do not send a move to the client making it
             if (id != user->getPlayerID())
                 clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
         }
@@ -478,9 +479,7 @@ void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, con
         for (const auto &[_, roomUser] : roomUsers)
         {
             unsigned long long id = roomUser.getPlayerID();
-
-            if (id != user->getPlayerID())
-                clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+            clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
         }
     }
     catch (const std::exception &e)
@@ -504,9 +503,7 @@ void MessageHandler::broadcastUpdateRoom(const Room *room, const User *user)
         for (const auto &[_, roomUser] : roomUsers)
         {
             unsigned long long id = roomUser.getPlayerID();
-
-            if (id != user->getPlayerID())
-                clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+            clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
         }
     }
     catch (const std::exception &e)

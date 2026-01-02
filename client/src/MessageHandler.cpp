@@ -26,14 +26,16 @@ void MessageHandler::handleListRooms(ConnectionManager *connectionManager, const
     handleGeneralSend(connectionManager, jsonText);
 }
 
-void MessageHandler::handleCreateRoom(ConnectionManager *connectionManager, const std::string &jsonText)
+void MessageHandler::handleCreateRoom(LobbyView *view, ConnectionManager *connectionManager, const std::string &jsonText)
 {
     handleGeneralSend(connectionManager, jsonText);
+    view->setJoinRequested(true);
 }
 
-void MessageHandler::handleJoinRoom(ConnectionManager *connectionManager, const std::string &jsonText)
+void MessageHandler::handleJoinRoom(LobbyView *view, ConnectionManager *connectionManager, const std::string &jsonText)
 {
     handleGeneralSend(connectionManager, jsonText);
+    view->setJoinRequested(true);
 }
 
 void MessageHandler::handleExitRoom(ConnectionManager *connectionManager, const std::string &jsonText)
@@ -43,12 +45,20 @@ void MessageHandler::handleExitRoom(ConnectionManager *connectionManager, const 
 
 void MessageHandler::handleReceiveRooms(LobbyView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
 {
-    //To be implemented later when view is ready 
+    std::vector<Room> rooms;
+    for (const auto& roomJson : data.at("rooms"))
+    {
+        rooms.push_back(Room());
+        Room::from_json(roomJson, rooms[rooms.size() - 1]);
+    }
+    view->updateRooms(rooms);
 }
 
-void MessageHandler::handleReceiveRoom(LobbyView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
+void MessageHandler::handleReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
 {
-    //To be implemented later when view is ready
+    Room room;
+    Room::from_json(data.at("room"), room);
+    view->updateRoom(room);
 }
 
 void MessageHandler::handleFlipReady(ConnectionManager *connectionManager, const std::string &jsonText)
@@ -154,6 +164,8 @@ void MessageHandler::handleGameFinale(GameView *view, const nlohmann::json &data
 
 void MessageHandler::handleView(View* view, ConnectionManager* connectionManager, User* user, const std::string &jsonText)
 {
+    if (connectionManager == nullptr || user == nullptr || view == nullptr)
+        throw std::invalid_argument("Null pointer passed to MessageHandler::handleView");    
     try
     {
         nlohmann::json j = nlohmann::json::parse(jsonText);
@@ -170,12 +182,9 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
         else if (LobbyView* lobbyView = dynamic_cast<LobbyView*>(view))
         {
             if (type == "REQUEST_ROOMS") handleListRooms(connectionManager, jsonText);
-            else if (type == "ROOM_CREATE") handleCreateRoom(connectionManager, jsonText);
-            else if (type == "ROOM_JOIN") handleJoinRoom(connectionManager, jsonText);
-            else if (type == "ROOM_LEAVE") handleExitRoom(connectionManager, jsonText);
+            else if (type == "ROOM_CREATE") handleCreateRoom(lobbyView, connectionManager, jsonText);
+            else if (type == "ROOM_JOIN") handleJoinRoom(lobbyView, connectionManager, jsonText);
             else if (type == "ACK_REQUEST_ROOMS") handleReceiveRooms(lobbyView, connectionManager, data);
-            else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(lobbyView, connectionManager, data);
-            else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(lobbyView, connectionManager, data);
             else handleIgnore();
         }
         else if (RoomView* roomView = dynamic_cast<RoomView*>(view))
@@ -183,6 +192,9 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             if (type == "PLAYER_WANT") handleFlipPlayerWant(connectionManager, jsonText);
             else if (type == "ACK_PLAYER_WANT") handleSetPlayerWant(user, data);
             else if (type == "ERR_PLAYER_WANT") handleErrPlayerWant(user, data);
+            else if (type == "ROOM_LEAVE") handleExitRoom(connectionManager, jsonText);
+            else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, connectionManager, data);
+            else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, connectionManager, data);
             else handleIgnore();
         }
         else if(GameView* gameView = dynamic_cast<GameView*>(view))

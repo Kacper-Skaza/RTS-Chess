@@ -26,18 +26,18 @@ private:
     //Lobby view handles
     //Outgoing
     static void handleListRooms(ConnectionManager* connectionManager, const std::string &jsonText);
-    static void handleCreateRoom(ConnectionManager* connectionManager, const std::string &jsonText);
-    static void handleJoinRoom(ConnectionManager* connectionManager, const std::string &jsonText);
-    static void handleExitRoom(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleCreateRoom(LobbyView *view, ConnectionManager *connectionManager, const std::string &jsonText);
+    static void handleJoinRoom(LobbyView *view, ConnectionManager *connectionManager, const std::string &jsonText);
     //Incomming
     static void handleReceiveRooms(LobbyView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
-    static void handleReceiveRoom(LobbyView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
-
+    
     //Room view handles
     //Outgoing
     static void handleFlipReady(ConnectionManager* connectionManager, const std::string &jsonText);
     static void handleFlipPlayerWant(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handleExitRoom(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
+    static void handleReceiveRoom(RoomView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
     static void handleSetPlayerWant(User* user, const nlohmann::json &data);
     static void handleErrPlayerWant(User* user, const nlohmann::json &data);
 

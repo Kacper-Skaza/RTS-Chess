@@ -84,24 +84,27 @@ int main()
 	{
 		SDLFontManager fontMan(renderer);
 
-		std::unique_ptr<View> currentView = std::make_unique<RoomView>(window, renderer, &fontMan);
+		std::unique_ptr<View> currentView = std::make_unique<ConnectView>(window, renderer, &fontMan);
 
-		RoomView *roomView = dynamic_cast<RoomView*>(currentView.get());
+		// RoomView *roomView = dynamic_cast<RoomView*>(currentView.get());
 
-		User dummyCreator(1ULL, "SystemAdmin");
-		dummyCreator.setPlayer(true);
-		dummyCreator.setReady(true);
-		User* me = new User(2ULL, "Me");
-		roomView->updateUser(me);
-
-		// 2. Create a vector of Rooms
-		Room testRoom;
-
-		// 3. Add rooms to the vector
-		// We use emplace_back to construct the Room directly in the vector
-		testRoom = Room("Pro Only 2000+", dummyCreator);
-		roomView->updateRoom(testRoom);
-
+		// User dummyCreator(3ULL, "SystemAdmin");
+		// dummyCreator.setPlayer(true);
+		// dummyCreator.setReady(true);
+		// User* me = new User(2ULL, "Me");
+		
+		// // 2. Create a vector of Rooms
+		// Room testRoom;
+		
+		// // 3. Add rooms to the vector
+		// // We use emplace_back to construct the Room directly in the vector
+		// testRoom = Room("Pro Only 2000+", dummyCreator);
+		// roomView->updateRoom(testRoom);
+		// roomView->getRoom().addUserToRoom(*me);
+		// for (auto &&i : roomView->getRoom().getUserList())
+		// 	if (i.second.getPlayerID() == me->getPlayerID())
+		// 		roomView->updateUser(const_cast<User*>(&i.second));
+		
 		// --- Main loop ---
 		SDL_Event event;
 		

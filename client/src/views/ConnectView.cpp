@@ -80,7 +80,7 @@ SOCKET ConnectView::connectToServer()
     #endif
 
     const int separatorIndex = this->connectionBox.getString().find(':');
-    std::string ip = this->connectionBox.getString().substr(0, separatorIndex - 1);
+    std::string ip = this->connectionBox.getString().substr(0, separatorIndex);
     int port = std::stoi(this->connectionBox.getString().substr(separatorIndex + 1));
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET_PLATFORM)

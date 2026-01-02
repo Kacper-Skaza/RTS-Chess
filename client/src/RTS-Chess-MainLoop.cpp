@@ -60,9 +60,9 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
                                 {"data", {"nick", connectView->getUserBox().getString()}}
                             };
                             roomRefreshCounter = 0;
-                            MessageHandler::handleView(connectView, connectionManager, me, j.dump());
                             unsigned long long id = 0;
                             me = new User(id, connectView->getUserBox().getString());
+                            MessageHandler::handleView(connectView, connectionManager, me, j.dump());
                         }
                         view.release();
                         view = std::make_unique<LobbyView>(window, renderer, fontManager);

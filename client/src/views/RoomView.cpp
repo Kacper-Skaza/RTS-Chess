@@ -76,18 +76,20 @@ void RoomView::render()
     // --- 2. Lista Graczy ---
     int startY = 150;
     auto userList = room.getUserList();
-    for (size_t i = 0; i < userList.size(); ++i)
+    int iter = 0;
+    for (auto &&i: userList)
     {
-        std::string status = userList[i].isReady() ? "[READY]" : "[NOT READY]";
-        std::string role = userList[i].isPlayer() ? "(Player)" : "(Spectator)";
-        std::string userLine = userList[i].getUsername() + " " + role + " " + status;
+        std::string status = i.second.isReady() ? "[READY]" : "[NOT READY]";
+        std::string role = i.second.isPlayer() ? "(Player)" : "(Spectator)";
+        std::string userLine = i.second.getUsername() + " " + role + " " + status;
 
         SDL_Texture *userTex = fontManager->getFontTexture(userLine, "Roboto/Roboto-Medium", 20, white);
         if (userTex)
         {
-            SDL_Rect dst = {70, startY + (static_cast<int>(i) * 35), 0, 0};
+            SDL_Rect dst = {70, startY + (static_cast<int>(iter) * 35), 0, 0};
             SDL_QueryTexture(userTex, nullptr, nullptr, &dst.w, &dst.h);
             SDL_RenderCopy(renderer, userTex, nullptr, &dst);
+            iter++;
         }
     }
 

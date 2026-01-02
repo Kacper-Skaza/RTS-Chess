@@ -28,30 +28,40 @@ private:
     std::unordered_map<std::string, SDL_Texture*> textures;
     std::unordered_map<std::string, SDL_Rect> destinationRectangles;
     
+    std::string oldRoomName;
+
+    std::vector<std::string> whitePlayers;
+    std::vector<std::string> blackPlayers;
     std::string chat;
     TextBox chatBox;
     
     //Game manipulation variables
-    Board* board;
+    Board board;
     bool nullBoard;
     std::pair<int, int> selected;
     MatchEndReasons gameState = MatchEndReasons::NOT_ENDED;
     
-
+    
 
 public:
-    explicit GameView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager, SDLTextureManager *textureManager, Board *board = nullptr);
-    ~GameView();
+    explicit GameView(SDL_Window *window, SDL_Renderer *renderer, 
+        SDLFontManager *fontManager, SDLTextureManager *textureManager, 
+        Board *board = nullptr, 
+        std::vector<std::string> whitePlayers = {}, std::vector<std::string> blackPlayers = {},
+        std::string roomName = "");
+    ~GameView() = default;
 
     void render();
-    void handleEvent(const SDL_Event &e);
 
-    void updateGame(Board* board);
     void updateChat(std::string& message, User& sender);
 
-    char checkPiece();
+    std::string& getOldRoomName();
 
-    const MatchEndReasons& getGameState() const;
+    char checkPiece();
+    TextBox& getChatBox();
+    void checkGameEnd(); 
+
+    const MatchEndReasons& getGameState();
     void setGameState(MatchEndReasons state);
 
     std::pair<int, int>& getSelected();

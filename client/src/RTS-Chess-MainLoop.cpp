@@ -57,7 +57,7 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
                         {
                             nlohmann::json j = nlohmann::json{
                                 {"type", "REQUEST_NICK"},
-                                {"data", {"nick", connectView->getUserBox().getString()}}
+                                {"data", {{"nick", connectView->getUserBox().getString()}}}
                             };
                             roomRefreshCounter = 0;
                             unsigned long long id = 0;
@@ -139,7 +139,7 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                 //here join room
                 nlohmann::json j = nlohmann::json{
                     {"type", "ROOM_JOIN"},
-                    {"data", {"room_name", room->getRoomName()}}
+                    {"data", {{"room_name", room->getRoomName()}}}
                 };
                 MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
                 view.release();
@@ -150,7 +150,7 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                 //here create room check
                 nlohmann::json j = nlohmann::json{
                     {"type", "ROOM_CREATE"},
-                    {"data", {"room_name", lobbyView->getcreateBox().getString()}}
+                    {"data", {{"room_name", lobbyView->getcreateBox().getString()}}}
                 };
                 MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
                 view.release();
@@ -210,7 +210,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 roomView->getSelf()->setReady(!roomView->getSelf()->isReady());
                 nlohmann::json j = nlohmann::json{
                     {"type", "PLAYER_WANT"},
-                    {"data", roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY"}
+                    {"data", {{"player", roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY"}}}
                 };
                 // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
             }
@@ -219,7 +219,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 roomView->getSelf()->setPlayer(!roomView->getSelf()->isPlayer());
                 nlohmann::json j = nlohmann::json{
                     {"type", "PLAYER_WANT"},
-                    {"data", roomView->getSelf()->isPlayer() ? (roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY") : "SPECTATOR"}
+                    {"data", {{"player", roomView->getSelf()->isPlayer() ? (roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY") : "SPECTATOR"}}}
                 };
                 // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
             }
@@ -250,7 +250,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             // Return to RoomView
             nlohmann::json j = nlohmann::json{
                 {"type", "ROOM_REQUEST"},
-                {"data", {"room_name", gameView->getOldRoomName()}}
+                {"data", {{"room_name", gameView->getOldRoomName()}}}
             };
             // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
             view.release();
@@ -283,7 +283,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                         //send move to server
                         nlohmann::json j = nlohmann::json{
                             {"type", "MAKE_MOVE"},
-                            {"data", {"move", move}}
+                            {"data", {{"move", move}}}
                         };
                         // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
                     }
@@ -311,7 +311,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
         {
             nlohmann::json j = nlohmann::json{
                 {"type", "CHAT_MESSAGE"},
-                {"data", gameView->getChatBox().getString()}
+                {"data", {{"message", gameView->getChatBox().getString()}}}
             };
             // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
             //temp later remove

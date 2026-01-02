@@ -32,7 +32,7 @@ struct Client
 };
 
 // Enums
-enum class MatchEndReasons
+enum class MatchEndReasons : unsigned int
 {
     NOT_ENDED = 0,
     WHITE_WON = 1,
@@ -44,6 +44,16 @@ enum class MatchEndReasons
     KING_DIED = 64,
     UNKNOWN = 2048
 };
+
+constexpr MatchEndReasons operator|(MatchEndReasons a, MatchEndReasons b)
+{
+    return static_cast<MatchEndReasons>(static_cast<unsigned int>(a) | static_cast<unsigned int>(b));
+}
+
+constexpr MatchEndReasons operator&(MatchEndReasons a, MatchEndReasons b)
+{
+    return static_cast<MatchEndReasons>(static_cast<unsigned int>(a) & static_cast<unsigned int>(b));
+}
 
 enum class ChessSide
 {

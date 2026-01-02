@@ -47,5 +47,6 @@ public:
     bool operator==(const User &user) const;
 
     friend void from_json(const nlohmann::json &j, User &p);
+    friend void to_json(nlohmann::json& j, const User* p);
     friend void to_json(nlohmann::json &j, const User &p);
 };

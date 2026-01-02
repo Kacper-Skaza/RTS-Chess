@@ -96,6 +96,11 @@ void from_json(const nlohmann::json& j, User& p)
     p.side = j.at("side").get<ChessSide>();
 }
 
+void to_json(nlohmann::json& j, const User* p)
+{
+    
+}
+
 void to_json(nlohmann::json& j, const User& p)
 {
     j = nlohmann::json{

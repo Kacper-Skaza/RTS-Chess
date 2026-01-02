@@ -45,6 +45,10 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         {
             handleRequestRooms(client);
         }
+        else if (type == "REQUEST_ROOM")
+        {
+            handleRequestRoom(client);
+        }
         else if (type == "ROOM_JOIN")
         {
             handleRoomJoin(client, data);
@@ -177,6 +181,34 @@ void MessageHandler::handleRequestRooms(Client *client)
     }
 }
 
+void MessageHandler::handleRequestRoom(Client *client)
+{
+    try
+    {
+        if (!client->room)
+        {
+            json response = {
+                {"type", "ERR_REQUEST_ROOM"},
+                {"data", {"reason", "Room not found !!!"}}};
+
+            client->connection->sendMessage(response.dump());
+            return;
+        }
+
+        // Prepare ACK_REQUEST_ROOM response
+        json response = {
+            {"type", "ACK_REQUEST_ROOM"},
+            {"data", {"room", *client->room}}};
+
+        client->connection->sendMessage(response.dump());
+        std::cout << "[DEBUG] Sent room to " << client->user->getUsername() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in handleRequestRoom: " << e.what() << std::endl;
+    }
+}
+
 void MessageHandler::handleRoomJoin(Client *client, const json &data)
 {
     try
@@ -204,6 +236,9 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
         targetRoom->addPlayer(*client->user);
         client->user->setInRoom(true);
         client->room = targetRoom;
+
+        // Broadcast to all in room
+        broadcastUpdateRoom(client->room, client->user.get());
 
         // Prepare ACK_ROOM_JOIN response
         json response = {
@@ -248,6 +283,9 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
         client->user->setReady(false);
         client->room = nullptr;
 
+        // Broadcast to all in room
+        broadcastUpdateRoom(client->room, client->user.get());
+
         // Prepare ACK_ROOM_LEAVE response
         json response = {
             {"type", "ACK_ROOM_LEAVE"},
@@ -277,6 +315,9 @@ void MessageHandler::handlePlayerReady(Client *client)
         {
             client->user->setReady(!client->user->isReady());
 
+            // Broadcast to all in room
+            broadcastUpdateRoom(client->room, client->user.get());
+
             // Prepare ACK_PLAYER_READY response
             json response = {
                 {"type", "ACK_PLAYER_READY"},
@@ -301,6 +342,9 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
         if (client->room)
         {
             client->user->setPlayer(player);
+
+            // Broadcast to all in room
+            broadcastUpdateRoom(client->room, client->user.get());
 
             // Prepare ACK_PLAYER_READY response
             json response = {
@@ -437,6 +481,32 @@ void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, con
     }
     catch (const std::exception &e)
     {
-        std::cerr << "[ERR] Error in broadcastChat: " << e.what() << std::endl;
+        std::cerr << "[ERR] Error in broadcastUpdateChat: " << e.what() << std::endl;
+    }
+}
+
+void MessageHandler::broadcastUpdateRoom(const Room *room, const User *user)
+{
+    try
+    {
+        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        json broadcastData = {
+            {"type", "UPDATE_ROOM"},
+            {"data", {"room", *room}}};
+
+        const std::unordered_map<unsigned int, User> &roomUsers = room->getUserList();
+
+        // Send newMessage to everyone
+        for (const auto &[_, roomUser] : roomUsers)
+        {
+            unsigned long long id = roomUser.getPlayerID();
+
+            if (id != user->getPlayerID())
+                clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in broadcastUpdateRoom: " << e.what() << std::endl;
     }
 }

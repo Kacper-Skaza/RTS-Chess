@@ -90,39 +90,17 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
 
 void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, LobbyView* lobbyView, SDL_Event& event)
 {
-    
-    // User dummyCreator(1ULL, "SystemAdmin");
-
-    // // 2. Create a vector of Rooms
-    // std::vector<Room> testRooms;
-
-    // // 3. Add rooms to the vector
-    // // We use emplace_back to construct the Room directly in the vector
-    // testRooms.emplace_back(Room("Pro Only 2000+", dummyCreator));
-    // testRooms.emplace_back(Room("Fast Blitz 3min", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game", dummyCreator));
-    // testRooms.emplace_back(Room("Casual Game1", dummyCreator));
-    // lobbyView->updateRooms(testRooms);
+    if (roomRefreshCounter <= 0)
+    {
+        roomRefreshCounter = 20;
+        nlohmann::json j = nlohmann::json{
+            {"type", "REQUEST_ROOMS"},
+            {"data", nullptr}
+        };
+        MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
+    }
+    else
+        roomRefreshCounter--;
 
     while (SDL_PollEvent(&event) != 0)
     {
@@ -139,40 +117,31 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                 //here join room
                 nlohmann::json j = nlohmann::json{
                     {"type", "ROOM_JOIN"},
-                    {"data", {{"room_name", room->getRoomName()}}}
+                    {"data", {{"roomName", room->getRoomName()}}}
                 };
                 MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
                 view.release();
                 view = std::make_unique<RoomView>(window, renderer, fontManager);
+                ((RoomView*)(view.get()))->updateUser(me);
             }
             if (lobbyView->getCreateButton().checkIfClicked(mousePosX, mousePosY)) 
             {
                 //here create room check
                 nlohmann::json j = nlohmann::json{
                     {"type", "ROOM_CREATE"},
-                    {"data", {{"room_name", lobbyView->getcreateBox().getString()}}}
+                    {"data", {{"roomName", lobbyView->getcreateBox().getString()}}}
                 };
                 MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
                 view.release();
                 view = std::make_unique<RoomView>(window, renderer, fontManager);
+                ((RoomView*)(view.get()))->updateUser(me);
             }
-            if (roomRefreshCounter <= 0)
-            {
-                roomRefreshCounter = 5;
-                nlohmann::json j = nlohmann::json{
-                    {"type", "REQUEST_ROOMS"},
-                    {"data", nullptr}
-                };
-                // MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
-            }
-            else
-                roomRefreshCounter--;
-            
             if (lobbyView->getcreateBox().checkIfClicked(mousePosX, mousePosY))
                 SDL_StartTextInput();
             else
                 SDL_StopTextInput();
         }
+        
         if (event.type == SDL_MOUSEWHEEL)
         {
             // event.wheel.y to kierunek (1 w górę, -1 w dół)
@@ -212,7 +181,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                     {"type", "PLAYER_WANT"},
                     {"data", {{"player", roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY"}}}
                 };
-                // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
+                MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
             }
             else if (name == "toggle_role")
             {
@@ -221,7 +190,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                     {"type", "PLAYER_WANT"},
                     {"data", {{"player", roomView->getSelf()->isPlayer() ? (roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY") : "SPECTATOR"}}}
                 };
-                // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
+                MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
             }
             else if (name == "leave_room")
             {
@@ -229,7 +198,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                     {"type", "ROOM_LEAVE"},
                     {"data", nullptr}
                 };
-                // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
+                MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
                 roomRefreshCounter = 0;
                 view.release();
                 view = std::make_unique<LobbyView>(window, renderer, fontManager);
@@ -250,9 +219,9 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             // Return to RoomView
             nlohmann::json j = nlohmann::json{
                 {"type", "ROOM_REQUEST"},
-                {"data", {{"room_name", gameView->getOldRoomName()}}}
+                {"data", {{"roomName", gameView->getOldRoomName()}}}
             };
-            // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
+            MessageHandler::handleView(gameView, connectionManager, me, j.dump());
             view.release();
             view = std::make_unique<RoomView>(window, renderer, fontManager);
             return;
@@ -285,7 +254,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                             {"type", "MAKE_MOVE"},
                             {"data", {{"move", move}}}
                         };
-                        // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
+                        MessageHandler::handleView(gameView, connectionManager, me, j.dump());
                     }
                     else
                     {
@@ -313,7 +282,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 {"type", "CHAT_MESSAGE"},
                 {"data", {{"message", gameView->getChatBox().getString()}}}
             };
-            // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
+            MessageHandler::handleView(gameView, connectionManager, me, j.dump());
             //temp later remove
             gameView->updateChat(gameView->getChatBox().getString(), *me);
             gameView->getChatBox().setText("");

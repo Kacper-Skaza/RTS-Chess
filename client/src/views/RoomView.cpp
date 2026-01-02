@@ -2,7 +2,7 @@
 #include <iostream>
 
 RoomView::RoomView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager)
-    : window(window), renderer(renderer), fontManager(fontManager)
+    : window(window), renderer(renderer), fontManager(fontManager), room(), self(nullptr)
 {
 }
 

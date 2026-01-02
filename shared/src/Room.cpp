@@ -150,6 +150,8 @@ const User& Room::getHost() const
 
 void Room::from_json(const nlohmann::json& j, Room& p)
 {
+    if (j.empty())
+        return;
     p.name = j.at("name").get<std::string>();
     p.matchStarted = j.at("matchStarted").get<bool>();
     p.maxPlayerCount = static_cast<uint8_t>(j.at("maxPlayerCount").get<int>());

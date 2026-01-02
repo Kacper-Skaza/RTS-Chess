@@ -65,7 +65,7 @@ void MessageHandler::handleSpecialReceiveRoom(RoomView *view, ConnectionManager 
 {
     handleReceiveRoom(view, connectionManager, data);
     nlohmann::json j = nlohmann::json{
-        {"type", "ACK_ROOM_REQUEST"},
+        {"type", "ACK_UPDATE_ROOM"},
         {"data", nullptr}
     };
     connectionManager->sendMessage(j.dump());
@@ -187,12 +187,12 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
         if(ConnectView* connectView = dynamic_cast<ConnectView*>(view))
         {
             if (type == "REQUEST_NICK") handleGetUsernameID(connectionManager, jsonText);
-            else if (type == "ACK_REQUEST_NICK") handleSetUsernameID(connectView, connectionManager, user, data);
             else handleIgnore();
         }
         else if (LobbyView* lobbyView = dynamic_cast<LobbyView*>(view))
         {
             if (type == "REQUEST_ROOMS") handleListRooms(connectionManager, jsonText);
+            else if (type == "ACK_REQUEST_NICK") handleSetUsernameID(connectView, connectionManager, user, data);
             else if (type == "ROOM_CREATE") handleCreateRoom(lobbyView, connectionManager, jsonText);
             else if (type == "ROOM_JOIN") handleJoinRoom(lobbyView, connectionManager, jsonText);
             else if (type == "ACK_REQUEST_ROOMS") handleReceiveRooms(lobbyView, connectionManager, data);

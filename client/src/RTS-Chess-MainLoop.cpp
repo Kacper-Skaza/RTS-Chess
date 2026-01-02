@@ -179,7 +179,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 roomView->getSelf()->setReady(!roomView->getSelf()->isReady());
                 nlohmann::json j = nlohmann::json{
                     {"type", "PLAYER_WANT"},
-                    {"data", {{"player", roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY"}}}
+                    {"data", {{"player", roomView->getSelf()->isReady() ? PlayerWant::PLAYER_READY : PlayerWant::PLAYER_NOT_READY}}}
                 };
                 MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
             }
@@ -188,7 +188,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 roomView->getSelf()->setPlayer(!roomView->getSelf()->isPlayer());
                 nlohmann::json j = nlohmann::json{
                     {"type", "PLAYER_WANT"},
-                    {"data", {{"player", roomView->getSelf()->isPlayer() ? (roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY") : "SPECTATOR"}}}
+                    {"data", {{"player", roomView->getSelf()->isPlayer() ? (roomView->getSelf()->isReady() ? PlayerWant::PLAYER_READY : PlayerWant::PLAYER_NOT_READY) : PlayerWant::SPECTATOR}}}
                 };
                 MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
             }
@@ -284,7 +284,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             };
             MessageHandler::handleView(gameView, connectionManager, me, j.dump());
             //temp later remove
-            gameView->updateChat(gameView->getChatBox().getString(), *me);
+            // gameView->updateChat(gameView->getChatBox().getString(), *me);
             gameView->getChatBox().setText("");
             SDL_StopTextInput();
         }

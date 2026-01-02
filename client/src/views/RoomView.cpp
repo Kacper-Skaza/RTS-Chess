@@ -79,9 +79,9 @@ void RoomView::render()
     int iter = 0;
     for (auto &&i: userList)
     {
-        std::string status = i.second.isReady() ? "[READY]" : "[NOT READY]";
-        std::string role = i.second.isPlayer() ? "(Player)" : "(Spectator)";
-        std::string userLine = i.second.getUsername() + " " + role + " " + status;
+        std::string status = i.second->isReady() ? "[READY]" : "[NOT READY]";
+        std::string role = i.second->isPlayer() ? "(Player)" : "(Spectator)";
+        std::string userLine = i.second->getUsername() + " " + role + " " + status;
 
         SDL_Texture *userTex = fontManager->getFontTexture(userLine, "Roboto/Roboto-Medium", 20, white);
         if (userTex)

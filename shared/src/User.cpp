@@ -98,7 +98,14 @@ void from_json(const nlohmann::json& j, User& p)
 
 void to_json(nlohmann::json& j, const User* p)
 {
-    
+    j = nlohmann::json{
+        {"id", p->id},
+        {"username", p->username},
+        {"player", p->player},
+        {"ready", p->ready},
+        {"inRoom", p->inRoom},
+        {"side", p->side}
+    };
 }
 
 void to_json(nlohmann::json& j, const User& p)

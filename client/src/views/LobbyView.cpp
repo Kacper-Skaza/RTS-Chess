@@ -132,7 +132,7 @@ void LobbyView::render()
         auto userList = rooms[i].getUserList();
         for (size_t j = 0; j < userList.size(); ++j)
         {
-            playersStr += userList[j].getUsername() + (j == userList.size() - 1 ? "" : ", ");
+            playersStr += userList[j]->getUsername() + (j == userList.size() - 1 ? "" : ", ");
         }
         SDL_Texture *playersTex = fontManager->getFontTexture(playersStr, "Roboto/Roboto-Medium", 18, gray);
         if (playersTex)

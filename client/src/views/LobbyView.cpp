@@ -1,11 +1,40 @@
 #include "../../headers/views/LobbyView.hpp"
 #include <iostream>
 
-LobbyView::LobbyView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager) : window(window), renderer(renderer), fontManager(fontManager) {}
-
-void LobbyView::updateRooms(std::vector<Room *> newRooms)
+LobbyView::LobbyView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager) : window(window), renderer(renderer), fontManager(fontManager),
+    createBox   (window, renderer, fontManager, {50, 980, 600, 50}, "Roboto/Roboto-Medium", 24, true),
+    createButton(window, renderer, fontManager, {700, 980, 150, 50}, "Roboto/Roboto-Medium", 24, false, {255, 255, 255, 255})
 {
-    this->rooms = newRooms;
+    createButton.setText("Create Room");
+}
+
+void LobbyView::updateRooms(std::vector<Room>& newRooms)
+{
+    this->rooms.clear();
+    for (auto& room : newRooms)
+    {
+        rooms.push_back(std::move(room));
+    }
+}
+
+TextBox &LobbyView::getcreateBox()
+{
+    return createBox;
+}
+
+TextBox &LobbyView::getCreateButton()
+{
+    return createButton;
+}
+
+void LobbyView::setJoinRequested(bool requested)
+{
+    joinRequested = requested;
+}
+
+bool LobbyView::isJoinRequested() const
+{
+    return joinRequested;
 }
 
 Room *LobbyView::getRoomClicked()
@@ -41,7 +70,7 @@ void LobbyView::handleScroll(int mouseWheelY)
     int windowH;
     SDL_GetWindowSize(window, nullptr, &windowH);
     int contentHeight = static_cast<int>(rooms.size()) * itemHeight;
-    int visibleArea = windowH - 50; // 50 to nasz startowy Y
+    int visibleArea = windowH - 200; // 50 to nasz startowy Y
 
     if (contentHeight > visibleArea)
     {
@@ -73,13 +102,10 @@ void LobbyView::render()
 
     for (size_t i = 0; i < rooms.size(); ++i)
     {
-        if (rooms[i] == nullptr)
-            continue;
-
         int currentY = startY + (static_cast<int>(i) * itemHeight);
 
         // Optymalizacja: Nie rysuj, jeśli element jest poza ekranem
-        if (currentY + itemHeight < 0 || currentY > windowH)
+        if (currentY + itemHeight < 0 || currentY > windowH - 150)
             continue;
 
         // Kontener pokoju (tło wiersza)
@@ -93,7 +119,7 @@ void LobbyView::render()
         SDL_Color cyan = {0, 200, 255, 255};
 
         // 1. Nazwa pokoju
-        SDL_Texture *nameTex = fontManager->getFontTexture("Room: " + rooms[i]->getRoomName(), "Roboto/Roboto-Medium", 24, white);
+        SDL_Texture *nameTex = fontManager->getFontTexture("Room: " + rooms[i].getRoomName(), "Roboto/Roboto-Medium", 24, white);
         if (nameTex)
         {
             SDL_Rect dst = {70, currentY + 10, 0, 0};
@@ -103,7 +129,7 @@ void LobbyView::render()
 
         // 2. Lista graczy
         std::string playersStr = "Players: ";
-        auto userList = rooms[i]->getUserList();
+        auto userList = rooms[i].getUserList();
         for (size_t j = 0; j < userList.size(); ++j)
         {
             playersStr += userList[j].getUsername() + (j == userList.size() - 1 ? "" : ", ");
@@ -117,7 +143,7 @@ void LobbyView::render()
         }
 
         // 3. Pojemność (Capacity)
-        std::string capStr = std::to_string(rooms[i]->getPlayerCount()) + "/" + std::to_string(rooms[i]->getMaxPlayerCount());
+        std::string capStr = std::to_string(rooms[i].getPlayerCount()) + "/" + std::to_string(rooms[i].getMaxPlayerCount());
         SDL_Texture *capTex = fontManager->getFontTexture(capStr, "Roboto/Roboto-Medium", 22, cyan);
         if (capTex)
         {
@@ -154,8 +180,25 @@ void LobbyView::render()
         }
 
         // Dodajemy przycisk do listy klikalnych obiektów
-        joinButtons.push_back({btnRect, rooms[i]});
+        joinButtons.push_back({btnRect, &rooms[i]});
     }
+
+    // Bottom Bar
+    SDL_SetRenderDrawColor(renderer, 25, 25, 25, 255);
+    SDL_Rect tempRect = {0, 920, windowW, 150};
+    SDL_RenderFillRect(renderer, &tempRect);
+
+    // Create Box Render
+    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    SDL_RenderFillRect(renderer, &createBox.getBoxPos());
+    createBox.genTexture();
+    SDL_RenderCopy(renderer, createBox.getTexture(), nullptr, &(createBox.getTextureRect()));
+    
+    // Create Button Render
+    SDL_SetRenderDrawColor(renderer, 46, 87, 25, 255);
+    SDL_RenderFillRect(renderer, &createButton.getBoxPos());
+    createButton.genTexture();
+    SDL_RenderCopy(renderer, createButton.getTexture(), nullptr, &(createButton.getTextureRect()));
 
     SDL_RenderPresent(renderer);
 }

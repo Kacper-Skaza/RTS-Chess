@@ -7,6 +7,7 @@
 #include "View.hpp"
 #include "../SDLFontManager.hpp"
 #include "../../../shared/headers/Room.hpp"
+#include "../TextBox.hpp"
 
 class LobbyView : public View
 {
@@ -15,8 +16,12 @@ private:
     SDL_Renderer *renderer;
     SDLFontManager *fontManager;
 
+    TextBox createBox;
+    TextBox createButton;
+    bool joinRequested = false;
+
     // List of rooms received from server
-    std::vector<Room *> rooms;
+    std::vector<Room> rooms;
 
     // Scrolling state for the room list
     int scrollOffset = 0;
@@ -37,7 +42,13 @@ public:
     void render() override;
 
     // Updates list of rooms displayed in the lobby
-    void updateRooms(std::vector<Room *> newRooms);
+    void updateRooms(std::vector<Room>& newRooms);
+
+    TextBox& getcreateBox();
+    TextBox& getCreateButton();
+
+    void setJoinRequested(bool requested);
+    bool isJoinRequested() const;
 
     // Returns the room that was clicked by the user (if any)
     Room *getRoomClicked();

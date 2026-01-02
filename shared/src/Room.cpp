@@ -141,9 +141,11 @@ void Room::stopMatch(MatchEndReasons reason)
     //do not destroy room coz it will be done server side & client side elsewhere
 }
 
-const User& Room::getCreator() const
+const User& Room::getHost() const
 {
-    return this->userList.at(this->playerList[0]);
+    if (this->playerList.size() > 0)
+        return this->userList.at(this->playerList[0]);
+    return this->userList.begin()->second;
 }
 
 void Room::from_json(const nlohmann::json& j, Room& p)

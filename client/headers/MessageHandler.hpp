@@ -38,6 +38,7 @@ private:
     static void handleExitRoom(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
     static void handleReceiveRoom(RoomView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
+    static void handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data);
     static void handleSetPlayerWant(User* user, const nlohmann::json &data);
     static void handleErrPlayerWant(User* user, const nlohmann::json &data);
 

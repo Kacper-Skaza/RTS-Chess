@@ -61,6 +61,17 @@ void MessageHandler::handleReceiveRoom(RoomView *view, ConnectionManager *connec
     view->updateRoom(room);
 }
 
+void MessageHandler::handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
+{
+    handleReceiveRoom(view, connectionManager, data);
+    nlohmann::json j = nlohmann::json{
+        {"type", "ACK_ROOM_REQUEST"},
+        {"data", nullptr}
+    };
+    connectionManager->sendMessage(j.dump());
+}
+
+
 void MessageHandler::handleFlipReady(ConnectionManager *connectionManager, const std::string &jsonText)
 {
     handleGeneralSend(connectionManager, jsonText);
@@ -195,6 +206,8 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "ROOM_LEAVE") handleExitRoom(connectionManager, jsonText);
             else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, connectionManager, data);
+            else if (type == "ACK_ROOM_REQUEST") handleReceiveRoom(roomView, connectionManager, data);
+            else if (type == "UPDATE_ROOM") handleSpecialReceiveRoom(roomView, connectionManager, data);
             else handleIgnore();
         }
         else if(GameView* gameView = dynamic_cast<GameView*>(view))
@@ -206,6 +219,7 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "GAME_FINALE") handleGameFinale(gameView, data);
             else if (type == "ERR_MAKE_MOVE") handleBoardMissmatch(gameView, data);
             else if (type == "ACK_ERR_MOVE_MADE") handleBoardMissmatch(gameView, data);
+            else if (type == "ROOM_REQUEST") handleGeneralSend(connectionManager, jsonText);
             else handleIgnore();
         }
         else throw std::logic_error("Handling this view is not supported");

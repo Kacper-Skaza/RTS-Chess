@@ -11,6 +11,7 @@ namespace
     int mousePosY;
     int toUpdateCounter = 10;
     int roomRefreshCounter = 5;
+    int roomReturnCounter = 0;
     std::string messageContainer = "";
 }
 
@@ -48,7 +49,7 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
                      connectView->validateConnectionData())
                 {
                     SOCKET sock;
-                    if((sock = connectView->connectToServer()) != -1)
+                    if((sock = connectView->connectToServer()) != SOCKET_ERROR_PLATFORM)
                     {
                         if (connectionManager == nullptr)
                             connectionManager = new ConnectionManager(sock);
@@ -58,15 +59,11 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
                                 {"type", "REQUEST_NICK"},
                                 {"data", {"nick", connectView->getUserBox().getString()}}
                             };
+                            roomRefreshCounter = 0;
                             MessageHandler::handleView(connectView, connectionManager, me, j.dump());
                             unsigned long long id = 0;
                             me = new User(id, connectView->getUserBox().getString());
                         }
-                        nlohmann::json j = nlohmann::json{
-                            {"type", "REQUEST_ROOMS"},
-                            {"data", nullptr}
-                        };
-                        MessageHandler::handleView(connectView, connectionManager, me, j.dump());
                         view.release();
                         view = std::make_unique<LobbyView>(window, renderer, fontManager);
                     }
@@ -166,7 +163,7 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                     {"type", "REQUEST_ROOMS"},
                     {"data", nullptr}
                 };
-                MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
+                // MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
             }
             else
                 roomRefreshCounter--;
@@ -188,41 +185,81 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
     }
 }
 
-void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, RoomView* roomView, SDL_Event& event)
-{
-    User dummyCreator(1ULL, "SystemAdmin");
-    User* me = new User(2ULL, "Me");
-    roomView->updateUser(me);
-
-    // 2. Create a vector of Rooms
-    Room testRoom;
-
-    // 3. Add rooms to the vector
-    // We use emplace_back to construct the Room directly in the vector
-    testRoom = Room("Pro Only 2000+", dummyCreator);
-    roomView->updateRoom(testRoom);
-
+void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, SDLTextureManager* texturemanager, std::unique_ptr<View> &view, RoomView* roomView, SDL_Event& event)
+{    
+    if (roomView->getRoom().isMatchStarted())
+    {
+        // Switch to GameView
+        view.release();
+        view = std::make_unique<GameView>(window, renderer, fontManager, texturemanager, &roomView->getRoom().getBoard());
+        return;
+    }
+    
     while (SDL_PollEvent(&event) != 0)
     {
         if (event.type == SDL_QUIT)
         {
             running = false;
         }
-        else if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
+        if (event.type == SDL_MOUSEBUTTONDOWN && event.button.button == SDL_BUTTON_LEFT)
         {
+            //get what button was pressed and do corresponding action
             std::string name = roomView->getButtonClicked();
-            if (name != "")
+            if (name == "toggle_ready")
             {
-                std::cout<<name<<std::endl;
+                roomView->getSelf()->setReady(!roomView->getSelf()->isReady());
+                nlohmann::json j = nlohmann::json{
+                    {"type", "PLAYER_WANT"},
+                    {"data", roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY"}
+                };
+                // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
+            }
+            else if (name == "toggle_role")
+            {
+                roomView->getSelf()->setPlayer(!roomView->getSelf()->isPlayer());
+                nlohmann::json j = nlohmann::json{
+                    {"type", "PLAYER_WANT"},
+                    {"data", roomView->getSelf()->isPlayer() ? (roomView->getSelf()->isReady() ? "PLAYER_READY" : "PLAYER_NOT_READY") : "SPECTATOR"}
+                };
+                // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
+            }
+            else if (name == "leave_room")
+            {
+                nlohmann::json j = nlohmann::json{
+                    {"type", "ROOM_LEAVE"},
+                    {"data", nullptr}
+                };
+                // MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
+                roomRefreshCounter = 0;
+                view.release();
+                view = std::make_unique<LobbyView>(window, renderer, fontManager);
             }
         }
     }
-
 
 }
 
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, GameView* gameView, SDL_Event& event)
 {
+    if (gameView->getGameState() != MatchEndReasons::NOT_ENDED)
+    {
+        // Game has ended
+        roomReturnCounter--;
+        if (roomReturnCounter <= 0)
+        {
+            // Return to RoomView
+            nlohmann::json j = nlohmann::json{
+                {"type", "ROOM_REQUEST"},
+                {"data", {"room_name", gameView->getOldRoomName()}}
+            };
+            // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
+            view.release();
+            view = std::make_unique<RoomView>(window, renderer, fontManager);
+            return;
+        }
+        
+        return;
+    }
     while (SDL_PollEvent(&event) != 0)
     {
         if (event.type == SDL_QUIT)
@@ -243,6 +280,12 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                                   gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
                         gameView->getBoard()->makeMove(move);
                         gameView->setSelected(-1, -1);
+                        //send move to server
+                        nlohmann::json j = nlohmann::json{
+                            {"type", "MAKE_MOVE"},
+                            {"data", {"move", move}}
+                        };
+                        // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
                     }
                     else
                     {
@@ -254,6 +297,31 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                     gameView->setSelected((mousePosY - 40) / 128, (mousePosX - 40) / 128);
                 }
             }
+            if (gameView->getChatBox().checkIfClicked(mousePosX, mousePosY))
+            {
+                SDL_StartTextInput();
+            }
+            else
+            {
+                SDL_StopTextInput();
+            }
+            
+        }
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
+        {
+            nlohmann::json j = nlohmann::json{
+                {"type", "CHAT_MESSAGE"},
+                {"data", gameView->getChatBox().getString()}
+            };
+            // MessageHandler::handleView(gameView, connectionManager, me, j.dump());
+            //temp later remove
+            gameView->updateChat(gameView->getChatBox().getString(), *me);
+            gameView->getChatBox().setText("");
+            SDL_StopTextInput();
+        }
+        if (SDL_IsTextInputActive() == SDL_TRUE)
+        {
+            gameView->getChatBox().textListener(event);
         }
     }
 }
@@ -280,7 +348,7 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     if (GameView* gameView = dynamic_cast<GameView*>(view.get()))
         gameLoop(window, renderer, fontManager, view, gameView, event);
     else if (RoomView* roomView = dynamic_cast<RoomView*>(view.get()))
-        roomLoop(window, renderer, fontManager, view, roomView, event);
+        roomLoop(window, renderer, fontManager, textureManager, view, roomView, event);
     else if(LobbyView* lobbyView = dynamic_cast<LobbyView*>(view.get()))
         lobbyLoop(window, renderer, fontManager, view, lobbyView, event);
     else if (ConnectView* connectView = dynamic_cast<ConnectView*>(view.get()))

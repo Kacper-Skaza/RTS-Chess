@@ -10,6 +10,7 @@ namespace
     int mousePosX;
     int mousePosY;
     int toUpdateCounter = 10;
+    int roomRefreshCounter = 5;
     std::string messageContainer = "";
 }
 
@@ -158,6 +159,18 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                 view.release();
                 view = std::make_unique<RoomView>(window, renderer, fontManager);
             }
+            if (roomRefreshCounter <= 0)
+            {
+                roomRefreshCounter = 5;
+                nlohmann::json j = nlohmann::json{
+                    {"type", "REQUEST_ROOMS"},
+                    {"data", nullptr}
+                };
+                MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
+            }
+            else
+                roomRefreshCounter--;
+            
             if (lobbyView->getcreateBox().checkIfClicked(mousePosX, mousePosY))
                 SDL_StartTextInput();
             else
@@ -177,17 +190,17 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
 
 void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, RoomView* roomView, SDL_Event& event)
 {
-    /*User dummyCreator(1ULL, "SystemAdmin");
+    User dummyCreator(1ULL, "SystemAdmin");
     User* me = new User(2ULL, "Me");
     roomView->updateUser(me);
 
     // 2. Create a vector of Rooms
-    Room* testRoom;
+    Room testRoom;
 
     // 3. Add rooms to the vector
     // We use emplace_back to construct the Room directly in the vector
-    testRoom = new Room("Pro Only 2000+", dummyCreator);
-    roomView->updateRoom(testRoom);*/
+    testRoom = Room("Pro Only 2000+", dummyCreator);
+    roomView->updateRoom(testRoom);
 
     while (SDL_PollEvent(&event) != 0)
     {

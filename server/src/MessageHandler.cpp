@@ -16,7 +16,7 @@ void MessageHandler::init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &c
 void MessageHandler::handle(Client *client, const std::string &jsonText)
 {
     if (!clientsPtr || !roomsPtr)
-        return;
+        throw std::runtime_error("Error: Missing clientsPtr or roomsPtr in MessageHandler class");
 
     try
     {
@@ -24,9 +24,12 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         json j = json::parse(jsonText);
 
         // Extract type and data
-        std::string type = j["type"];
-        json data = j.contains("data") ? j["data"] : json();
+        std::string type = j.at("type");
+        json data = j.contains("data") ? j.at("data") : json();
         std::cout << "[SERVER] Handling: " << type << " for " << client->user->getUsername() << std::endl;
+
+        // DEBUG
+        std::cout << "[DEBUG] Received message: " << j.dump() << std::endl;
 
         // Handle specific request type
         if (type.rfind("ACK_", 0) == 0)
@@ -57,10 +60,6 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         {
             handleRoomLeave(client, data);
         }
-        else if (type == "PLAYER_READY")
-        {
-            handlePlayerReady(client);
-        }
         else if (type == "PLAYER_WANT")
         {
             handlePlayerWant(client, data);
@@ -75,7 +74,7 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         }
         else
         {
-            std::cout << "[ERR] Unknown message type received: " << type << " from " << client->user->getUsername() << std::endl;
+            std::cerr << "[ERR] Unknown message type received: " << type << " from " << client->user->getUsername() << std::endl;
         }
     }
     catch (const json::parse_error &e)
@@ -94,7 +93,7 @@ void MessageHandler::handleRequestNick(Client *client, const json &data)
 {
     try
     {
-        std::string newNick = data["nick"];
+        std::string newNick = data.at("nick");
 
         if (client->user)
         {
@@ -120,7 +119,7 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
     try
     {
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string newRoomName = data["roomName"];
+        std::string newRoomName = data.at("roomName");
 
         // Check if room name is already taken
         for (const auto &[name, _] : rooms)
@@ -214,7 +213,7 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
     try
     {
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string roomName = data["roomName"];
+        std::string roomName = data.at("roomName");
         Room *targetRoom = nullptr;
 
         auto it = rooms.find(roomName);
@@ -259,7 +258,7 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
     try
     {
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string roomName = data["roomName"];
+        std::string roomName = data.at("roomName");
         Room *targetRoom = nullptr;
 
         auto it = rooms.find(roomName);
@@ -307,53 +306,48 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
     }
 }
 
-void MessageHandler::handlePlayerReady(Client *client)
-{
-    try
-    {
-        if (client->room)
-        {
-            client->user->setReady(!client->user->isReady());
-
-            // Broadcast to all in room
-            broadcastUpdateRoom(client->room, client->user.get());
-
-            // Prepare ACK_PLAYER_READY response
-            json response = {
-                {"type", "ACK_PLAYER_READY"},
-                {"data", {{"ready", client->user->isReady()}}}};
-
-            client->connection->sendMessage(response.dump());
-            std::cout << "[DEBUG] User " << client->user->getUsername() << " is ready? " << client->user->isReady() << std::endl;
-        }
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "[ERR] Error in handlePlayerReady: " << e.what() << std::endl;
-    }
-}
-
 void MessageHandler::handlePlayerWant(Client *client, const json &data)
 {
     try
     {
-        bool player = data["player"];
+        std::string player = data.at("player");
 
-        if (client->room)
+        if (!client->room)
         {
-            client->user->setPlayer(player);
-
-            // Broadcast to all in room
-            broadcastUpdateRoom(client->room, client->user.get());
-
-            // Prepare ACK_PLAYER_READY response
             json response = {
-                {"type", "ACK_PLAYER_READY"},
-                {"data", nullptr}};
+                {"type", "ERR_PLAYER_WANT"},
+                {"data", {{"reason", "User is not in the room !!!"}}}};
 
             client->connection->sendMessage(response.dump());
-            std::cout << "[DEBUG] User " << client->user->getUsername() << " is player? " << client->user->isPlayer() << std::endl;
+            return;
         }
+
+        if (player == "PLAYER_READY")
+        {
+            client->user->setPlayer(true);
+            client->user->setReady(true);
+        }
+        else if (player == "PLAYER_NOT_READY")
+        {
+            client->user->setPlayer(true);
+            client->user->setReady(false);
+        }
+        else
+        {
+            client->user->setPlayer(false);
+            client->user->setReady(false);
+        }
+
+        // Broadcast to all in room
+        broadcastUpdateRoom(client->room, client->user.get());
+
+        // Prepare ACK_PLAYER_WANT response
+        json response = {
+            {"type", "ACK_PLAYER_WANT"},
+            {"data", {{"player", player}}}};
+
+        client->connection->sendMessage(response.dump());
+        std::cout << "[DEBUG] User " << client->user->getUsername() << " is " << player << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -365,7 +359,7 @@ void MessageHandler::handleChatMessage(Client *client, const json &data)
 {
     try
     {
-        std::string newMessage = data["message"];
+        std::string newMessage = data.at("message");
 
         // Broadcast to all in room
         broadcastUpdateChat(client->room, client->user.get(), newMessage);
@@ -388,7 +382,7 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 {
     try
     {
-        Move newMove = data["move"];
+        Move newMove = data.at("move");
 
         if (!client->room || !client->room->isMatchStarted())
         {

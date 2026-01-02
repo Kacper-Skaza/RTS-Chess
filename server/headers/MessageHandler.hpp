@@ -1,13 +1,10 @@
 #pragma once
 
+#include <iostream>
+
 #include "../../shared/headers/Structures.hpp"
 #include "../../shared/headers/User.hpp"
 #include "../../shared/headers/Room.hpp"
-
-#include <iostream>
-#include <string>
-#include <vector>
-#include <memory>
 
 #include "../../shared/headers/dependencies/Json.hpp"
 using json = nlohmann::json;
@@ -26,7 +23,6 @@ private:
     static void handleRequestRoom(Client *client);
     static void handleRoomJoin(Client *client, const json &data);
     static void handleRoomLeave(Client *client, const json &data);
-    static void handlePlayerReady(Client *client);
     static void handlePlayerWant(Client *client, const json &data);
     static void handleChatMessage(Client *client, const json &data);
     static void handleMakeMove(Client *client, const json &data);

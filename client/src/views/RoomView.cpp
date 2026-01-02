@@ -13,7 +13,17 @@ void RoomView::updateRoom(Room& newRoom)
 
 void RoomView::updateUser(User *newUser)
 {
-    this->user = newUser;
+    this->self = newUser;
+}
+
+Room &RoomView::getRoom()
+{
+    return this->room;
+}
+
+User *RoomView::getSelf()
+{
+    return this->self;
 }
 
 std::string RoomView::getButtonClicked()
@@ -37,7 +47,7 @@ std::string RoomView::getButtonClicked()
 
 void RoomView::render()
 {
-    if (room.getRoomName() != "")
+    if (room.getRoomName() == "")
     {
         //add temporary rendering
         return;
@@ -86,8 +96,8 @@ void RoomView::render()
 
     // Pobieramy dane lokalnego gracza (załóżmy, że to pierwszy na liście lub masz metodę by go znaleźć)
     // Na potrzeby UI musimy wiedzieć co wyświetlić. Załóżmy, że sprawdzamy stan "nasz" z obiektu pokoju.
-    bool isReady = user->isReady();
-    bool isPlayer = user->isPlayer();
+    bool isReady = self->isReady();
+    bool isPlayer = self->isPlayer();
     // Logika wyciągnięcia stanu 'self' powinna być tu dodana zależnie od Twojej klasy Room/User
 
     struct BtnDef

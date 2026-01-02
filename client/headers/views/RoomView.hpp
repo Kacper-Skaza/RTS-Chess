@@ -18,7 +18,7 @@ private:
 
     // List of rooms received from server
     Room room;
-    User *user;
+    User *self;
 
     // Helper structure used for detecting clicks on "Join" buttons
     struct Button
@@ -37,6 +37,9 @@ public:
     // Updates list of rooms displayed in the lobby
     void updateRoom(Room &newRoom);
     void updateUser(User *newUser);
+
+    Room& getRoom();
+    User* getSelf();
 
     // Returns the room that was clicked by the user (if any)
     std::string getButtonClicked();

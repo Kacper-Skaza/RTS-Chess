@@ -30,7 +30,8 @@
 extern bool running;
 const int TARGET_FPS = 60;
 
-void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, 
-              SDL_Event& event);
+void mainLoop(SDL_Window* window, SDL_Renderer* renderer, 
+    SDLFontManager* fontManager, SDLTextureManager* textureManager, 
+    std::unique_ptr<View> &view, SDL_Event& event);
 
 void mainLoopDestroy();

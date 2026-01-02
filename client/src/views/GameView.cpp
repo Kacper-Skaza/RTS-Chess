@@ -1,8 +1,7 @@
 #include "../../headers/views/GameView.hpp"
-#include "GameView.hpp"
 
-GameView::GameView(SDL_Window *window, SDL_Renderer *renderer, 
-    SDLFontManager *fontManager, SDLTextureManager *textureManager, 
+GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
+    SDLFontManager *fontManager, SDLTextureManager *textureManager,
     Board *board, std::vector<std::string> whitePlayers, std::vector<std::string> blackPlayers,
     std::string roomName)
      :
@@ -17,7 +16,7 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     this->oldRoomName = roomName;
     if (board != nullptr)
         this->board = std::move(*board);
-    else    
+    else
         this->board = Board();
 
     //texture loading
@@ -55,7 +54,7 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     destinationRectangles.emplace("piece_universal", SDL_Rect{0, 0, 128, 128});
     destinationRectangles.emplace("chat", SDL_Rect{1200, 40, 620, 920});
     destinationRectangles.emplace("chat_box", SDL_Rect{1200, 980, 620, 60});
-    
+
     //add destination for players
     destinationRectangles.emplace("player_white", SDL_Rect{40, 1069, 1024, 30});
     destinationRectangles.emplace("player_black", SDL_Rect{40, 5, 1024, 30});

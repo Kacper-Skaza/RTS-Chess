@@ -23,6 +23,7 @@ private:
     static void handleRequestNick(Client *client, const json &data);
     static void handleRoomCreate(Client *client, const json &data);
     static void handleRequestRooms(Client *client);
+    static void handleRequestRoom(Client *client);
     static void handleRoomJoin(Client *client, const json &data);
     static void handleRoomLeave(Client *client, const json &data);
     static void handlePlayerReady(Client *client);
@@ -33,6 +34,7 @@ private:
     // ===== Outgoing messages =====
     static void broadcastMoveMade(const Room *room, const User *user, const Move &newMove);
     static void broadcastUpdateChat(const Room *room, const User *user, const std::string &newMessage);
+    static void broadcastUpdateRoom(const Room *room, const User *user);
 
 public:
     MessageHandler() = delete;

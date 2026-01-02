@@ -5,21 +5,6 @@ class ConnectionManager;
 class User;
 class Room;
 
-// Platform identifiers
-#define PLATFORM_UNKNOWN 1
-#define PLATFORM_WINDOWS 2
-#define PLATFORM_LINUX 3
-
-// Detect current platform
-#if defined(_WIN32) || defined(_WIN64)
-    #define PLATFORM PLATFORM_WINDOWS
-#elif defined(LINUX) || defined(__linux__)
-    #define PLATFORM PLATFORM_LINUX
-#else
-    #define PLATFORM PLATFORM_UNKNOWN
-    #error "Unknown platform!"
-#endif
-
 // Default chessboard size
 constexpr int BOARD_SIZE = 8;
 

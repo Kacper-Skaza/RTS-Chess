@@ -40,6 +40,7 @@ public:
 
     Room& getRoom();
     User* getSelf();
+    User* getOtherSelf();
 
     // Returns the room that was clicked by the user (if any)
     std::string getButtonClicked();

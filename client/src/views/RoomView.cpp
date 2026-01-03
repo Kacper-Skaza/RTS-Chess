@@ -26,6 +26,16 @@ User *RoomView::getSelf()
     return this->self;
 }
 
+User *RoomView::getOtherSelf()
+{
+    auto it = this->room.getUserList().find(this->self->getPlayerID());
+    if (it != this->room.getUserList().end())
+        return it->second;
+    else
+        throw std::logic_error("how are u not in room while beeing in room");
+    return nullptr;
+}
+
 std::string RoomView::getButtonClicked()
 {
     int mx, my;

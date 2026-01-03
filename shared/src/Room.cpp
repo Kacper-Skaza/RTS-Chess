@@ -101,9 +101,7 @@ const std::unordered_map<unsigned int, User*> Room::getPlayerList()
 void Room::setMaxPlayerCount(const int count)
 {
     if (count >= MIN_PLAYER_COUNT && count <= MAX_PLAYER_COUNT)
-        return;
-
-    this->maxPlayerCount = count;
+        this->maxPlayerCount = count;
 }
 
 void Room::bumpMaxPlayerCount()

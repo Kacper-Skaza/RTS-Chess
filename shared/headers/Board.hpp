@@ -31,6 +31,7 @@ public:
 
 	const std::vector<std::vector<Piece *>> getBoardFull() const;
 	const std::vector<std::vector<char>> getBoardSymbol() const;
+	const std::vector<std::vector<bool>> getBoardCooldown() const;
 
 	bool makeMove(const Move &move);
 

@@ -85,11 +85,43 @@ const std::vector<std::vector<char>> Board::getBoardSymbol() const
 	return symbolBoard;
 }
 
+// true is cooldown is done
+// false is cooldown still active
+const std::vector<std::vector<bool>> Board::getBoardCooldown() const
+{
+	std::vector<std::vector<bool>> cooldownBoard(BOARD_SIZE, std::vector<bool>(BOARD_SIZE));
+
+	auto currentTime = std::chrono::system_clock::now();
+
+	for (int i = 0; i < BOARD_SIZE; i++)
+	{
+		for (int j = 0; j < BOARD_SIZE; j++)
+		{
+			if (board[i][j].get())
+			{
+				cooldownBoard[i][j] = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - board[i][j].get()->getLastMoveTime()).count() > MAX_COOLDOWN;
+			}
+			else
+			{
+				cooldownBoard[i][j] = false;
+			}			
+		}
+	}
+	
+	return cooldownBoard;
+}
+
 bool Board::makeMove(const Move &move)
 {
 	const Piece *piece = move.getPiece();
 	std::pair<int, int> from = move.getFrom();
 	std::pair<int, int> to = move.getTo();
+
+	//Validate cooldown
+	if (piece->getCooldown() > 0)
+	{
+		return false;
+	}
 
 	// Validate move
 	if (!board[from.first][from.second])

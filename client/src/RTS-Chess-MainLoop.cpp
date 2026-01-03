@@ -159,6 +159,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     if (roomView->getRoom().isMatchStarted())
     {
         // Switch to GameView
+        me->setSide(roomView->getOtherSelf()->getSide());
         view.release();
         view = std::make_unique<GameView>(window, renderer, fontManager, texturemanager, &roomView->getRoom().getBoard());
         return;
@@ -245,16 +246,21 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                     //do move
                     if(gameView->checkPiece() != ' ')
                     {
-                        Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second],
-                                  gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
-                        gameView->getBoard()->makeMove(move);
+                        if ((std::isupper(gameView->checkPiece())? ChessSide::WHITE: ChessSide::BLACK) == me->getSide())
+                        {
+                            Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second],
+                                      gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
+                            if (gameView->getBoard()->makeMove(move))
+                            {
+                                //send move to server
+                                nlohmann::json j = nlohmann::json{
+                                    {"type", "MAKE_MOVE"},
+                                    {"data", {{"move", move}}}
+                                };
+                                MessageHandler::handleView(gameView, connectionManager, me, j.dump());
+                            }
+                        }
                         gameView->setSelected(-1, -1);
-                        //send move to server
-                        nlohmann::json j = nlohmann::json{
-                            {"type", "MAKE_MOVE"},
-                            {"data", {{"move", move}}}
-                        };
-                        MessageHandler::handleView(gameView, connectionManager, me, j.dump());
                     }
                     else
                     {

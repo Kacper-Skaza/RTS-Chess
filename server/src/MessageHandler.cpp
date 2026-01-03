@@ -189,8 +189,15 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string newRoomName = data.at("roomName");
 
+        // Trim spaces on newRoomName
+        while (!newRoomName.empty() && newRoomName.front() == ' ')
+            newRoomName.erase(newRoomName.begin());
+
+        while (!newRoomName.empty() && newRoomName.back() == ' ')
+            newRoomName.pop_back();
+
         // Check if newRoomName is empty
-        if (newRoomName == "")
+        if (newRoomName.empty())
         {
             json errResponse = {
                 {"type", "ERR_ROOM_CREATE"},
@@ -450,6 +457,24 @@ void MessageHandler::handleChatMessage(Client *client, const json &data)
     {
         // Data
         std::string newMessage = data.at("message");
+
+        // Trim spaces on newMessage
+        while (!newMessage.empty() && newMessage.front() == ' ')
+            newMessage.erase(newMessage.begin());
+
+        while (!newMessage.empty() && newMessage.back() == ' ')
+            newMessage.pop_back();
+
+        // Check if newMessage is empty
+        if (newMessage.empty())
+        {
+            json errResponse = {
+                {"type", "ERR_CHAT_MESSAGE"},
+                {"data", {{"reason", "Cannot send an empty message!!!"}}}};
+
+            client->connection->sendMessage(errResponse.dump());
+            return;
+        }
 
         // Broadcast update to everyone in the room
         broadcastUpdateChat(client->room, client->user.get(), newMessage);

@@ -29,7 +29,7 @@ private:
     static void handleMakeMove(Client *client, const json &data);
 
     // ===== OUTGOING MESSAGES =====
-    static void broadcastMoveMade(const Room *room, const User *user, const Move &newMove);
+    static void broadcastMoveMade(const Room *room, const User *user, const json &newMove);
     static void broadcastUpdateChat(const Room *room, const User *user, const std::string &newMessage);
     static void broadcastUpdateRoom(Room *room);
 

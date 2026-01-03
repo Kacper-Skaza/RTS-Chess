@@ -487,20 +487,8 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
             return;
         }
 
-        if (client->room->getBoard().makeMove(newMove))
-        {
-            // Broadcast update to everyone in the room
-            broadcastMoveMade(client->room, client->user.get(), newMove);
-
-            // Prepare ACK_MAKE_MOVE response
-            json response = {
-                {"type", "ACK_MAKE_MOVE"},
-                {"data", nullptr}};
-
-            client->connection->sendMessage(response.dump());
-            std::cout << "[DEBUG] User " << client->user->getUsername() << " made move. " << std::endl;
-        }
-        else
+        // Check if move is valid
+        if (!client->room->getBoard().makeMove(newMove))
         {
             json errResponse = {
                 {"type", "ERR_MAKE_MOVE"},
@@ -509,6 +497,19 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
             client->connection->sendMessage(errResponse.dump());
             return;
         }
+
+        // Broadcast update to everyone in the room
+        broadcastMoveMade(client->room, client->user.get(), data.at("move"));
+
+        // Prepare ACK_MAKE_MOVE response
+        json response = {
+            {"type", "ACK_MAKE_MOVE"},
+            {"data", nullptr}};
+
+        // Send response
+        client->connection->sendMessage(response.dump());
+        std::cout << "[DEBUG] User '" << client->user->getUsername() << "' in room '" << client->room->getRoomName() << "' ";
+        std::cout << "made a move" << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -518,7 +519,7 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 
 // ===== OUTGOING MESSAGES =====
 
-void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const Move &newMove)
+void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const json &newMove)
 {
     try
     {

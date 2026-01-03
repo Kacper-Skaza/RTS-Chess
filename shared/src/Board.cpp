@@ -118,7 +118,7 @@ bool Board::makeMove(const Move &move)
 	std::pair<int, int> to = move.getTo();
 
 	//Validate cooldown
-	if (piece->getCooldown() > 0)
+	if (piece->getCooldown() < 0)
 	{
 		return false;
 	}
@@ -210,10 +210,13 @@ void Board::checkGameEnd()
     {
         for (auto &&j : i)
         {
-            if (j.get()->getSymbol() == 'K')
-                whiteKingAlive = true;
-            if (j.get()->getSymbol() == 'k')
-                blackKingAlive = true;
+			if (j)
+			{
+				if (j.get()->getSymbol() == 'K')
+					whiteKingAlive = true;
+				if (j.get()->getSymbol() == 'k')
+					blackKingAlive = true;
+			}
         }
     }
     if (!whiteKingAlive)

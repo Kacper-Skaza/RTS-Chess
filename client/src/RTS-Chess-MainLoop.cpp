@@ -204,6 +204,16 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 view.release();
                 view = std::make_unique<LobbyView>(window, renderer, fontManager);
             }
+            else if (name == "toggle_count")
+            {
+                roomView->getRoom().setMaxPlayerCount(roomView->getRoom().getMaxPlayerCount() % 8 + 2);
+                nlohmann::json j = nlohmann::json{
+                    {"type", "CHANGE_PLAYER_COUNT"},
+                    {"data", nullptr}
+                };
+                MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
+            }
+            
         }
     }
 

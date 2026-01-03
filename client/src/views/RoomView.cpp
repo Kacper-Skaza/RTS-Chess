@@ -118,14 +118,19 @@ void RoomView::render()
         std::string id;
         SDL_Color color;
     };
+    
+    SDL_Color hostColor = {100, 250, 100, 255};
+    SDL_Color nonHostColor = {250, 100, 100, 255};
+     
     std::vector<BtnDef> btnDefs = {
+        {std::to_string(this->room.getMaxPlayerCount()), "toggle_count", (self->getPlayerID() == this->room.getHost()->getPlayerID()) ? hostColor : nonHostColor},
         {(isReady ? "NOT READY" : "READY"), "toggle_ready", {100, 100, 250, 255}},
         {(isPlayer ? "BE SPECTATOR" : "BE PLAYER"), "toggle_role", {150, 150, 150, 255}},
         {"LEAVE ROOM", "leave_room", {200, 50, 50, 255}}};
 
     int btnW = 200;
     int btnH = 50;
-    int totalWidth = (btnW * 3) + (20 * 2); // 3 przyciski + odstępy
+    int totalWidth = (btnW * btnDefs.size()) + (20 * btnDefs.size()-1); // 3 przyciski + odstępy
     int currentX = (windowW - totalWidth) / 2;
     int btnY = windowH - 100;
 

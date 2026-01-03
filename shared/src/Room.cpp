@@ -1,5 +1,7 @@
 #include "../headers/Room.hpp"
 
+#include <iostream>
+
 //Player count
 #define MIN_PLAYER_COUNT 2
 #define MAX_PLAYER_COUNT 8
@@ -167,8 +169,13 @@ void Room::from_json(const nlohmann::json& j, Room& p)
         delete i.second;
     }
     p.userList.clear();
-    for (auto &i : j.at("userList").items())
-        p.userList.emplace(std::stoul(i.key()), new User(i.value().get<User>()));
+    for (auto &&mapItem : j.at("userList"))
+    {
+        User* user = new User();
+        *user = mapItem.at(1).get<User>();
+        p.userList.emplace(mapItem.at(0), user);
+    }
+    
     // p.userList = j.at("userList").get<std::unordered_map<unsigned int, User*>>();
 }
 

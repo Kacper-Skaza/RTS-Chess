@@ -10,7 +10,7 @@ LobbyView::LobbyView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager 
 
 void LobbyView::updateRooms(std::vector<Room>& newRooms)
 {
-    this->rooms.clear();
+    this->rooms.clear(); //memory leak
     for (auto& room : newRooms)
     {
         rooms.push_back(std::move(room));
@@ -130,9 +130,13 @@ void LobbyView::render()
         // 2. Lista graczy
         std::string playersStr = "Players: ";
         auto userList = rooms[i].getUserList();
-        for (size_t j = 0; j < userList.size(); ++j)
+        for (auto &&j : userList)
         {
-            playersStr += userList[j]->getUsername() + (j == userList.size() - 1 ? "" : ", ");
+            playersStr += j.second->getUsername() + ", ";
+        }
+        if (playersStr.size() >= 11 )
+        {
+            playersStr.resize(playersStr.size() - 2);
         }
         SDL_Texture *playersTex = fontManager->getFontTexture(playersStr, "Roboto/Roboto-Medium", 18, gray);
         if (playersTex)

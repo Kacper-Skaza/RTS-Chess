@@ -68,6 +68,10 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         {
             handlePlayerWant(client, data);
         }
+        else if (type == "CHANGE_PLAYER_COUNT")
+        {
+            handleChangePlayerCount(client);
+        }
         else if (type == "CHAT_MESSAGE")
         {
             handleChatMessage(client, data);
@@ -399,6 +403,47 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
     catch (const std::exception &e)
     {
         std::cerr << "[ERR] Error in handlePlayerWant: " << e.what() << std::endl;
+    }
+}
+
+void MessageHandler::handleChangePlayerCount(Client *client)
+{
+    try
+    {
+        if (!client->room)
+        {
+            json errResponse = {
+                {"type", "ERR_CHANGE_PLAYER_COUNT"},
+                {"data", {{"reason", "User is not in the room !!!"}}}};
+
+            client->connection->sendMessage(errResponse.dump());
+            return;
+        }
+
+        // Bump MaxPlayerCount to next value
+        client->room->bumpMaxPlayerCount();
+
+        // Check if match is ready to start
+        if (client->room->isMatchReady())
+        {
+            client->room->startMatch();
+        }
+
+        // Broadcast update to everyone in the room
+        broadcastUpdateRoom(client->room);
+
+        // Prepare ACK_CHANGE_PLAYER_COUNT response
+        json response = {
+            {"type", "ACK_CHANGE_PLAYER_COUNT"},
+            {"data", nullptr}};
+
+        client->connection->sendMessage(response.dump());
+        std::cout << "[DEBUG] User " << client->user->getUsername();
+        std::cout << " changed MaxPlayerCount in room " << client->room->getRoomName() << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in handleChangePlayerCount: " << e.what() << std::endl;
     }
 }
 

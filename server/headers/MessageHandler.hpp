@@ -24,6 +24,7 @@ private:
     static void handleRoomJoin(Client *client, const json &data);
     static void handleRoomLeave(Client *client);
     static void handlePlayerWant(Client *client, const json &data);
+    static void handleChangePlayerCount(Client *client);
     static void handleChatMessage(Client *client, const json &data);
     static void handleMakeMove(Client *client, const json &data);
 

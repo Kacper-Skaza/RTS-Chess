@@ -10,7 +10,11 @@ LobbyView::LobbyView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager 
 
 void LobbyView::updateRooms(std::vector<Room>& newRooms)
 {
-    this->rooms.clear(); //memory leak
+    for (auto &&i : this->rooms)
+        for (auto &&j : i.getUserList())
+            delete j.second;
+    this->rooms.clear();
+
     for (auto& room : newRooms)
     {
         rooms.push_back(std::move(room));

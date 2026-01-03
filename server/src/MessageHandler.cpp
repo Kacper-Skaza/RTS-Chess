@@ -234,7 +234,7 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
             return;
         }
 
-        targetRoom->addPlayer(*client->user);
+        targetRoom->addUserToRoom(*client->user);
         client->user->setInRoom(true);
         client->room = targetRoom;
 

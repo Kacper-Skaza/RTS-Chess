@@ -509,7 +509,9 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
         // Send response
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User '" << client->user->getUsername() << "' in room '" << client->room->getRoomName() << "' ";
-        std::cout << "made a move" << std::endl;
+        std::cout << "made a move from ";
+        std::cout << "[" << newMove.getFrom().first << ", " << newMove.getFrom().second << "] to ";
+        std::cout << "[" << newMove.getTo().first << ", " << newMove.getTo().second << "]" << std::endl;
     }
     catch (const std::exception &e)
     {

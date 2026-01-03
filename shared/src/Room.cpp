@@ -155,7 +155,17 @@ void Room::removeUserFromRoom(const User& user)
 void Room::startMatch()
 {
     this->matchStarted = true;
-    //reinit board
+
+    const std::unordered_map<unsigned int, User *> players = this->getPlayerList();
+    bool turn = true;
+
+    for (auto &[_, user] : players)
+    {
+        user->setSide(turn ? ChessSide::WHITE : ChessSide::BLACK);
+        turn = !turn;
+    }
+
+    // reinit board
 }
 
 void Room::stopMatch(MatchEndReasons reason)

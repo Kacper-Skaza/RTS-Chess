@@ -213,7 +213,7 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
         client->user->setInRoom(true);
         client->user->setPlayer(true);
         client->user->setReady(false);
-        client->user->setSide(ChessSide::WHITE);
+        client->user->setSide(ChessSide::UNKNOWN);
         client->room = rooms[newRoomName].get();
 
         // Prepare ACK_ROOM_CREATE response
@@ -348,7 +348,6 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
         client->room->removePlayer(*client->user);
         client->user->setPlayer(false);
         client->user->setReady(false);
-        client->user->setSide(ChessSide::UNKNOWN);
 
         // Check if user wants to become a player
         if (player == PlayerWant::PLAYER_READY || player == PlayerWant::PLAYER_NOT_READY)
@@ -363,29 +362,15 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
                 return;
             }
 
+            // Set user to PlayerWant::PLAYER_NOT_READY
             client->room->addPlayer(*client->user);
             client->user->setPlayer(true);
 
             if (player == PlayerWant::PLAYER_READY)
             {
+                // Set user to PlayerWant::PLAYER_READY
                 client->user->setReady(true);
-
-                if (client->room->getPlayerCount() % 2 != 0)
-                    client->user->setSide(ChessSide::WHITE);
-                else
-                    client->user->setSide(ChessSide::BLACK);
             }
-            else
-            {
-                client->user->setReady(false);
-                client->user->setSide(ChessSide::UNKNOWN);
-            }
-        }
-
-        // Check if match is ready to start
-        if (client->room->isMatchReady())
-        {
-            client->room->startMatch();
         }
 
         // Broadcast update to everyone in the room
@@ -422,12 +407,6 @@ void MessageHandler::handleChangePlayerCount(Client *client)
 
         // Bump MaxPlayerCount to next value
         client->room->bumpMaxPlayerCount();
-
-        // Check if match is ready to start
-        if (client->room->isMatchReady())
-        {
-            client->room->startMatch();
-        }
 
         // Broadcast update to everyone in the room
         broadcastUpdateRoom(client->room);
@@ -521,14 +500,16 @@ void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const
 {
     try
     {
+        // Data
         std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
+
+        // Prepare MOVE_MADE broadcast
         json broadcastData = {
             {"type", "MOVE_MADE"},
             {"data", {{"move", newMove}}}};
 
-        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
-
-        // Send newMove to everyone
+        // Broadcast update to everyone in the room
         for (const auto &[_, roomUser] : roomUsers)
         {
             unsigned long long id = roomUser->getPlayerID();
@@ -537,8 +518,6 @@ void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const
             if (id != user->getPlayerID())
                 clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
         }
-
-        std::cout << "[DEBUG] Broadcasted move in room: " << room->getRoomName() << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -550,14 +529,16 @@ void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, con
 {
     try
     {
+        // Data
         std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
+
+        // Prepare UPDATE_CHAT broadcast
         json broadcastData = {
             {"type", "UPDATE_CHAT"},
             {"data", {{"message", newMessage}, {"user", *user}}}};
 
-        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
-
-        // Send newMessage to everyone
+        // Broadcast update to everyone in the room
         for (const auto &[_, roomUser] : roomUsers)
         {
             unsigned long long id = roomUser->getPlayerID();
@@ -570,18 +551,26 @@ void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, con
     }
 }
 
-void MessageHandler::broadcastUpdateRoom(const Room *room)
+void MessageHandler::broadcastUpdateRoom(Room *room)
 {
     try
     {
+        // Data
         std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
+
+        // Check if match is ready to start
+        if (!room->isMatchStarted() && room->isMatchReady())
+        {
+            room->startMatch();
+        }
+
+        // Prepare UPDATE_ROOM broadcast
         json broadcastData = {
             {"type", "UPDATE_ROOM"},
             {"data", {{"room", *room}}}};
 
-        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
-
-        // Send newMessage to everyone
+        // Broadcast update to everyone in the room
         for (const auto &[_, roomUser] : roomUsers)
         {
             unsigned long long id = roomUser->getPlayerID();

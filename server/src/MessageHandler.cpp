@@ -150,11 +150,11 @@ void MessageHandler::handleRequestRoom(Client *client)
     {
         if (!client->room)
         {
-            json response = {
+            json errResponse = {
                 {"type", "ERR_REQUEST_ROOM"},
                 {"data", {{"reason", "Room not found !!!"}}}};
 
-            client->connection->sendMessage(response.dump());
+            client->connection->sendMessage(errResponse.dump());
             return;
         }
 
@@ -179,16 +179,27 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string newRoomName = data.at("roomName");
 
-        // Check if room name is already taken
+        // Check if newRoomName is empty
+        if (newRoomName == "")
+        {
+            json errResponse = {
+                {"type", "ERR_ROOM_CREATE"},
+                {"data", {{"reason", "Cannot create room with empty name !!!"}}}};
+
+            client->connection->sendMessage(errResponse.dump());
+            return;
+        }
+
+        // Check if newRoomName is already taken
         for (const auto &[name, _] : rooms)
         {
             if (name == newRoomName)
             {
-                json response = {
+                json errResponse = {
                     {"type", "ERR_ROOM_CREATE"},
                     {"data", {{"reason", "Room with this name already exists !!!"}}}};
 
-                client->connection->sendMessage(response.dump());
+                client->connection->sendMessage(errResponse.dump());
                 return;
             }
         }
@@ -231,11 +242,11 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
 
         if (!targetRoom)
         {
-            json response = {
+            json errResponse = {
                 {"type", "ERR_ROOM_JOIN"},
                 {"data", {{"reason", "Room not found !!!"}}}};
 
-            client->connection->sendMessage(response.dump());
+            client->connection->sendMessage(errResponse.dump());
             return;
         }
 
@@ -271,11 +282,11 @@ void MessageHandler::handleRoomLeave(Client *client)
 
         if (!client->room)
         {
-            json response = {
+            json errResponse = {
                 {"type", "ERR_ROOM_LEAVE"},
                 {"data", {{"reason", "You are not in the room !!!"}}}};
 
-            client->connection->sendMessage(response.dump());
+            client->connection->sendMessage(errResponse.dump());
             return;
         }
 
@@ -422,11 +433,11 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 
         if (!client->room || !client->room->isMatchStarted())
         {
-            json response = {
+            json errResponse = {
                 {"type", "ERR_MAKE_MOVE"},
                 {"data", {{"reason", "Move not allowed at this time.+ !!!"}}}};
 
-            client->connection->sendMessage(response.dump());
+            client->connection->sendMessage(errResponse.dump());
             return;
         }
 
@@ -445,11 +456,11 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
         }
         else
         {
-            json response = {
+            json errResponse = {
                 {"type", "ERR_MAKE_MOVE"},
                 {"data", {{"board", client->room->getBoard()}}}};
 
-            client->connection->sendMessage(response.dump());
+            client->connection->sendMessage(errResponse.dump());
             return;
         }
     }

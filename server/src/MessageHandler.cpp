@@ -271,14 +271,15 @@ void MessageHandler::handleRoomLeave(Client *client)
             return;
         }
 
-        // Remove player
+        // Remove user
         client->room->removePlayer(*client->user);
+        client->room->removeUserFromRoom(*client->user);
 
         // Broadcast to all in room
         broadcastUpdateRoom(client->room);
 
         // If room is empty, remove it
-        if (client->room->getPlayerCount() == 0)
+        if (client->room->getUserCount() == 0)
         {
             std::cout << "[DEBUG] Room " << client->room->getRoomName() << " is empty. Deleting..." << std::endl;
             rooms.erase(client->room->getRoomName());

@@ -29,13 +29,14 @@ Room::~Room()
 
 bool Room::isMatchReady() const
 {
-    auto it = this->userList.find(1);
-    for (auto &&i : this->playerList)
+    for (unsigned int id : this->playerList)
     {
-        it = this->userList.find(i);
-        if (it != this->userList.end() && it->second->isReady() == false) return false;
+        auto it = this->userList.find(id);
+        if (it != this->userList.end() && it->second->isReady() == false)
+            return false;
     }
-    return true;
+
+    return this->playerList.size() == this->maxPlayerCount;
 }
 
 const std::string Room::getRoomName() const noexcept
@@ -175,7 +176,7 @@ void Room::from_json(const nlohmann::json& j, Room& p)
         *user = mapItem.at(1).get<User>();
         p.userList.emplace(mapItem.at(0), user);
     }
-    
+
     // p.userList = j.at("userList").get<std::unordered_map<unsigned int, User*>>();
 }
 

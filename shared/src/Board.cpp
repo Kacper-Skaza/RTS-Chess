@@ -202,9 +202,35 @@ void Board::from_json(const nlohmann::json &j, Board& b)
 			b.board[i][k].reset();
 			if (cell.at("id").get<const int>() != -1)
 			{
-				b.board[i][k] = std::make_unique<Piece>(
-					std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',
-					cell.at("symbol").get<char>(), cell.at("id").get<int>());
+				switch (cell.at("symbol").get<char>())
+				{
+				case 'p':
+				case 'P':
+					b.board[i][k] = std::make_unique<Pawn>(std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',cell.at("id").get<int>());
+					break;
+				case 'n':
+				case 'N':
+					b.board[i][k] = std::make_unique<Knight>(std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',cell.at("id").get<int>());
+					break;
+				case 'k':
+				case 'K':
+					b.board[i][k] = std::make_unique<King>(std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',cell.at("id").get<int>());
+					break;
+				case 'q':
+				case 'Q':
+					b.board[i][k] = std::make_unique<Queen>(std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',cell.at("id").get<int>());
+					break;
+				case 'r':
+				case 'R':
+					b.board[i][k] = std::make_unique<Rook>(std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',cell.at("id").get<int>());
+					break;
+				case 'b':
+				case 'B':
+					b.board[i][k] = std::make_unique<Bishop>(std::isupper(cell.at("symbol").get<char>()) ? 'W' : 'B',cell.at("id").get<int>());
+					break;
+				}
+				if (cell.contains("moveCount"))
+					b.board[i][k].get()->setMoveCount(cell.at("moveCount").get<int>());
 			}
 			k++;
 		}

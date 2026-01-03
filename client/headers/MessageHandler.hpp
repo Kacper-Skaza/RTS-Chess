@@ -36,6 +36,7 @@ private:
     static void handleFlipReady(ConnectionManager* connectionManager, const std::string &jsonText);
     static void handleFlipPlayerWant(ConnectionManager* connectionManager, const std::string &jsonText);
     static void handleExitRoom(ConnectionManager* connectionManager, const std::string &jsonText);
+    static void handlePlayerCountChange(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
     static void handleReceiveRoom(RoomView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
     static void handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data);

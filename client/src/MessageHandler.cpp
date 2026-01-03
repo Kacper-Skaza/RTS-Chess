@@ -173,6 +173,11 @@ void MessageHandler::handleGameFinale(GameView *view, const nlohmann::json &data
     view->setGameState(data.at("reason").get<MatchEndReasons>());
 }
 
+void MessageHandler::handlePlayerCountChange(ConnectionManager* connectionManager, const std::string &jsonText)
+{
+    handleGeneralSend(connectionManager, jsonText);
+}
+
 void MessageHandler::handleView(View* view, ConnectionManager* connectionManager, User* user, const std::string &jsonText)
 {
     if (connectionManager == nullptr || user == nullptr || view == nullptr)
@@ -204,9 +209,11 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "ACK_PLAYER_WANT") handleSetPlayerWant(user, data);
             else if (type == "ERR_PLAYER_WANT") handleErrPlayerWant(user, data);
             else if (type == "ROOM_LEAVE") handleExitRoom(connectionManager, jsonText);
+            else if (type == "CHANGE_PLAYER_COUNT") handlePlayerCountChange(connectionManager, jsonText);
             else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "ACK_ROOM_REQUEST") handleReceiveRoom(roomView, connectionManager, data);
+            else if (type == "ACK_CHANGE_PLAYER_COUNT") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "UPDATE_ROOM") handleSpecialReceiveRoom(roomView, connectionManager, data);
             else handleIgnore();
         }

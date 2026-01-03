@@ -48,7 +48,6 @@ void MessageHandler::handleReceiveRooms(LobbyView *view, ConnectionManager *conn
     std::vector<Room> rooms;
     for (const auto& roomJson : data.at("rooms"))
     {
-        std::cout << roomJson.at(1).dump() << "\n";
         rooms.push_back(Room());
         Room::from_json(roomJson.at(1), rooms[rooms.size() - 1]);
     }

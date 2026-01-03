@@ -324,16 +324,23 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
         {
             client->user->setPlayer(true);
             client->user->setReady(true);
+
+            if (client->room->getPlayerList().size() % 2 == 0)
+                client->user->setSide(ChessSide::WHITE);
+            else
+                client->user->setSide(ChessSide::BLACK);
         }
         else if (player == PlayerWant::PLAYER_NOT_READY)
         {
             client->user->setPlayer(true);
             client->user->setReady(false);
+            client->user->setSide(ChessSide::UNKNOWN);
         }
         else if (player == PlayerWant::SPECTATOR)
         {
             client->user->setPlayer(false);
             client->user->setReady(false);
+            client->user->setSide(ChessSide::UNKNOWN);
         }
         else
         {

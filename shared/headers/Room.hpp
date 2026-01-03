@@ -49,8 +49,8 @@ public:
     // Set structure data
     void addUserToRoom(const User& joining);
     void addPlayer(const User& player);
-    void removePlayer(const User& player, const bool quit = false);
-    void removeUserFromRoom(const User& player);
+    void removePlayer(const User& player);
+    void removeUserFromRoom(const User& user);
     void setMaxPlayerCount(const int count);
 
     // Other metchods

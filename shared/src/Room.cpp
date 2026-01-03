@@ -117,7 +117,7 @@ void Room::addPlayer(const User& player)
     }
 }
 
-void Room::removePlayer(const User& player, const bool quit)
+void Room::removePlayer(const User& player)
 {
     const unsigned int ToRemoveID = player.getPlayerID();
     for (size_t i = 0; i < this->playerList.size(); i++)
@@ -128,12 +128,11 @@ void Room::removePlayer(const User& player, const bool quit)
             break;
         }
     }
-    if (quit == true) this->userList.erase(ToRemoveID);
 }
 
-void Room::removeUserFromRoom(const User& player)
+void Room::removeUserFromRoom(const User& user)
 {
-    if (this->userList.find(player.getPlayerID()) != this->userList.end()) this->userList.erase(player.getPlayerID());
+    if (this->userList.find(user.getPlayerID()) != this->userList.end()) this->userList.erase(user.getPlayerID());
 }
 
 void Room::startMatch()

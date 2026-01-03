@@ -93,7 +93,7 @@ SOCKET ConnectView::connectToServer()
 
     if (connect(sock, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR_PLATFORM)
     {
-        close(sock);
+        ConnectionManager::closeConnection(sock);
         return -1;
     }
 

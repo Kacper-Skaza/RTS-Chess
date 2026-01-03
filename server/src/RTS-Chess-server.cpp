@@ -1,24 +1,16 @@
 #include <iostream>
 
-#include "../headers/MessageHandler.hpp"
-
-#include "../../shared/headers/Structures.hpp"
+// ===== SHARED =====
+#include "../../shared/headers/PlatformManager.hpp"
 #include "../../shared/headers/ConnectionManager.hpp"
+#include "../../shared/headers/Structures.hpp"
 #include "../../shared/headers/User.hpp"
 #include "../../shared/headers/Room.hpp"
 
-#if PLATFORM == PLATFORM_WINDOWS
-    typedef int nfds_t;
-    #define poll WSAPoll
-#endif
-
-#if PLATFORM == PLATFORM_LINUX
-    #include <poll.h>
-    #include <netinet/in.h>
-#endif
+// ===== SERVER =====
+#include "../headers/MessageHandler.hpp"
 
 // ===== MAIN =====
-
 int main()
 {
     // Start WSA for Windows
@@ -50,13 +42,13 @@ int main()
     // Bind socket
     if (bind(listenSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR_PLATFORM)
     {
-        std::cout << ">> RTS Chess Server failed to bind server socket on port " << PORT << std::endl;
+        std::cout << ">> RTS Chess Server failed to bind server socket on port " << PORT << " ..." << std::endl;
         return 1;
     }
 
     // Start listening
     listen(listenSocket, SOMAXCONN);
-    std::cout << ">> RTS Chess Server started listening on port " << PORT << std::endl;
+    std::cout << ">> RTS Chess Server started listening on port " << PORT << " ..." << std::endl;
 
     // Initialize server data
     std::chrono::steady_clock::time_point lastAllCheck = {};      // Time of last full server check
@@ -75,7 +67,7 @@ int main()
         fds.push_back({listenSocket, POLLIN, 0});
 
         // Add client sockets
-        for (auto const &[fd, client] : clients)
+        for (auto const &[fd, _] : clients)
         {
             fds.push_back({fd, POLLIN, 0});
         }
@@ -96,15 +88,13 @@ int main()
 
                 if (newSock != INVALID_SOCKET_PLATFORM)
                 {
-                    ConnectionManager::setNonBlocking(newSock);
-
                     std::unique_ptr<Client> newClient = std::make_unique<Client>();
                     newClient->connection = std::make_unique<ConnectionManager>(newSock);
                     newClient->user = std::make_unique<User>(static_cast<unsigned long long>(newSock), "Guest");
                     newClient->room = nullptr;
 
-                    std::cout << "[SERVER] Client " << newClient->user->getUsername() << " on FD " << newSock << " connected :)" << std::endl;
                     clients[newSock] = std::move(newClient);
+                    std::cout << "[SERVER] New client on FD " << newSock << " connected :)" << std::endl;
                 }
             }
 
@@ -125,15 +115,37 @@ int main()
                         // Process all queued messages
                         std::string msg;
                         while (!(msg = clientPtr->connection->recvMessage()).empty())
-                        {
                             MessageHandler::handle(clientPtr, msg);
-                        }
+                    }
+                }
+                if (fds[i].revents & POLLHUP)
+                {
+                    SOCKET fd = fds[i].fd;
+
+                    if (clients.count(fd))
+                    {
+                        // Graceful disconnect
+                        ConnectionManager::closeConnection(fd);
+                        clients.erase(fd);
+                        std::cout << "[SERVER] Client on FD " << fd << " disconnected gracefully :|" << std::endl;
+                    }
+                }
+                if (fds[i].revents & POLLERR)
+                {
+                    SOCKET fd = fds[i].fd;
+
+                    if (clients.count(fd))
+                    {
+                        // Disconnect because of error
+                        ConnectionManager::closeConnection(fd);
+                        clients.erase(fd);
+                        std::cout << "[SERVER] Client on FD " << fd << " experienced error and disconnected :(" << std::endl;
                     }
                 }
             }
         }
 
-        // Check all once every 1000ms
+        // Check all clients once every 1000ms
         std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
         std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastAllCheck);
 
@@ -149,14 +161,12 @@ int main()
                 // Process all queued messages
                 std::string msg;
                 while (!(msg = clientPtr->connection->recvMessage()).empty())
-                {
                     MessageHandler::handle(clientPtr, msg);
-                }
 
-                // Remove client on timeout (1 minute)
-                if (clientPtr->connection->getTimeSinceLastPingRecv().count() > 60)
+                // Remove client on timeout (60 seconds)
+                if (clientPtr->connection->getTimeSinceLastPingRecv().count() > 20)
                 {
-                    std::cout << "[SERVER] Client " << clientPtr->user->getUsername() << " on FD " << it->first << " disconnected :( [timeout]" << std::endl;
+                    std::cout << "[SERVER] Client on FD " << it->first << " disconnected by timeout :(" << std::endl;
                     it = clients.erase(it);
                 }
                 else

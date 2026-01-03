@@ -3,7 +3,6 @@
 #include <chrono>
 #include <string>
 #include <queue>
-#include <unistd.h>
 
 #include "PlatformManager.hpp"
 
@@ -26,17 +25,17 @@ public:
     explicit ConnectionManager(SOCKET socketFd);
     ~ConnectionManager() = default;
 
-    // ===== Management =====
+    // ===== MANAGEMENT =====
     static void setNonBlocking(SOCKET fd);
-    void closeConnection();
+    static void closeConnection(SOCKET fd);
     void update();
 
-    // ===== Ping =====
+    // ===== PING =====
     void sendNewPing();
     std::chrono::seconds getTimeSinceLastPingSend();
     std::chrono::seconds getTimeSinceLastPingRecv();
 
-    // ===== Communication =====
+    // ===== COMMUNICATION =====
     void sendMessage(const std::string &msg);
     std::string recvMessage();
 };

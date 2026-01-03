@@ -1,13 +1,12 @@
 #include "../headers/ConnectionManager.hpp"
 
-ConnectionManager::ConnectionManager(SOCKET socketFd) : socketFd(socketFd), lastPingSend(std::chrono::steady_clock::now()), lastPingRecv(std::chrono::steady_clock::now())
+ConnectionManager::ConnectionManager(SOCKET socketFd) : socketFd(socketFd)
 {
     this->setNonBlocking(this->socketFd);
-    this->sendNewPing();
     this->update();
 }
 
-// ===== Management =====
+// ===== MANAGEMENT =====
 
 void ConnectionManager::setNonBlocking(SOCKET fd)
 {
@@ -22,14 +21,25 @@ void ConnectionManager::setNonBlocking(SOCKET fd)
 #endif
 }
 
-void ConnectionManager::closeConnection()
+void ConnectionManager::closeConnection(SOCKET fd)
 {
-    close(this->socketFd);
+    // Check if socket is already closed
+    if (fd == INVALID_SOCKET_PLATFORM)
+        return;
+
+#if PLATFORM == PLATFORM_WINDOWS
+    closesocket(fd);
+#elif PLATFORM == PLATFORM_LINUX
+    close(fd);
+#endif
+
+    // Mark as closed
+    fd = INVALID_SOCKET_PLATFORM;
 }
 
 void ConnectionManager::update()
 {
-    // Send every 5 seconds
+    // Send PING every 5 seconds
     if (this->getTimeSinceLastPingRecv().count() >= 5 && this->getTimeSinceLastPingSend().count() >= 5)
     {
         this->lastPingSend = std::chrono::steady_clock::now();
@@ -40,7 +50,7 @@ void ConnectionManager::update()
     this->sendRaw();
 }
 
-// ===== Ping =====
+// ===== PING =====
 
 void ConnectionManager::sendNewPing()
 {
@@ -63,17 +73,17 @@ std::chrono::seconds ConnectionManager::getTimeSinceLastPingRecv()
     return elapsed;
 }
 
-// ===== Communication =====
+// ===== COMMUNICATION =====
 
 void ConnectionManager::sendMessage(const std::string &msg)
 {
     this->outgoingQueue.push(msg + '\n');
-    this->sendRaw();
+    this->update();
 }
 
 std::string ConnectionManager::recvMessage()
 {
-    this->recvRaw();
+    this->update();
     if (this->incomingQueue.empty())
         return "";
 
@@ -82,7 +92,7 @@ std::string ConnectionManager::recvMessage()
     return temp;
 }
 
-// ===== Private =====
+// ===== PRIVATE =====
 
 void ConnectionManager::sendRaw()
 {

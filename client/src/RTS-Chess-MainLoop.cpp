@@ -343,6 +343,15 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     delay();
     if (connectionManager != nullptr)
         receiveLoop(view);
+        if ((0) /*jezeli 70 sekund od ostatniego ping*/)
+        {
+            view.release();
+            view = std::make_unique<ConnectView>(window, renderer, fontManager);
+            if (me != nullptr)
+                delete me;
+            delete connectionManager;
+        }
+
     return;
 }
 

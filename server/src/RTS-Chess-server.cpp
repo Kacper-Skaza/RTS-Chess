@@ -42,13 +42,13 @@ int main()
     // Bind socket
     if (bind(listenSocket, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR_PLATFORM)
     {
-        std::cout << ">> RTS Chess Server failed to bind server socket on port " << PORT << " ..." << std::endl;
+        std::cout << "[SERVER] RTS-Chess-server failed to bind server socket on port " << PORT << " ..." << std::endl;
         return 1;
     }
 
     // Start listening
     listen(listenSocket, SOMAXCONN);
-    std::cout << ">> RTS Chess Server started listening on port " << PORT << " ..." << std::endl;
+    std::cout << "[SERVER] RTS-Chess-server started listening on port " << PORT << " ..." << std::endl;
 
     // Initialize server data
     std::chrono::steady_clock::time_point lastAllCheck = {};      // Time of last full server check
@@ -124,10 +124,13 @@ int main()
 
                     if (clients.count(fd))
                     {
-                        // Graceful disconnect
+                        // Disconnect gracefully
                         ConnectionManager::closeConnection(fd);
+                        std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
+                        std::cout << " disconnected gracefully :)" << std::endl;
+
+                        // Clean memory
                         clients.erase(fd);
-                        std::cout << "[SERVER] Client on FD " << fd << " disconnected gracefully :|" << std::endl;
                     }
                 }
                 if (fds[i].revents & POLLERR)
@@ -136,10 +139,13 @@ int main()
 
                     if (clients.count(fd))
                     {
-                        // Disconnect because of error
+                        // Disconnect because of unknown error
                         ConnectionManager::closeConnection(fd);
+                        std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
+                        std::cout << " experienced error and disconnected :(" << std::endl;
+
+                        // Clean memory
                         clients.erase(fd);
-                        std::cout << "[SERVER] Client on FD " << fd << " experienced error and disconnected :(" << std::endl;
                     }
                 }
             }
@@ -163,10 +169,17 @@ int main()
                 while (!(msg = clientPtr->connection->recvMessage()).empty())
                     MessageHandler::handle(clientPtr, msg);
 
-                // Remove client on timeout (60 seconds)
-                if (clientPtr->connection->getTimeSinceLastPingRecv().count() > 20)
+                // Check if a timeout occurred (60 seconds)
+                if (clientPtr->connection->getTimeSinceLastPingRecv().count() > 60)
                 {
-                    std::cout << "[SERVER] Client on FD " << it->first << " disconnected by timeout :(" << std::endl;
+                    SOCKET fd = it->first;
+
+                    // Disconnect by timeout
+                    ConnectionManager::closeConnection(fd);
+                    std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
+                    std::cout << " disconnected by timeout :(" << std::endl;
+
+                    // Clean memory
                     it = clients.erase(it);
                 }
                 else

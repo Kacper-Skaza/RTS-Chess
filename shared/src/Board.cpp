@@ -191,6 +191,38 @@ bool Board::makeMove(const Move &move)
     return true;
 }
 
+const MatchEndReasons &Board::getGameState()
+{
+    return this->gameState;
+}
+
+void Board::setGameState(MatchEndReasons state)
+{
+    this->gameState = state;
+}
+
+void Board::checkGameEnd()
+{
+    bool whiteKingAlive = false;
+    bool blackKingAlive = false;
+
+    for (auto &&i : this->board)
+    {
+        for (auto &&j : i)
+        {
+            if (j.get()->getSymbol() == 'K')
+                whiteKingAlive = true;
+            if (j.get()->getSymbol() == 'k')
+                blackKingAlive = true;
+        }
+    }
+    if (!whiteKingAlive)
+        this->gameState = this->gameState | MatchEndReasons::BLACK_WON;
+    if (!blackKingAlive)
+        this->gameState = this->gameState | MatchEndReasons::WHITE_WON;
+}
+
+
 void Board::from_json(const nlohmann::json &j, Board& b)
 {
 	int i = 0, k = 0;

@@ -15,6 +15,7 @@ class Board
 {
 private:
 	std::vector<std::vector<std::unique_ptr<Piece>>> board;
+	MatchEndReasons gameState = MatchEndReasons::NOT_ENDED;
 
 public:
 	Board();
@@ -32,6 +33,10 @@ public:
 	const std::vector<std::vector<Piece *>> getBoardFull() const;
 	const std::vector<std::vector<char>> getBoardSymbol() const;
 	const std::vector<std::vector<bool>> getBoardCooldown() const;
+
+	void checkGameEnd(); 
+	const MatchEndReasons& getGameState();
+    void setGameState(MatchEndReasons state);
 
 	bool makeMove(const Move &move);
 

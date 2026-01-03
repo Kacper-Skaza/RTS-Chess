@@ -40,7 +40,7 @@ private:
     Board board;
     bool nullBoard;
     std::pair<int, int> selected;
-    MatchEndReasons gameState = MatchEndReasons::NOT_ENDED;
+
     
     
 
@@ -60,10 +60,9 @@ public:
 
     char checkPiece();
     TextBox& getChatBox();
-    void checkGameEnd(); 
 
-    const MatchEndReasons& getGameState();
-    void setGameState(MatchEndReasons state);
+
+
 
     std::pair<int, int>& getSelected();
     void setSelected(int x, int y);

@@ -158,15 +158,15 @@ void GameView::render()
     }
 
     //if game ended, show info
-    if (this->gameState != MatchEndReasons::NOT_ENDED)
+    if (this->board.getGameState() != MatchEndReasons::NOT_ENDED)
     {
         SDL_Rect rect = {700, 500, 600, 100};
         std::string endText = "GAME ENDED: ";
-        if ((gameState & MatchEndReasons::WHITE_WON) != MatchEndReasons::NOT_ENDED)
+        if ((this->board.getGameState() & MatchEndReasons::WHITE_WON) != MatchEndReasons::NOT_ENDED)
             endText += "WHITE WON ";
-        if ((gameState & MatchEndReasons::BLACK_WON) != MatchEndReasons::NOT_ENDED)
+        if ((this->board.getGameState() & MatchEndReasons::BLACK_WON) != MatchEndReasons::NOT_ENDED)
             endText += "BLACK WON ";
-        if ((gameState & MatchEndReasons::PLAYER_LEFT) != MatchEndReasons::NOT_ENDED)
+        if ((this->board.getGameState() & MatchEndReasons::PLAYER_LEFT) != MatchEndReasons::NOT_ENDED)
             endText += "PLAYER LEFT ";
         SDL_RenderCopy(renderer, fontManager->getFontTexture(endText, "Roboto/Roboto-Medium", 64), nullptr, &rect);
     }
@@ -174,26 +174,6 @@ void GameView::render()
     SDL_RenderPresent(renderer);
 }
 
-void GameView::checkGameEnd()
-{
-    bool whiteKingAlive = false;
-    bool blackKingAlive = false;
-
-    for (auto &&i : this->board.getBoardSymbol())
-    {
-        for (auto &&j : i)
-        {
-            if (j == 'K')
-                whiteKingAlive = true;
-            if (j == 'k')
-                blackKingAlive = true;
-        }
-    }
-    if (!whiteKingAlive)
-        this->gameState = this->gameState | MatchEndReasons::BLACK_WON;
-    if (!blackKingAlive)
-        this->gameState = this->gameState | MatchEndReasons::WHITE_WON;
-}
 
 void GameView::updateChat(std::string& message, User& sender)
 {
@@ -231,16 +211,6 @@ char GameView::checkPiece()
 TextBox &GameView::getChatBox()
 {
     return this->chatBox;
-}
-
-const MatchEndReasons &GameView::getGameState()
-{
-    return this->gameState;
-}
-
-void GameView::setGameState(MatchEndReasons state)
-{
-    this->gameState = state;
 }
 
 std::pair<int, int> &GameView::getSelected()

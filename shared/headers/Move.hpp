@@ -27,7 +27,7 @@ private:
 public:
 	Move();
 	Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to, bool recreated = false);
-	~Move();
+	~Move() = default;
 
 	const Piece *getPiece() const noexcept;
 	const std::pair<int, int> getFrom() const noexcept;

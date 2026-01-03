@@ -24,12 +24,6 @@ Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to, bool 
 	}
 }
 
-Move::~Move()
-{
-	if (recreated == true && piece != nullptr)
-		delete piece;
-}
-
 const Piece *Move::getPiece() const noexcept
 {
 	return piece;
@@ -47,10 +41,7 @@ const std::pair<int, int> Move::getTo() const noexcept
 
 Move Move::from_json(const nlohmann::json& j, Board* board)
 {
-	int i = j.at("piece").at("id").get<int>()/10;
-	int k = j.at("piece").at("id").get<int>()%10;
-	
-	Move p(board->getBoardFull()[i][k], 
+	Move p(board->getBoardFull()[j.at("from").at(0).get<int>()][j.at("from").at(1).get<int>()], 
 		std::make_pair(j.at("from").at(0).get<int>(),j.at("from").at(1).get<int>()), 
 		std::make_pair(j.at("to").at(0).get<int>(),j.at("to").at(1).get<int>()),
 		true);

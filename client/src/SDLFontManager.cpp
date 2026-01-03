@@ -121,3 +121,18 @@ SDL_Texture *SDLFontManager::createTextTexture(const std::string &str, const std
     SDL_FreeSurface(surface);
     return fontTexture;
 } 
+
+/**
+ * This creates wrapped text it is not saved every time generate new and remember to free this
+ */
+SDL_Texture *SDLFontManager::createWrappedTextTexture(const std::string &str, const std::string &font, int size, SDL_Color color, uint32_t wraplength)
+{
+    SDL_Surface* surface = TTF_RenderText_Solid_Wrapped(
+        this->fonts.find(std::string(font + std::to_string(size)))->second.get(),
+        str.c_str(), color, wraplength
+    );
+    SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(this->renderer, surface);
+
+    SDL_FreeSurface(surface);
+    return fontTexture;
+}

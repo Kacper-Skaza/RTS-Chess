@@ -28,4 +28,6 @@ public:
     bool addNewFont(const std::string& pathToFont, int fontSize);
     SDL_Texture* createTextTexture(const std::string& str, const std::string& font, int size, SDL_Color color = {0,0,0,255});
 
+    SDL_Texture *createWrappedTextTexture(const std::string &str, const std::string &font, int size, SDL_Color color, uint32_t wraplength);
+
 };

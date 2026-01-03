@@ -258,32 +258,35 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
     try
     {
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string roomName = data.at("roomName");
-        Room *targetRoom = nullptr;
 
-        auto it = rooms.find(roomName);
-        if (it != rooms.end())
-        {
-            targetRoom = it->second.get();
-        }
-
-        if (!targetRoom)
+        if (!client->room)
         {
             json response = {
                 {"type", "ERR_ROOM_LEAVE"},
-                {"data", {{"reason", "Room not found !!!"}}}};
+                {"data", {{"reason", "You are not in the room !!!"}}}};
 
             client->connection->sendMessage(response.dump());
             return;
         }
 
-        targetRoom->removePlayer(*client->user);
-        client->user->setInRoom(false);
-        client->user->setReady(false);
-        client->room = nullptr;
+        // Remove player
+        client->room->removePlayer(*client->user);
 
         // Broadcast to all in room
         broadcastUpdateRoom(client->room, client->user.get());
+
+        // If room is empty, remove it
+        if (client->room->getPlayerCount() == 0)
+        {
+            std::cout << "[DEBUG] Room " << client->room->getRoomName() << " is empty. Deleting..." << std::endl;
+            rooms.erase(client->room->getRoomName());
+        }
+
+        // Set flags to default values
+        client->user->setInRoom(false);
+        client->user->setPlayer(false);
+        client->user->setReady(false);
+        client->room = nullptr;
 
         // Prepare ACK_ROOM_LEAVE response
         json response = {
@@ -291,14 +294,7 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
             {"data", nullptr}};
 
         client->connection->sendMessage(response.dump());
-        std::cout << "[DEBUG] User " << client->user->getUsername() << " left room: " << roomName << std::endl;
-
-        // If room is empty, remove it
-        if (targetRoom->getPlayerCount() == 0)
-        {
-            std::cout << "[DEBUG] Room " << roomName << " is empty. Deleting..." << std::endl;
-            rooms.erase(it);
-        }
+        std::cout << "[DEBUG] User " << client->user->getUsername() << " left room" << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -357,7 +353,7 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
 
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User " << client->user->getUsername();
-        std::cout << " is [" << client->user->isPlayer() << client->user->isReady() << "]" << std::endl;
+        std::cout << " is [" << client->user->isPlayer() << ", " << client->user->isReady() << "]" << std::endl;
     }
     catch (const std::exception &e)
     {

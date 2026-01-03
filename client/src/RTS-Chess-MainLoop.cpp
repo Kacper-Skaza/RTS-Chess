@@ -242,7 +242,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
 
 void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, std::unique_ptr<View> &view, GameView* gameView, SDL_Event& event)
 {
-    if (gameView->getGameState() != MatchEndReasons::NOT_ENDED)
+    if (gameView->getBoard()->getGameState() != MatchEndReasons::NOT_ENDED)
     {
         // Game has ended
         roomReturnCounter--;
@@ -322,8 +322,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 {"data", {{"message", gameView->getChatBox().getString()}}}
             };
             MessageHandler::handleView(gameView, connectionManager, me, j.dump());
-            //temp later remove
-            // gameView->updateChat(gameView->getChatBox().getString(), *me);
             gameView->getChatBox().setText("");
             SDL_StopTextInput();
         }

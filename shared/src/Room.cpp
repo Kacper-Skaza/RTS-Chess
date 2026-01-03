@@ -36,7 +36,7 @@ bool Room::isMatchReady() const
             return false;
     }
 
-    return this->playerList.size() == this->maxPlayerCount;
+    return this->getPlayerCount() == this->maxPlayerCount;
 }
 
 const std::string Room::getRoomName() const noexcept
@@ -109,12 +109,17 @@ void Room::addUserToRoom(const User& joining)
     this->userList.insert({joining.getPlayerID(), const_cast<User*>(&joining)});
 }
 
-void Room::addPlayer(const User& player)
+void Room::addPlayer(const User &player)
 {
-    if (this->userList.find(player.getPlayerID()) != this->userList.end())
-    {
-        this->playerList.push_back(player.getPlayerID());
-    }
+    const unsigned long long id = player.getPlayerID();
+
+    if (this->userList.find(id) == this->userList.end())
+        return;
+
+    if (std::find(this->playerList.begin(), this->playerList.end(), id) != this->playerList.end())
+        return;
+
+    this->playerList.push_back(id);
 }
 
 void Room::removePlayer(const User& player)

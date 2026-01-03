@@ -1,5 +1,12 @@
 #include "../headers/ConnectionManager.hpp"
 
+// ===== STATIC =====
+
+const std::string ConnectionManager::PING = "{PING}";
+const std::string ConnectionManager::ACK_PING = "{ACK_PING}";
+
+// ===== CONSTRUCTOR =====
+
 ConnectionManager::ConnectionManager(SOCKET socketFd) : socketFd(socketFd)
 {
     std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
@@ -43,11 +50,11 @@ void ConnectionManager::closeConnection(SOCKET fd)
 
 void ConnectionManager::update()
 {
-    // Send PING every 5 seconds
-    if (this->getTimeSinceLastPingRecv().count() >= 5 && this->getTimeSinceLastPingSend().count() >= 5)
+    // Send PING every 2 seconds
+    if (this->getTimeSinceLastPingRecv().count() >= 2 && this->getTimeSinceLastPingSend().count() >= 2)
     {
         this->lastPingSend = std::chrono::steady_clock::now();
-        this->sendNewPing();
+        this->sendMessage(PING);
     }
 
     this->recvRaw();
@@ -56,9 +63,13 @@ void ConnectionManager::update()
 
 // ===== PING =====
 
-void ConnectionManager::sendNewPing()
+std::chrono::milliseconds ConnectionManager::getPingMs()
 {
-    this->sendMessage("{PING}");
+    // Check if ACK_PING was received in the last 5 seconds
+    if (this->getTimeSinceLastPingRecv().count() <= 5)
+        return this->pingMs + std::chrono::milliseconds(1);
+
+    return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - this->lastPingRecv);
 }
 
 std::chrono::seconds ConnectionManager::getTimeSinceLastPingSend()
@@ -96,7 +107,7 @@ std::string ConnectionManager::recvMessage()
     return temp;
 }
 
-// ===== PRIVATE =====
+// ===== PRIVATE DATA HANDLERS =====
 
 void ConnectionManager::sendRaw()
 {
@@ -154,15 +165,16 @@ void ConnectionManager::recvRaw()
 
                 if (!message.empty())
                 {
-                    if (message == "{PING}")
+                    if (message == PING)
                     {
                         // Handle PING
-                        this->sendMessage("{ACK_PING}");
+                        this->sendMessage(ACK_PING);
                     }
-                    else if (message == "{ACK_PING}")
+                    else if (message == ACK_PING)
                     {
                         // Handle ACK_PING
                         this->lastPingRecv = std::chrono::steady_clock::now();
+                        this->pingMs = std::chrono::duration_cast<std::chrono::milliseconds>(this->lastPingRecv - this->lastPingSend);
                     }
                     else
                     {

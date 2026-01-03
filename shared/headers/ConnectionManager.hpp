@@ -9,19 +9,29 @@
 class ConnectionManager
 {
 private:
+    // ===== STATIC =====
+    static const std::string PING;
+    static const std::string ACK_PING;
+
+    // ===== SOCKET =====
     SOCKET socketFd;
 
+    // ===== PING =====
+    std::chrono::milliseconds pingMs;
     std::chrono::steady_clock::time_point lastPingSend;
     std::chrono::steady_clock::time_point lastPingRecv;
 
+    // ===== BUFFERS =====
     std::string incomingBuffer;
     std::queue<std::string> incomingQueue;
     std::queue<std::string> outgoingQueue;
 
+    // ===== PRIVATE DATA HANDLERS =====
     void sendRaw();
     void recvRaw();
 
 public:
+    // ===== CONSTRUCTOR =====
     explicit ConnectionManager(SOCKET socketFd);
     ~ConnectionManager() = default;
 
@@ -31,7 +41,7 @@ public:
     void update();
 
     // ===== PING =====
-    void sendNewPing();
+    std::chrono::milliseconds getPingMs();
     std::chrono::seconds getTimeSinceLastPingSend();
     std::chrono::seconds getTimeSinceLastPingRecv();
 

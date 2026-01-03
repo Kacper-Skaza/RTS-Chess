@@ -453,13 +453,13 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 {
     try
     {
-        Move newMove = data.at("move");
+        Move newMove = Move::from_json(data.at("move"), &client->room->getBoard());
 
         if (!client->room || !client->room->isMatchStarted())
         {
             json errResponse = {
                 {"type", "ERR_MAKE_MOVE"},
-                {"data", {{"reason", "Move not allowed at this time.+ !!!"}}}};
+                {"data", {{"reason", "Move not allowed at this time !!!"}}}};
 
             client->connection->sendMessage(errResponse.dump());
             return;
@@ -482,7 +482,7 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
         {
             json errResponse = {
                 {"type", "ERR_MAKE_MOVE"},
-                {"data", {{"board", client->room->getBoard()}}}};
+                {"data", {{"reason", "Invalid move !!!"}, {"board", client->room->getBoard()}}}};
 
             client->connection->sendMessage(errResponse.dump());
             return;

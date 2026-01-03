@@ -182,14 +182,14 @@ void MessageHandler::handlePlayerCountChange(ConnectionManager* connectionManage
 void MessageHandler::handleView(View* view, ConnectionManager* connectionManager, User* user, const std::string &jsonText)
 {
     if (connectionManager == nullptr || user == nullptr || view == nullptr)
-        throw std::invalid_argument("Null pointer passed to MessageHandler::handleView");    
+        throw std::invalid_argument("Null pointer passed to MessageHandler::handleView");
     try
     {
         nlohmann::json j = nlohmann::json::parse(jsonText);
 
         std::string type = j.at("type");
-        nlohmann::json data = j.contains("data")? j.at("data"): nlohmann::json(); 
-        
+        nlohmann::json data = j.contains("data")? j.at("data"): nlohmann::json();
+
         if(ConnectView* connectView = dynamic_cast<ConnectView*>(view))
         {
             if (type == "REQUEST_NICK") handleGetUsernameID(connectionManager, jsonText);
@@ -214,7 +214,7 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "ACK_ROOM_REQUEST") handleReceiveRoom(roomView, connectionManager, data);
-            else if (type == "ACK_CHANGE_PLAYER_COUNT") handleReceiveRoom(roomView, connectionManager, data);
+            // else if (type == "ACK_CHANGE_PLAYER_COUNT") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "UPDATE_ROOM") handleSpecialReceiveRoom(roomView, connectionManager, data);
             else handleIgnore();
         }

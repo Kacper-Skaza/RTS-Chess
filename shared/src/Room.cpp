@@ -108,9 +108,12 @@ void Room::setMaxPlayerCount(const int count)
 
 void Room::bumpMaxPlayerCount()
 {
-    int nextValue = (getMaxPlayerCount() % 8) + 2;
+    uint8_t nextValue = getMaxPlayerCount() + 2;
 
-    while (nextValue < getPlayerCount() && nextValue < 8)
+    if (nextValue > MAX_PLAYER_COUNT)
+        nextValue = MIN_PLAYER_COUNT;
+
+    while (nextValue < getPlayerCount())
         nextValue += 2;
 
     setMaxPlayerCount(nextValue);

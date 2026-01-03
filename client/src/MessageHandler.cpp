@@ -152,7 +152,8 @@ void MessageHandler::handleBoardMissmatch(GameView *view, const nlohmann::json &
 void MessageHandler::handleMove(GameView *view, ConnectionManager* connectionManager, const nlohmann::json &data)
 {
     nlohmann::json response;
-    if (view->getBoard()->makeMove(data.at("move").get<Move>()))
+    Move move = Move::from_json(data, view->getBoard());
+    if (view->getBoard()->makeMove(move))
     {
         response = {
             {"type", "ACK_MOVE_MADE"},

@@ -8,7 +8,7 @@ Move::Move()
 	this->recreated = false;
 }
 
-Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to) : piece(piece), from(from), to(to)
+Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to, bool recreated) : piece(piece), from(from), to(to), recreated(recreated)
 {
 	if (from.first < 0 || from.first >= BOARD_SIZE ||
 		from.second < 0 || from.second >= BOARD_SIZE ||
@@ -45,12 +45,16 @@ const std::pair<int, int> Move::getTo() const noexcept
 	return to;
 }
 
-void from_json(const nlohmann::json& j, Move& p)
+Move Move::from_json(const nlohmann::json& j, Board* board)
 {
-	p.piece = new Piece(Piece::from_json(j.at("piece")));
-	p.from = std::make_pair(j.at("from").at(0).get<int>(),j.at("from").at(1).get<int>()); 
-	p.to = std::make_pair(j.at("to").at(0).get<int>(),j.at("to").at(1).get<int>());
-	p.recreated = true;
+	int i = j.at("piece").at("id").get<int>()/10;
+	int k = j.at("piece").at("id").get<int>()%10;
+	
+	Move p(board->getBoardFull()[i][k], 
+		std::make_pair(j.at("from").at(0).get<int>(),j.at("from").at(1).get<int>()), 
+		std::make_pair(j.at("to").at(0).get<int>(),j.at("to").at(1).get<int>()),
+		true);
+	return p;
 }
 
 void to_json(nlohmann::json &j, const Move &p)

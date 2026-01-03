@@ -127,14 +127,17 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
             if (lobbyView->getCreateButton().checkIfClicked(mousePosX, mousePosY)) 
             {
                 //here create room check
-                nlohmann::json j = nlohmann::json{
-                    {"type", "ROOM_CREATE"},
-                    {"data", {{"roomName", lobbyView->getcreateBox().getString()}}}
-                };
-                MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
-                view.release();
-                view = std::make_unique<RoomView>(window, renderer, fontManager);
-                ((RoomView*)(view.get()))->updateUser(me);
+                if (!lobbyView->getcreateBox().getString().empty())
+                {
+                    nlohmann::json j = nlohmann::json{
+                        {"type", "ROOM_CREATE"},
+                        {"data", {{"roomName", lobbyView->getcreateBox().getString()}}}
+                    };
+                    MessageHandler::handleView(lobbyView, connectionManager, me, j.dump());
+                    view.release();
+                    view = std::make_unique<RoomView>(window, renderer, fontManager);
+                    ((RoomView*)(view.get()))->updateUser(me);
+                }
             }
             if (lobbyView->getcreateBox().checkIfClicked(mousePosX, mousePosY))
                 SDL_StartTextInput();
@@ -160,8 +163,26 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     {
         // Switch to GameView
         me->setSide(roomView->getOtherSelf()->getSide());
+        std::vector<std::string> whitePlayers;
+        std::vector<std::string> blackPlayers;
+        for (auto &&i : roomView->getRoom().getPlayerList())
+        {
+            if (i.second->getSide() == ChessSide::WHITE)
+            {
+                whitePlayers.push_back(i.second->getUsername());
+            }
+            else if (i.second->getSide() == ChessSide::BLACK)
+            {
+                blackPlayers.push_back(i.second->getUsername());
+            }
+            else
+            {
+                continue;
+            }
+        }
+        Board b = std::move(roomView->getRoom().getBoard());
         view.release();
-        view = std::make_unique<GameView>(window, renderer, fontManager, texturemanager, &roomView->getRoom().getBoard());
+        view = std::make_unique<GameView>(window, renderer, fontManager, texturemanager, &b, whitePlayers, blackPlayers);
         return;
     }
     
@@ -254,10 +275,12 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 if (gameView->getSelected() != std::make_pair(-1, -1))
                 {
                     //do move
-                    if(gameView->checkPiece() != ' ')
+                    if(gameView->checkPiece() != ' ' && me->getSide() != ChessSide::UNKNOWN)
                     {
                         if ((std::isupper(gameView->checkPiece())? ChessSide::WHITE: ChessSide::BLACK) == me->getSide())
                         {
+                            std::string s =(me->getSide() == ChessSide::BLACK)? "black\n": (me->getSide() == ChessSide::WHITE)? "white\n": "unknown\n";
+                            std::cout << s;
                             Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second],
                                       gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
                             if (gameView->getBoard()->makeMove(move))
@@ -292,7 +315,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             }
             
         }
-        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN)
+        if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN && !gameView->getChatBox().getString().empty())
         {
             nlohmann::json j = nlohmann::json{
                 {"type", "CHAT_MESSAGE"},

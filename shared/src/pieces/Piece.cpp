@@ -26,7 +26,7 @@ std::chrono::system_clock::time_point Piece::getLastMoveTime() const noexcept
 
 int Piece::getCooldown() const noexcept
 {
-	auto timeDif = std::chrono::duration_cast<std::chrono::milliseconds>(lastMoveTime - std::chrono::system_clock::now()).count();
+	auto timeDif = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastMoveTime).count();
 	return  timeDif - MAX_COOLDOWN;
 }
 

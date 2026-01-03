@@ -18,7 +18,9 @@ void MessageHandler::init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &c
 void MessageHandler::handle(Client *client, const std::string &jsonText)
 {
     if (!clientsPtr || !roomsPtr)
-        throw std::runtime_error("Error: Missing clientsPtr or roomsPtr in MessageHandler class !!!");
+        throw std::runtime_error("[ERR] MessageHandler is missing 'clientsPtr' or 'roomsPtr' !!!");
+    if (!client->connection || !client->user)
+        throw std::runtime_error("[ERR] Client is missing 'connection' or 'user' !!!");
 
     try
     {
@@ -28,7 +30,7 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         // Extract type and data
         std::string type = j.at("type");
         json data = j.contains("data") ? j.at("data") : json();
-        std::cout << "[SERVER] Handling: " << type << " for " << client->user->getUsername() << std::endl;
+        std::cout << "[MESSAGE_HANDLER] Handling: " << type << " for " << client->user->getUsername() << std::endl;
 
         // DEBUG
         std::cout << "[DEBUG] Received message: " << j.dump() << std::endl;
@@ -140,6 +142,9 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
         // Create room and add owner
         rooms[newRoomName] = std::move(std::make_unique<Room>(newRoomName, *client->user));
         client->user->setInRoom(true);
+        client->user->setPlayer(true);
+        client->user->setReady(false);
+        client->user->setSide(ChessSide::UNKNOWN);
         client->room = rooms[newRoomName].get();
 
         // Prepare ACK_ROOM_CREATE response
@@ -236,9 +241,12 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
 
         targetRoom->addUserToRoom(*client->user);
         client->user->setInRoom(true);
+        client->user->setPlayer(false);
+        client->user->setReady(false);
+        client->user->setSide(ChessSide::UNKNOWN);
         client->room = targetRoom;
 
-        // Broadcast to all in room
+        // Broadcast update to everyone in the room
         broadcastUpdateRoom(client->room);
 
         // Prepare ACK_ROOM_JOIN response
@@ -275,7 +283,7 @@ void MessageHandler::handleRoomLeave(Client *client)
         client->room->removePlayer(*client->user);
         client->room->removeUserFromRoom(*client->user);
 
-        // Broadcast to all in room
+        // Broadcast update to everyone in the room
         broadcastUpdateRoom(client->room);
 
         // If room is empty, remove it
@@ -313,58 +321,59 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
 
         if (!client->room)
         {
-            json response = {
+            json errResponse = {
                 {"type", "ERR_PLAYER_WANT"},
                 {"data", {{"reason", "User is not in the room !!!"}}}};
 
-            client->connection->sendMessage(response.dump());
+            client->connection->sendMessage(errResponse.dump());
             return;
         }
 
-        if (player == PlayerWant::PLAYER_READY)
+        // Set user to PlayerWant::SPECTATOR by default
+        client->room->removePlayer(*client->user);
+        client->user->setPlayer(false);
+        client->user->setReady(false);
+        client->user->setSide(ChessSide::UNKNOWN);
+
+        // Check if user wants to become a player
+        if (player == PlayerWant::PLAYER_READY || player == PlayerWant::PLAYER_NOT_READY)
         {
+            if (client->room->getPlayerCount() >= client->room->getMaxPlayerCount())
+            {
+                json errResponse = {
+                    {"type", "ERR_PLAYER_WANT"},
+                    {"data", {{"reason", "Room already has maximum number of players !!!"}}}};
+
+                client->connection->sendMessage(errResponse.dump());
+                return;
+            }
+
             client->room->addPlayer(*client->user);
-
             client->user->setPlayer(true);
-            client->user->setReady(true);
 
-            if (client->room->getPlayerCount() % 2 != 0)
-                client->user->setSide(ChessSide::WHITE);
+            if (player == PlayerWant::PLAYER_READY)
+            {
+                client->user->setReady(true);
+
+                if (client->room->getPlayerCount() % 2 != 0)
+                    client->user->setSide(ChessSide::WHITE);
+                else
+                    client->user->setSide(ChessSide::BLACK);
+            }
             else
-                client->user->setSide(ChessSide::BLACK);
-        }
-        else if (player == PlayerWant::PLAYER_NOT_READY)
-        {
-            client->room->addPlayer(*client->user);
-
-            client->user->setPlayer(true);
-            client->user->setReady(false);
-            client->user->setSide(ChessSide::UNKNOWN);
-        }
-        else if (player == PlayerWant::SPECTATOR)
-        {
-            client->room->removePlayer(*client->user);
-
-            client->user->setPlayer(false);
-            client->user->setReady(false);
-            client->user->setSide(ChessSide::UNKNOWN);
-        }
-        else
-        {
-            json response = {
-                {"type", "ERR_PLAYER_WANT"},
-                {"data", {{"reason", "Wrong arguments !!!"}}}};
-
-            client->connection->sendMessage(response.dump());
-            return;
+            {
+                client->user->setReady(false);
+                client->user->setSide(ChessSide::UNKNOWN);
+            }
         }
 
+        // Check if match is ready to start
         if (client->room->isMatchReady())
         {
             client->room->startMatch();
         }
 
-        // Broadcast to all in room
+        // Broadcast update to everyone in the room
         broadcastUpdateRoom(client->room);
 
         // Prepare ACK_PLAYER_WANT response
@@ -388,7 +397,7 @@ void MessageHandler::handleChatMessage(Client *client, const json &data)
     {
         std::string newMessage = data.at("message");
 
-        // Broadcast to all in room
+        // Broadcast update to everyone in the room
         broadcastUpdateChat(client->room, client->user.get(), newMessage);
 
         // Prepare ACK_CHAT_MESSAGE response
@@ -423,7 +432,7 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 
         if (client->room->getBoard().makeMove(newMove))
         {
-            // Broadcast to all in room
+            // Broadcast update to everyone in the room
             broadcastMoveMade(client->room, client->user.get(), newMove);
 
             // Prepare ACK_MAKE_MOVE response

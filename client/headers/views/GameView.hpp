@@ -32,6 +32,7 @@ private:
 
     std::vector<std::string> whitePlayers;
     std::vector<std::string> blackPlayers;
+    
     std::string chat;
     TextBox chatBox;
     

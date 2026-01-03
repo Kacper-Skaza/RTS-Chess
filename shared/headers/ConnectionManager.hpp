@@ -31,7 +31,7 @@ private:
     void recvRaw();
 
 public:
-    // ===== CONSTRUCTOR =====
+    // ===== INIT CONNECTION MANAGER =====
     explicit ConnectionManager(SOCKET socketFd);
     ~ConnectionManager() = default;
 

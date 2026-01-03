@@ -18,9 +18,9 @@ private:
 
     // ===== INCOMING MESSAGES =====
     static void handleRequestNick(Client *client, const json &data);
-    static void handleRoomCreate(Client *client, const json &data);
     static void handleRequestRooms(Client *client);
     static void handleRequestRoom(Client *client);
+    static void handleRoomCreate(Client *client, const json &data);
     static void handleRoomJoin(Client *client, const json &data);
     static void handleRoomLeave(Client *client);
     static void handlePlayerWant(Client *client, const json &data);

@@ -5,7 +5,7 @@
 const std::string ConnectionManager::PING = "{PING}";
 const std::string ConnectionManager::ACK_PING = "{ACK_PING}";
 
-// ===== CONSTRUCTOR =====
+// ===== INIT CONNECTION MANAGER =====
 
 ConnectionManager::ConnectionManager(SOCKET socketFd) : socketFd(socketFd)
 {

@@ -44,10 +44,6 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         {
             handleRequestNick(client, data);
         }
-        else if (type == "ROOM_CREATE")
-        {
-            handleRoomCreate(client, data);
-        }
         else if (type == "REQUEST_ROOMS")
         {
             handleRequestRooms(client);
@@ -55,6 +51,10 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         else if (type == "REQUEST_ROOM")
         {
             handleRequestRoom(client);
+        }
+        else if (type == "ROOM_CREATE")
+        {
+            handleRoomCreate(client, data);
         }
         else if (type == "ROOM_JOIN")
         {
@@ -118,49 +118,6 @@ void MessageHandler::handleRequestNick(Client *client, const json &data)
     }
 }
 
-void MessageHandler::handleRoomCreate(Client *client, const json &data)
-{
-    try
-    {
-        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        std::string newRoomName = data.at("roomName");
-
-        // Check if room name is already taken
-        for (const auto &[name, _] : rooms)
-        {
-            if (name == newRoomName)
-            {
-                json response = {
-                    {"type", "ERR_ROOM_CREATE"},
-                    {"data", {{"reason", "Room with this name already exists !!!"}}}};
-
-                client->connection->sendMessage(response.dump());
-                return;
-            }
-        }
-
-        // Create room and add owner
-        rooms[newRoomName] = std::move(std::make_unique<Room>(newRoomName, *client->user));
-        client->user->setInRoom(true);
-        client->user->setPlayer(true);
-        client->user->setReady(false);
-        client->user->setSide(ChessSide::UNKNOWN);
-        client->room = rooms[newRoomName].get();
-
-        // Prepare ACK_ROOM_CREATE response
-        json response = {
-            {"type", "ACK_ROOM_CREATE"},
-            {"data", {{"room", *client->room}}}};
-
-        client->connection->sendMessage(response.dump());
-        std::cout << "[DEBUG] User " << client->user->getUsername() << " created room: " << newRoomName << std::endl;
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "[ERR] Error in handleRoomCreate: " << e.what() << std::endl;
-    }
-}
-
 void MessageHandler::handleRequestRooms(Client *client)
 {
     try
@@ -212,6 +169,49 @@ void MessageHandler::handleRequestRoom(Client *client)
     catch (const std::exception &e)
     {
         std::cerr << "[ERR] Error in handleRequestRoom: " << e.what() << std::endl;
+    }
+}
+
+void MessageHandler::handleRoomCreate(Client *client, const json &data)
+{
+    try
+    {
+        std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
+        std::string newRoomName = data.at("roomName");
+
+        // Check if room name is already taken
+        for (const auto &[name, _] : rooms)
+        {
+            if (name == newRoomName)
+            {
+                json response = {
+                    {"type", "ERR_ROOM_CREATE"},
+                    {"data", {{"reason", "Room with this name already exists !!!"}}}};
+
+                client->connection->sendMessage(response.dump());
+                return;
+            }
+        }
+
+        // Create room and add owner
+        rooms[newRoomName] = std::move(std::make_unique<Room>(newRoomName, *client->user));
+        client->user->setInRoom(true);
+        client->user->setPlayer(true);
+        client->user->setReady(false);
+        client->user->setSide(ChessSide::WHITE);
+        client->room = rooms[newRoomName].get();
+
+        // Prepare ACK_ROOM_CREATE response
+        json response = {
+            {"type", "ACK_ROOM_CREATE"},
+            {"data", {{"room", *client->room}}}};
+
+        client->connection->sendMessage(response.dump());
+        std::cout << "[DEBUG] User " << client->user->getUsername() << " created room: " << newRoomName << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in handleRoomCreate: " << e.what() << std::endl;
     }
 }
 

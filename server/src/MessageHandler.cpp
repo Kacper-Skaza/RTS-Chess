@@ -101,20 +101,20 @@ void MessageHandler::handleRequestNick(Client *client, const json &data)
 {
     try
     {
+        // Data
         std::string newNick = data.at("nick");
 
-        if (client->user)
-        {
-            client->user->setUsername(newNick);
+        // Handle request
+        client->user->setUsername(newNick);
 
-            // Prepare ACK_REQUEST_NICK response
-            json response = {
-                {"type", "ACK_REQUEST_NICK"},
-                {"data", {{"id", client->user->getPlayerID()}}}};
+        // Prepare ACK_REQUEST_NICK response
+        json response = {
+            {"type", "ACK_REQUEST_NICK"},
+            {"data", {{"id", client->user->getPlayerID()}}}};
 
-            client->connection->sendMessage(response.dump());
-            std::cout << "[DEBUG] User " << client->user->getPlayerID() << " set nickname to: " << newNick << std::endl;
-        }
+        // Send response
+        client->connection->sendMessage(response.dump());
+        std::cout << "[DEBUG] User on FD " << client->user->getPlayerID() << " set nickname to '" << newNick << "'" << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -126,9 +126,11 @@ void MessageHandler::handleRequestRooms(Client *client)
 {
     try
     {
+        // Data
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
-        json roomsArray = json::array();
 
+        // Handle request
+        json roomsArray = json::array();
         for (const auto &[name, roomPtr] : rooms)
         {
             roomsArray.push_back({name, *roomPtr});
@@ -139,6 +141,7 @@ void MessageHandler::handleRequestRooms(Client *client)
             {"type", "ACK_REQUEST_ROOMS"},
             {"data", {{"rooms", roomsArray}}}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] Sent room list to " << client->user->getUsername() << std::endl;
     }
@@ -152,6 +155,7 @@ void MessageHandler::handleRequestRoom(Client *client)
 {
     try
     {
+        // Check if client is in the room
         if (!client->room)
         {
             json errResponse = {
@@ -167,6 +171,7 @@ void MessageHandler::handleRequestRoom(Client *client)
             {"type", "ACK_REQUEST_ROOM"},
             {"data", {{"room", *client->room}}}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] Sent room to " << client->user->getUsername() << std::endl;
     }
@@ -180,6 +185,7 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
 {
     try
     {
+        // Data
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string newRoomName = data.at("roomName");
 
@@ -221,6 +227,7 @@ void MessageHandler::handleRoomCreate(Client *client, const json &data)
             {"type", "ACK_ROOM_CREATE"},
             {"data", {{"room", *client->room}}}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User " << client->user->getUsername() << " created room: " << newRoomName << std::endl;
     }
@@ -234,10 +241,12 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
 {
     try
     {
+        // Data
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
         std::string roomName = data.at("roomName");
         Room *targetRoom = nullptr;
 
+        // Handle request
         auto it = rooms.find(roomName);
         if (it != rooms.end())
         {
@@ -269,6 +278,7 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
             {"type", "ACK_ROOM_JOIN"},
             {"data", {{"room", *targetRoom}}}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User " << client->user->getUsername() << " joined: " << roomName << std::endl;
     }
@@ -282,8 +292,10 @@ void MessageHandler::handleRoomLeave(Client *client)
 {
     try
     {
+        // Data
         std::unordered_map<std::string, std::unique_ptr<Room>> &rooms = *roomsPtr;
 
+        // Check if client is in the room
         if (!client->room)
         {
             json errResponse = {
@@ -319,6 +331,7 @@ void MessageHandler::handleRoomLeave(Client *client)
             {"type", "ACK_ROOM_LEAVE"},
             {"data", nullptr}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User " << client->user->getUsername() << " left room" << std::endl;
     }
@@ -332,8 +345,10 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
 {
     try
     {
+        // Data
         PlayerWant player = data.at("player");
 
+        // Check if client is in the room
         if (!client->room)
         {
             json errResponse = {
@@ -381,9 +396,10 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
             {"type", "ACK_PLAYER_WANT"},
             {"data", {{"player", player}}}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
-        std::cout << "[DEBUG] User " << client->user->getUsername();
-        std::cout << " is [" << client->user->isPlayer() << ", " << client->user->isReady() << "]" << std::endl;
+        std::cout << "[DEBUG] User '" << client->user->getUsername() << "' in room '" << client->room->getRoomName() << "' ";
+        std::cout << "is [" << client->user->isPlayer() << ", " << client->user->isReady() << "]" << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -395,6 +411,7 @@ void MessageHandler::handleChangePlayerCount(Client *client)
 {
     try
     {
+        // Check if client is in the room
         if (!client->room)
         {
             json errResponse = {
@@ -416,9 +433,10 @@ void MessageHandler::handleChangePlayerCount(Client *client)
             {"type", "ACK_CHANGE_PLAYER_COUNT"},
             {"data", nullptr}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
-        std::cout << "[DEBUG] User " << client->user->getUsername();
-        std::cout << " changed MaxPlayerCount in room " << client->room->getRoomName() << std::endl;
+        std::cout << "[DEBUG] User '" << client->user->getUsername() << "' in room '" << client->room->getRoomName() << "' ";
+        std::cout << "changed MaxPlayerCount in room " << client->room->getMaxPlayerCount() << std::endl;
     }
     catch (const std::exception &e)
     {
@@ -430,6 +448,7 @@ void MessageHandler::handleChatMessage(Client *client, const json &data)
 {
     try
     {
+        // Data
         std::string newMessage = data.at("message");
 
         // Broadcast update to everyone in the room
@@ -440,6 +459,7 @@ void MessageHandler::handleChatMessage(Client *client, const json &data)
             {"type", "ACK_CHAT_MESSAGE"},
             {"data", nullptr}};
 
+        // Send response
         client->connection->sendMessage(response.dump());
         std::cout << "[DEBUG] User " << client->user->getUsername() << " send message. " << std::endl;
     }
@@ -453,8 +473,10 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 {
     try
     {
+        // Data
         Move newMove = Move::from_json(data.at("move"), &client->room->getBoard());
 
+        // Check if client is in the room
         if (!client->room || !client->room->isMatchStarted())
         {
             json errResponse = {

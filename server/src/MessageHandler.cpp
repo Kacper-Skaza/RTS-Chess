@@ -526,6 +526,14 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
         // Broadcast update to everyone in the room
         broadcastMoveMade(client->room, client->user.get(), data.at("move"));
 
+        // Check if match has ended
+        client->room->getBoard().checkGameEnd();
+        if (client->room->isMatchStarted() && client->room->getBoard().getGameState() != MatchEndReasons::NOT_ENDED)
+        {
+            // Broadcast update to everyone in the room
+            broadcastGameFinale(client->room);
+        }
+
         // Prepare ACK_MAKE_MOVE response
         json response = {
             {"type", "ACK_MAKE_MOVE"},
@@ -545,61 +553,6 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
 }
 
 // ===== OUTGOING MESSAGES =====
-
-void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const json &newMove)
-{
-    try
-    {
-        // Data
-        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
-        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
-
-        // Prepare MOVE_MADE broadcast
-        json broadcastData = {
-            {"type", "MOVE_MADE"},
-            {"data", {{"move", newMove}}}};
-
-        // Broadcast update to everyone in the room
-        for (const auto &[_, roomUser] : roomUsers)
-        {
-            unsigned long long id = roomUser->getPlayerID();
-
-            // Do not send a move to the client making it
-            if (id != user->getPlayerID())
-                clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
-        }
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "[ERR] Error in broadcastMoveMade: " << e.what() << std::endl;
-    }
-}
-
-void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, const std::string &newMessage)
-{
-    try
-    {
-        // Data
-        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
-        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
-
-        // Prepare UPDATE_CHAT broadcast
-        json broadcastData = {
-            {"type", "UPDATE_CHAT"},
-            {"data", {{"message", newMessage}, {"user", *user}}}};
-
-        // Broadcast update to everyone in the room
-        for (const auto &[_, roomUser] : roomUsers)
-        {
-            unsigned long long id = roomUser->getPlayerID();
-            clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
-        }
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << "[ERR] Error in broadcastUpdateChat: " << e.what() << std::endl;
-    }
-}
 
 void MessageHandler::broadcastUpdateRoom(Room *room)
 {
@@ -630,5 +583,86 @@ void MessageHandler::broadcastUpdateRoom(Room *room)
     catch (const std::exception &e)
     {
         std::cerr << "[ERR] Error in broadcastUpdateRoom: " << e.what() << std::endl;
+    }
+}
+
+void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, const std::string &newMessage)
+{
+    try
+    {
+        // Data
+        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
+
+        // Prepare UPDATE_CHAT broadcast
+        json broadcastData = {
+            {"type", "UPDATE_CHAT"},
+            {"data", {{"message", newMessage}, {"user", *user}}}};
+
+        // Broadcast update to everyone in the room
+        for (const auto &[_, roomUser] : roomUsers)
+        {
+            unsigned long long id = roomUser->getPlayerID();
+            clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in broadcastUpdateChat: " << e.what() << std::endl;
+    }
+}
+
+void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const json &newMove)
+{
+    try
+    {
+        // Data
+        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
+
+        // Prepare MOVE_MADE broadcast
+        json broadcastData = {
+            {"type", "MOVE_MADE"},
+            {"data", {{"move", newMove}}}};
+
+        // Broadcast update to everyone in the room
+        for (const auto &[_, roomUser] : roomUsers)
+        {
+            unsigned long long id = roomUser->getPlayerID();
+
+            // Do not send a move to the client making it
+            if (id != user->getPlayerID())
+                clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in broadcastMoveMade: " << e.what() << std::endl;
+    }
+}
+
+void MessageHandler::broadcastGameFinale(Room *room)
+{
+    try
+    {
+        // Data
+        std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
+        const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
+
+        // Prepare GAME_FINALE broadcast
+        json broadcastData = {
+            {"type", "GAME_FINALE"},
+            {"data", {{"matchEndReasons", room->getBoard().getGameState()}}}};
+
+        // Broadcast update to everyone in the room
+        for (const auto &[_, roomUser] : roomUsers)
+        {
+            unsigned long long id = roomUser->getPlayerID();
+            clients[static_cast<SOCKET>(id)]->connection->sendMessage(broadcastData.dump());
+        }
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in broadcastGameFinale: " << e.what() << std::endl;
     }
 }

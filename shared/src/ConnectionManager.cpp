@@ -2,6 +2,10 @@
 
 ConnectionManager::ConnectionManager(SOCKET socketFd) : socketFd(socketFd)
 {
+    std::chrono::steady_clock::time_point currentTime = std::chrono::steady_clock::now();
+    this->lastPingSend = currentTime;
+    this->lastPingRecv = currentTime;
+
     this->setNonBlocking(this->socketFd);
     this->update();
 }

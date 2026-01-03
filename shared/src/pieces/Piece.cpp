@@ -19,6 +19,11 @@ bool Piece::getMoveCount() const noexcept
 	return moveCount;
 }
 
+std::chrono::system_clock::time_point Piece::getLastMoveTime() const noexcept
+{
+    return this->lastMoveTime;
+}
+
 int Piece::getCooldown() const noexcept
 {
 	auto timeDif = std::chrono::duration_cast<std::chrono::milliseconds>(lastMoveTime - std::chrono::system_clock::now()).count();

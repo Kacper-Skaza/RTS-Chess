@@ -30,6 +30,7 @@ public:
 	int  getID() const noexcept;
 	char getSymbol() const noexcept;
 	bool getMoveCount() const noexcept;
+	std::chrono::system_clock::time_point getLastMoveTime() const noexcept;
 	int getCooldown() const noexcept;
 	
 	void setMoveCount(int count);

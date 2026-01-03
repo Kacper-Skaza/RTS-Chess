@@ -5,7 +5,7 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     Board *board, std::vector<std::string> whitePlayers, std::vector<std::string> blackPlayers,
     std::string roomName)
      :
-    chatBox(window, renderer, fontManager, {100,100,200,600}, "Roboto/Roboto-Medium", 18, true), selected(-1, -1)
+    chatBox(window, renderer, fontManager, {1200, 980, 620, 60}, "Roboto/Roboto-Medium", 18, true), selected(-1, -1)
 {
     //init basic variables
     this->window = window;
@@ -56,8 +56,11 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     destinationRectangles.emplace("chat_box", SDL_Rect{1200, 980, 620, 60});
 
     //add destination for players
-    destinationRectangles.emplace("player_white", SDL_Rect{40, 1069, 1024, 30});
-    destinationRectangles.emplace("player_black", SDL_Rect{40, 5, 1024, 30});
+    int w,h;
+    SDL_QueryTexture(textures.at("player_black"), nullptr, nullptr, &w, &h);
+    destinationRectangles.emplace("player_black", SDL_Rect{40, 1069, w, h});
+    SDL_QueryTexture(textures.at("player_white"), nullptr, nullptr, &w, &h);
+    destinationRectangles.emplace("player_white", SDL_Rect{40, 5, w, h});
 
     //Debug textures
     textures.emplace("piece_marker", textureManager->getTexture("piece_marker"));
@@ -76,16 +79,18 @@ void GameView::render()
     SDL_RenderCopy(renderer, textures.at("chessboard"), nullptr, &destinationRectangles.at("chessboard"));
 
     //draw chat
+    SDL_Rect rect = destinationRectangles.at("chat");
     SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
     SDL_RenderFillRect(renderer, &destinationRectangles.at("chat"));
-    chatBox.genTexture();
-    SDL_RenderCopy(renderer, chatBox.getTexture(), nullptr, &destinationRectangles.at("chat"));
+    SDL_Texture* tex = fontManager->createWrappedTextTexture(chat, "Roboto/Roboto-Medium", 20, {255,255,255,255}, 610);
+    SDL_QueryTexture(tex, nullptr, nullptr, &rect.w, &rect.h);
+    SDL_RenderCopy(renderer, tex, nullptr, &rect);
 
     //draw chat button
     SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-    SDL_RenderFillRect(renderer, &destinationRectangles.at("chat_box"));
+    SDL_RenderFillRect(renderer, &chatBox.getBoxPos());
     chatBox.genTexture();
-    SDL_RenderCopy(renderer, chatBox.getTexture(), nullptr, &destinationRectangles.at("chat_box"));
+    SDL_RenderCopy(renderer, chatBox.getTexture(), nullptr, &chatBox.getTextureRect());
 
     //render players nicks over and under the board
     SDL_RenderCopy(renderer, textures.at("player_white"), nullptr, &destinationRectangles.at("player_white"));

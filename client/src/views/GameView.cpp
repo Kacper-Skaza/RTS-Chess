@@ -106,6 +106,8 @@ void GameView::render()
         SDL_RenderCopy(renderer, textures.at("piece_marker"), nullptr, &destinationRectangles.at("piece_universal"));
     }
 
+    std::vector<std::vector<bool>> cooldownBoard = this->getBoard()->getBoardCooldown();
+    SDL_SetRenderDrawColor(renderer, 114, 172, 220, 150);
     for (size_t i = 0; i < BOARD_SIZE; i++)
     {
         for (size_t j = 0; j < BOARD_SIZE; j++)
@@ -154,6 +156,9 @@ void GameView::render()
             default:
                 break;
             }
+
+            if (!cooldownBoard[i][j])
+                SDL_RenderFillRect(renderer, &destinationRectangles.at("piece_universal"));
         }
     }
 

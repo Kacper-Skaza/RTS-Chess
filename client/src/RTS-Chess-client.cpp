@@ -55,6 +55,7 @@ int main()
 	}
 
 	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	if (!renderer)
 	{
 		std::cerr << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;

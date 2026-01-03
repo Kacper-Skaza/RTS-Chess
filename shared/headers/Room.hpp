@@ -52,6 +52,7 @@ public:
     void removePlayer(const User& player);
     void removeUserFromRoom(const User& user);
     void setMaxPlayerCount(const int count);
+    void bumpMaxPlayerCount();
 
     // Other metchods
     void startMatch();

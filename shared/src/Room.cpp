@@ -100,8 +100,20 @@ const std::unordered_map<unsigned int, User*> Room::getPlayerList()
 
 void Room::setMaxPlayerCount(const int count)
 {
-    if (count >= MIN_PLAYER_COUNT && count <= MAX_PLAYER_COUNT) return;
+    if (count >= MIN_PLAYER_COUNT && count <= MAX_PLAYER_COUNT)
+        return;
+
     this->maxPlayerCount = count;
+}
+
+void Room::bumpMaxPlayerCount()
+{
+    int nextValue = (getMaxPlayerCount() % 8) + 2;
+
+    while (nextValue < getPlayerCount() && nextValue < 8)
+        nextValue += 2;
+
+    setMaxPlayerCount(nextValue);
 }
 
 void Room::addUserToRoom(const User& joining)

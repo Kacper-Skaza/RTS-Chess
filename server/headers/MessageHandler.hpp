@@ -12,32 +12,32 @@ using json = nlohmann::json;
 class MessageHandler
 {
 private:
-    // ===== Pointers to server data =====
+    // ===== SERVER DATA =====
     static std::unordered_map<SOCKET, std::unique_ptr<Client>> *clientsPtr;
     static std::unordered_map<std::string, std::unique_ptr<Room>> *roomsPtr;
 
-    // ===== Incoming messages =====
+    // ===== INCOMING MESSAGES =====
     static void handleRequestNick(Client *client, const json &data);
     static void handleRoomCreate(Client *client, const json &data);
     static void handleRequestRooms(Client *client);
     static void handleRequestRoom(Client *client);
     static void handleRoomJoin(Client *client, const json &data);
-    static void handleRoomLeave(Client *client, const json &data);
+    static void handleRoomLeave(Client *client);
     static void handlePlayerWant(Client *client, const json &data);
     static void handleChatMessage(Client *client, const json &data);
     static void handleMakeMove(Client *client, const json &data);
 
-    // ===== Outgoing messages =====
+    // ===== OUTGOING MESSAGES =====
     static void broadcastMoveMade(const Room *room, const User *user, const Move &newMove);
     static void broadcastUpdateChat(const Room *room, const User *user, const std::string &newMessage);
-    static void broadcastUpdateRoom(const Room *room, const User *user);
+    static void broadcastUpdateRoom(const Room *room);
 
 public:
     MessageHandler() = delete;
 
-    // ===== Init pointers =====
+    // ===== INIT SERVER DATA =====
     static void init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &clientsRef, std::unordered_map<std::string, std::unique_ptr<Room>> &roomsRef);
 
-    // ===== Main entry point =====
+    // ===== ENTRY POINT =====
     static void handle(Client *client, const std::string &jsonText);
 };

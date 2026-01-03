@@ -1,9 +1,11 @@
 #include "../headers/MessageHandler.hpp"
 
-// ===== Init pointers =====
+// ===== SERVER DATA =====
 
 std::unordered_map<SOCKET, std::unique_ptr<Client>> *MessageHandler::clientsPtr = nullptr;
 std::unordered_map<std::string, std::unique_ptr<Room>> *MessageHandler::roomsPtr = nullptr;
+
+// ===== INIT SERVER DATA =====
 
 void MessageHandler::init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &clientsRef, std::unordered_map<std::string, std::unique_ptr<Room>> &roomsRef)
 {
@@ -11,12 +13,12 @@ void MessageHandler::init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &c
     roomsPtr = &roomsRef;
 }
 
-// ===== Main entry point =====
+// ===== ENTRY POINT =====
 
 void MessageHandler::handle(Client *client, const std::string &jsonText)
 {
     if (!clientsPtr || !roomsPtr)
-        throw std::runtime_error("Error: Missing clientsPtr or roomsPtr in MessageHandler class");
+        throw std::runtime_error("Error: Missing clientsPtr or roomsPtr in MessageHandler class !!!");
 
     try
     {
@@ -58,7 +60,7 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
         }
         else if (type == "ROOM_LEAVE")
         {
-            handleRoomLeave(client, data);
+            handleRoomLeave(client);
         }
         else if (type == "PLAYER_WANT")
         {
@@ -87,7 +89,7 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
     }
 }
 
-// ===== Incoming messages =====
+// ===== INCOMING MESSAGES =====
 
 void MessageHandler::handleRequestNick(Client *client, const json &data)
 {
@@ -237,7 +239,7 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
         client->room = targetRoom;
 
         // Broadcast to all in room
-        broadcastUpdateRoom(client->room, client->user.get());
+        broadcastUpdateRoom(client->room);
 
         // Prepare ACK_ROOM_JOIN response
         json response = {
@@ -253,7 +255,7 @@ void MessageHandler::handleRoomJoin(Client *client, const json &data)
     }
 }
 
-void MessageHandler::handleRoomLeave(Client *client, const json &data)
+void MessageHandler::handleRoomLeave(Client *client)
 {
     try
     {
@@ -273,7 +275,7 @@ void MessageHandler::handleRoomLeave(Client *client, const json &data)
         client->room->removePlayer(*client->user);
 
         // Broadcast to all in room
-        broadcastUpdateRoom(client->room, client->user.get());
+        broadcastUpdateRoom(client->room);
 
         // If room is empty, remove it
         if (client->room->getPlayerCount() == 0)
@@ -343,8 +345,13 @@ void MessageHandler::handlePlayerWant(Client *client, const json &data)
             return;
         }
 
+        if (client->room->isMatchReady())
+        {
+            client->room->startMatch();
+        }
+
         // Broadcast to all in room
-        broadcastUpdateRoom(client->room, client->user.get());
+        broadcastUpdateRoom(client->room);
 
         // Prepare ACK_PLAYER_WANT response
         json response = {
@@ -429,7 +436,7 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
     }
 }
 
-// ===== Outgoing messages =====
+// ===== OUTGOING MESSAGES =====
 
 void MessageHandler::broadcastMoveMade(const Room *room, const User *user, const Move &newMove)
 {
@@ -484,7 +491,7 @@ void MessageHandler::broadcastUpdateChat(const Room *room, const User *user, con
     }
 }
 
-void MessageHandler::broadcastUpdateRoom(const Room *room, const User *user)
+void MessageHandler::broadcastUpdateRoom(const Room *room)
 {
     try
     {

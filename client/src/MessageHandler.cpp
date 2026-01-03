@@ -171,7 +171,7 @@ void MessageHandler::handleMove(GameView *view, ConnectionManager* connectionMan
 
 void MessageHandler::handleGameFinale(GameView *view, const nlohmann::json &data)
 {
-    view->setGameState(data.at("reason").get<MatchEndReasons>());
+    view->getBoard()->setGameState(data.at("matchEndReasons").get<MatchEndReasons>());
 }
 
 void MessageHandler::handlePlayerCountChange(ConnectionManager* connectionManager, const std::string &jsonText)

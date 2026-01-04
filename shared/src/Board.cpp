@@ -117,7 +117,7 @@ bool Board::makeMove(const Move &move)
 	std::pair<int, int> from = move.getFrom();
 	std::pair<int, int> to = move.getTo();
 
-	//Validate cooldown
+	// Validate cooldown
 	if (piece->getCooldown() < 0)
 	{
 		return false;
@@ -188,6 +188,21 @@ bool Board::makeMove(const Move &move)
 	this->board[from.first][from.second]->makeMove();
 	this->board[to.first][to.second] = std::move(board[from.first][from.second]);
 	this->board[from.first][from.second].reset();
+
+    // Check if promotion occurs
+    if (this->board[to.first][to.second]->getSymbol() == 'P' && to.first == 7)
+    {
+        int newID = this->board[to.first][to.second]->getID();
+        this->board[to.first][to.second].reset();
+        this->board[to.first][to.second] = std::make_unique<Queen>('W', newID);
+    }
+    if (this->board[to.first][to.second]->getSymbol() == 'p' && to.first == 0)
+    {
+        int newID = this->board[to.first][to.second]->getID();
+        this->board[to.first][to.second].reset();
+        this->board[to.first][to.second] = std::make_unique<Queen>('B', newID);
+    }
+
     return true;
 }
 

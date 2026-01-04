@@ -5,7 +5,7 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     Board *board, std::vector<std::string> whitePlayers, std::vector<std::string> blackPlayers,
     std::string roomName)
      :
-    chatBox(window, renderer, fontManager, {1200, 980, 620, 60}, "Roboto/Roboto-Medium", 18, true, {0,0,0,255}, false, "Your message..."), 
+    chatBox(window, renderer, fontManager, {1260, 980, 620, 60}, "Roboto/Roboto-Medium", 18, true, {0,0,0,255}, false, "Your message..."), 
     selected(-1, -1)
 {
     //init basic variables
@@ -40,28 +40,28 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     std::string whiteNames;
     for (const auto& name : whitePlayers)
     {
-        whiteNames += name + " ";
+        whiteNames += name + "\n";
     }
     std::string blackNames;
     for (const auto& name : blackPlayers)
     {
-        blackNames += name + " ";
+        blackNames += name + "\n";
     }
-    textures.emplace("player_white", fontManager->getFontTexture(whiteNames, "Roboto/Roboto-Medium", 24, {255,255,255,255}));
-    textures.emplace("player_black", fontManager->getFontTexture(blackNames, "Roboto/Roboto-Medium", 24, {255,255,255,255}));
+    textures.emplace("player_white", fontManager->createWrappedTextTexture(whiteNames, "Roboto/Roboto-Medium", 24, {255,255,255,255}, 300));
+    textures.emplace("player_black", fontManager->createWrappedTextTexture(blackNames, "Roboto/Roboto-Medium", 24, {0,0,0,255}, 300));
 
     //add destination to textures
     destinationRectangles.emplace("chessboard", SDL_Rect{40, 40, 1024, 1024});
     destinationRectangles.emplace("piece_universal", SDL_Rect{0, 0, 128, 128});
-    destinationRectangles.emplace("chat", SDL_Rect{1200, 40, 620, 920});
-    destinationRectangles.emplace("chat_box", SDL_Rect{1200, 980, 620, 60});
+    destinationRectangles.emplace("chat", SDL_Rect{1260, 40, 620, 920});
+    destinationRectangles.emplace("chat_box", SDL_Rect{1260, 980, 620, 60});
 
     //add destination for players
     int w,h;
     SDL_QueryTexture(textures.at("player_black"), nullptr, nullptr, &w, &h);
-    destinationRectangles.emplace("player_black", SDL_Rect{40, 1069, w, h});
+    destinationRectangles.emplace("player_black", SDL_Rect{1069, 1064-h, w, h});
     SDL_QueryTexture(textures.at("player_white"), nullptr, nullptr, &w, &h);
-    destinationRectangles.emplace("player_white", SDL_Rect{40, 5, w, h});
+    destinationRectangles.emplace("player_white", SDL_Rect{1069, 40, w, h});
 
     //Debug textures
     textures.emplace("piece_marker", textureManager->getTexture("piece_marker"));

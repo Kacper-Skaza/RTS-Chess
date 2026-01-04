@@ -197,6 +197,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
         Board b = std::move(roomView->getRoom().getBoard());
         view.release();
         view = std::make_unique<GameView>(window, renderer, fontManager, texturemanager, &b, whitePlayers, blackPlayers);
+        roomReturnCounter = 300;
         return;
     }
     
@@ -264,7 +265,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
         {
             // Return to RoomView
             nlohmann::json j = nlohmann::json{
-                {"type", "ROOM_REQUEST"},
+                {"type", "REQUEST_ROOM"},
                 {"data", {{"roomName", gameView->getOldRoomName()}}}
             };
             MessageHandler::handleView(gameView, connectionManager, me, j.dump());

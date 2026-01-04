@@ -213,7 +213,7 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "CHANGE_PLAYER_COUNT") handlePlayerCountChange(connectionManager, jsonText);
             else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, connectionManager, data);
-            else if (type == "ACK_ROOM_REQUEST") handleReceiveRoom(roomView, connectionManager, data);
+            else if (type == "ACK_REQUEST_ROOM") handleReceiveRoom(roomView, connectionManager, data);
             // else if (type == "ACK_CHANGE_PLAYER_COUNT") handleReceiveRoom(roomView, connectionManager, data);
             else if (type == "UPDATE_ROOM") handleSpecialReceiveRoom(roomView, connectionManager, data);
             else handleIgnore();

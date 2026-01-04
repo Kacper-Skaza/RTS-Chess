@@ -23,17 +23,29 @@ bool King::validateMove(const Move &move, const std::vector<std::vector<Piece *>
 	if (piece != this || piece == nullptr)
 		return false;
 
-	// Check if move is castling
-	if (target != nullptr)
-	{
-		if (std::toupper(target->getSymbol()) == 'R' &&
-			std::isupper(piece->getSymbol()) == std::isupper(target->getSymbol()) &&
-			piece->getMoveCount() == 0 &&
-			target->getMoveCount() == 0)
-		{
-			return true;
-		}
-	}
+    // Check if move is castling
+    if (target)
+    {
+        if (from.first == to.first &&
+            std::toupper(target->getSymbol()) == 'R' &&
+            std::isupper(piece->getSymbol()) == std::isupper(target->getSymbol()) &&
+            piece->getMoveCount() == 0 &&
+            target->getMoveCount() == 0)
+        {
+            // Check for obstruction in horizontal move
+            // Right
+            for (int y = from.second + 1; y < to.second; y++)
+                if (board[from.first][y])
+                    return false;
+
+            // Left
+            for (int y = from.second - 1; y > to.second; y--)
+                if (board[from.first][y])
+                    return false;
+
+            return true;
+        }
+    }
 
 	// Check if move is one square in any direction
 	if (!(dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)))

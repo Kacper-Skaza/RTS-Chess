@@ -52,7 +52,7 @@ public:
         std::string roomName = "");
     ~GameView() = default;
 
-    void render();
+    void render() override;
 
     void updateChat(std::string& message, User& sender);
 

@@ -34,7 +34,7 @@ public:
     TextBox& getUserBox();
     TextBox& getConnectButton();
 
-    void render();
+    void render() override;
     bool validateConnectionData();
     SOCKET connectToServer();
 };

@@ -18,6 +18,7 @@ private:
     static std::unordered_map<std::string, std::unique_ptr<Room>> *roomsPtr;
 
     // ===== INCOMING MESSAGES =====
+    static void handleErrorMoveMade(Client *client);
     static void handleRequestNick(Client *client, const json &data);
     static void handleRequestRooms(Client *client);
     static void handleRequestRoom(Client *client);

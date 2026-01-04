@@ -35,54 +35,69 @@ void MessageHandler::handleMessage(Client *client, const std::string &jsonText)
         // DEBUG
         std::cout << "[DEBUG] Received message: " << j.dump() << std::endl;
 
-        // Handle specific request type
+        // Handle ACK and ERR messages
         if (type.rfind("ACK_", 0) == 0)
         {
             std::cout << "[DEBUG] Received ACK: " << type << " from " << client->user->getUsername() << std::endl;
         }
-        else if (type == "REQUEST_NICK")
+        else if (type.rfind("ERR_", 0) == 0)
         {
-            handleRequestNick(client, data);
-        }
-        else if (type == "REQUEST_ROOMS")
-        {
-            handleRequestRooms(client);
-        }
-        else if (type == "REQUEST_ROOM")
-        {
-            handleRequestRoom(client);
-        }
-        else if (type == "ROOM_CREATE")
-        {
-            handleRoomCreate(client, data);
-        }
-        else if (type == "ROOM_JOIN")
-        {
-            handleRoomJoin(client, data);
-        }
-        else if (type == "ROOM_LEAVE")
-        {
-            handleRoomLeave(client);
-        }
-        else if (type == "PLAYER_WANT")
-        {
-            handlePlayerWant(client, data);
-        }
-        else if (type == "CHANGE_PLAYER_COUNT")
-        {
-            handleChangePlayerCount(client);
-        }
-        else if (type == "CHAT_MESSAGE")
-        {
-            handleChatMessage(client, data);
-        }
-        else if (type == "MAKE_MOVE")
-        {
-            handleMakeMove(client, data);
+            if (type == "ERR_MOVE_MADE")
+            {
+                handleErrorMoveMade(client);
+            }
+            else
+            {
+                std::cout << "[ERR] Received unknown ERR: " << type << " from " << client->user->getUsername() << std::endl;
+            }
         }
         else
         {
-            std::cerr << "[ERR] Unknown message type received: " << type << " from " << client->user->getUsername() << std::endl;
+            // Handle specific messages type
+            if (type == "REQUEST_NICK")
+            {
+                handleRequestNick(client, data);
+            }
+            else if (type == "REQUEST_ROOMS")
+            {
+                handleRequestRooms(client);
+            }
+            else if (type == "REQUEST_ROOM")
+            {
+                handleRequestRoom(client);
+            }
+            else if (type == "ROOM_CREATE")
+            {
+                handleRoomCreate(client, data);
+            }
+            else if (type == "ROOM_JOIN")
+            {
+                handleRoomJoin(client, data);
+            }
+            else if (type == "ROOM_LEAVE")
+            {
+                handleRoomLeave(client);
+            }
+            else if (type == "PLAYER_WANT")
+            {
+                handlePlayerWant(client, data);
+            }
+            else if (type == "CHANGE_PLAYER_COUNT")
+            {
+                handleChangePlayerCount(client);
+            }
+            else if (type == "CHAT_MESSAGE")
+            {
+                handleChatMessage(client, data);
+            }
+            else if (type == "MAKE_MOVE")
+            {
+                handleMakeMove(client, data);
+            }
+            else
+            {
+                std::cerr << "[ERR] Received unknown message type: " << type << " from " << client->user->getUsername() << std::endl;
+            }
         }
     }
     catch (const json::parse_error &e)
@@ -124,6 +139,36 @@ void MessageHandler::handleDisconnect(Client *client, const SOCKET &fd)
 }
 
 // ===== INCOMING MESSAGES =====
+
+void MessageHandler::handleErrorMoveMade(Client *client)
+{
+    try
+    {
+        // Check if client is in the room
+        if (!client->room || !client->room->isMatchStarted())
+        {
+            json errResponse = {
+                {"type", "ERR_ERR_MOVE_MADE"},
+                {"data", {{"reason", "You are not in the room !!!"}}}};
+
+            client->connection->sendMessage(errResponse.dump());
+            return;
+        }
+
+        // Prepare ACK_ERR_MOVE_MADE response
+        json response = {
+            {"type", "ACK_ERR_MOVE_MADE"},
+            {"data", {{"board", client->room->getBoard()}}}};
+
+        // Send response
+        client->connection->sendMessage(response.dump());
+        std::cout << "[DEBUG] Sent board to " << client->user->getUsername() << " due to 'ERR_MOVE_MADE'" << std::endl;
+    }
+    catch (const std::exception &e)
+    {
+        std::cerr << "[ERR] Error in handleErrorMoveMade: " << e.what() << std::endl;
+    }
+}
 
 void MessageHandler::handleRequestNick(Client *client, const json &data)
 {
@@ -534,7 +579,7 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
         {
             json errResponse = {
                 {"type", "ERR_MAKE_MOVE"},
-                {"data", {{"reason", "Move not allowed at this time !!!"}}}};
+                {"data", {{"reason", "You are not in the room !!!"}}}};
 
             client->connection->sendMessage(errResponse.dump());
             return;

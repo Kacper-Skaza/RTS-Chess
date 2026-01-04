@@ -30,6 +30,11 @@ int Piece::getCooldown() const noexcept
 	return  timeDif - MAX_COOLDOWN;
 }
 
+void Piece::setLastMoveTime(std::chrono::system_clock::time_point time)
+{
+	this->lastMoveTime = time;
+}
+
 void Piece::setMoveCount(int count)
 {
 	this->moveCount = count;

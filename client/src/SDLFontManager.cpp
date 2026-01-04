@@ -133,10 +133,6 @@ SDL_Texture *SDLFontManager::createWrappedTextTexture(const std::string &str, co
     );
     SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(this->renderer, surface);
 
-    this->fontTextures.emplace(
-        this->createTextureString(str+"wrapped", font, size, color), 
-        std::unique_ptr<SDL_Texture, decltype(&SDL_DestroyTexture)>(fontTexture, SDL_DestroyTexture));
-
     SDL_FreeSurface(surface);
     return fontTexture;
 }

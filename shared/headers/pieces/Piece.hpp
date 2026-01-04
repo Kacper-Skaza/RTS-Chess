@@ -33,6 +33,7 @@ public:
 	std::chrono::system_clock::time_point getLastMoveTime() const noexcept;
 	int getCooldown() const noexcept;
 	
+	void setLastMoveTime(std::chrono::system_clock::time_point time = std::chrono::system_clock::now());
 	void setMoveCount(int count);
 
 	void makeMove();

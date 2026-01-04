@@ -50,7 +50,7 @@ public:
         Board *board = nullptr, 
         std::vector<std::string> whitePlayers = {}, std::vector<std::string> blackPlayers = {},
         std::string roomName = "");
-    ~GameView() = default;
+    ~GameView();
 
     void render() override;
 

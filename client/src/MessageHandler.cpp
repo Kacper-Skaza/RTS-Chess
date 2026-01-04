@@ -149,11 +149,16 @@ void MessageHandler::handleBoardMissmatch(GameView *view, const nlohmann::json &
     Board newBoard;
     Board::from_json(data.at("board"), newBoard);
 
+    auto newBoardPtrs = newBoard.getBoardFull();
+    auto oldBoard = view->getBoard()->getBoardFull();
     for (size_t i = 0; i < BOARD_SIZE; i++)
     {
         for (size_t j = 0; j < BOARD_SIZE; j++)
         {
             view->getBoard()->setSpace(i, j, newBoard.getSpace(i, j));
+            if (oldBoard[i][j] && newBoardPtrs[i][j] && 
+                oldBoard[i][j]->getID() == newBoardPtrs[i][j]->getID())
+                view->getBoard()->getBoardFull()[i][j]->setLastMoveTime(oldBoard[i][j]->getLastMoveTime());
         }
     }
 }

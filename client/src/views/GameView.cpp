@@ -70,6 +70,12 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     chat = "";
 }
 
+GameView::~GameView()
+{
+    SDL_DestroyTexture(textures.at("player_white"));
+    SDL_DestroyTexture(textures.at("player_black"));
+}
+
 void GameView::render()
 {
     SDL_SetRenderDrawColor(renderer, 150, 150, 150, 255);
@@ -86,6 +92,7 @@ void GameView::render()
     SDL_Texture* tex = fontManager->createWrappedTextTexture(chat, "Roboto/Roboto-Medium", 20, {255,255,255,255}, 610);
     SDL_QueryTexture(tex, nullptr, nullptr, &rect.w, &rect.h);
     SDL_RenderCopy(renderer, tex, nullptr, &rect);
+    SDL_DestroyTexture(tex);
 
     //draw chat button
     if(chatBox.getSelected())

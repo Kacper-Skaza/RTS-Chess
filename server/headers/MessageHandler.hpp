@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "../../shared/headers/ConnectionManager.hpp"
 #include "../../shared/headers/Structures.hpp"
 #include "../../shared/headers/User.hpp"
 #include "../../shared/headers/Room.hpp"
@@ -40,6 +41,7 @@ public:
     // ===== INIT SERVER DATA =====
     static void init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &clientsRef, std::unordered_map<std::string, std::unique_ptr<Room>> &roomsRef);
 
-    // ===== ENTRY POINT =====
-    static void handle(Client *client, const std::string &jsonText);
+    // ===== ENTRY POINTS =====
+    static void handleMessage(Client *client, const std::string &jsonText);
+    static void handleDisconnect(Client *client, const SOCKET &fd);
 };

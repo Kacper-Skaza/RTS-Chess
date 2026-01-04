@@ -115,7 +115,7 @@ int main()
                         // Process all queued messages
                         std::string msg;
                         while (!(msg = clientPtr->connection->recvMessage()).empty())
-                            MessageHandler::handle(clientPtr, msg);
+                            MessageHandler::handleMessage(clientPtr, msg);
                     }
                 }
                 if (fds[i].revents & POLLHUP)
@@ -125,7 +125,7 @@ int main()
                     if (clients.count(fd))
                     {
                         // Disconnect gracefully
-                        ConnectionManager::closeConnection(fd);
+                        MessageHandler::handleDisconnect(clients[fd].get(), fd);
                         std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
                         std::cout << " disconnected gracefully :)" << std::endl;
 
@@ -140,7 +140,7 @@ int main()
                     if (clients.count(fd))
                     {
                         // Disconnect because of unknown error
-                        ConnectionManager::closeConnection(fd);
+                        MessageHandler::handleDisconnect(clients[fd].get(), fd);
                         std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
                         std::cout << " experienced error and disconnected :(" << std::endl;
 
@@ -167,7 +167,7 @@ int main()
                 // Process all queued messages
                 std::string msg;
                 while (!(msg = clientPtr->connection->recvMessage()).empty())
-                    MessageHandler::handle(clientPtr, msg);
+                    MessageHandler::handleMessage(clientPtr, msg);
 
                 // Check if a timeout occurred (60 seconds)
                 if (clientPtr->connection->getTimeSinceLastPingRecv().count() > 60)
@@ -175,7 +175,7 @@ int main()
                     SOCKET fd = it->first;
 
                     // Disconnect by timeout
-                    ConnectionManager::closeConnection(fd);
+                    MessageHandler::handleDisconnect(clients[fd].get(), fd);
                     std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
                     std::cout << " disconnected by timeout :(" << std::endl;
 

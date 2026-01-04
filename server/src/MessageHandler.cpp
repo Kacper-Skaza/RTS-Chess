@@ -13,9 +13,9 @@ void MessageHandler::init(std::unordered_map<SOCKET, std::unique_ptr<Client>> &c
     roomsPtr = &roomsRef;
 }
 
-// ===== ENTRY POINT =====
+// ===== ENTRY POINTS =====
 
-void MessageHandler::handle(Client *client, const std::string &jsonText)
+void MessageHandler::handleMessage(Client *client, const std::string &jsonText)
 {
     if (!clientsPtr || !roomsPtr)
         throw std::runtime_error("[ERR] MessageHandler is missing 'clientsPtr' or 'roomsPtr' !!!");
@@ -93,6 +93,34 @@ void MessageHandler::handle(Client *client, const std::string &jsonText)
     {
         std::cerr << "[ERR] Error in MessageHandler: " << e.what() << std::endl;
     }
+}
+
+void MessageHandler::handleDisconnect(Client *client, const SOCKET &fd)
+{
+    // Check if client is in the room
+    if (client->room)
+    {
+        // Check if match has started
+        if (client->room->isMatchStarted())
+        {
+            client->room->getBoard().setGameState(MatchEndReasons::NOT_ENDED);
+            client->room->getBoard().updateGameState(MatchEndReasons::PLAYER_LEFT);
+
+            if (client->user->getSide() == ChessSide::WHITE)
+                client->room->getBoard().updateGameState(MatchEndReasons::BLACK_WON);
+            else
+                client->room->getBoard().updateGameState(MatchEndReasons::WHITE_WON);
+
+            // Broadcast update to everyone in the room
+            broadcastGameFinale(client->room);
+        }
+
+        // Leave room
+        handleRoomLeave(client);
+    }
+
+    // Close socket connection
+    ConnectionManager::closeConnection(fd);
 }
 
 // ===== INCOMING MESSAGES =====

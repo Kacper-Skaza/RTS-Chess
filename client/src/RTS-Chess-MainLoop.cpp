@@ -271,6 +271,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             MessageHandler::handleView(gameView, connectionManager, me, j.dump());
             view.release();
             view = std::make_unique<RoomView>(window, renderer, fontManager);
+            ((RoomView*)(view.get()))->updateUser(me);
             return;
         }
         

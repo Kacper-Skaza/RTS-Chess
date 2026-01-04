@@ -15,6 +15,7 @@ private:
     const SDL_Rect boxPos;
     const std::string font;
     const SDL_Color color;
+    const SDL_Color tempColor;
     const int fontSize;
     const bool editable;
     
@@ -26,6 +27,7 @@ private:
     // data for fontManager
     SDL_Rect textureSize;
     std::string text;
+    std::string tempText;
     bool render;
 
     bool selected;
@@ -34,7 +36,8 @@ private:
     
 public:
     TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
-        const std::string& font, int size, const bool editable = false, SDL_Color color = {0,0,0,255}, bool select = false);
+        const std::string& font, int size, const bool editable = false, SDL_Color color = {0,0,0,255}, bool select = false, 
+        std::string temp= "", SDL_Color tempColor = {75, 75, 75, 255});
     ~TextBox();
 
     bool checkIfClicked(int x, int y);

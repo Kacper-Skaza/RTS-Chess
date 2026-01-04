@@ -4,7 +4,9 @@
 
 
 TextBox::TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
-        const std::string& font, int size, bool editable, SDL_Color color, bool select) : boxPos(pos), font(font), color(color), fontSize(size), editable(editable)   
+        const std::string& font, int size, bool editable, SDL_Color color, bool select, 
+        std::string temp, SDL_Color tempColor) : 
+        boxPos(pos), font(font), color(color), tempColor(tempColor), fontSize(size), editable(editable)
 {
     //set data
     this->window = window;
@@ -13,8 +15,9 @@ TextBox::TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
     this->texture = nullptr;
     this->textureSize = {pos.x, pos.y, 0, 0};
     this->text = "";
+    this->tempText = temp;
     this->selected = select;
-    render = false;
+    render = true;
 
     //create needed data
     this->fontManager->addNewFont(font, size);
@@ -35,7 +38,10 @@ void TextBox::genTexture()
     if (this->render)
     {
         SDL_DestroyTexture(this->texture);
-        this->texture = this->fontManager->createTextTexture(this->text, this->font, this->fontSize, this->color);
+        if (!this->text.empty())
+            this->texture = this->fontManager->createTextTexture(this->text, this->font, this->fontSize, this->color);
+        else
+            this->texture = this->fontManager->createTextTexture(this->tempText, this->font, this->fontSize, this->tempColor);    
         SDL_QueryTexture(this->texture, nullptr, nullptr, &this->textureSize.w, &this->textureSize.h);
     }
 }

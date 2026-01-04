@@ -132,7 +132,7 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                 view = std::make_unique<RoomView>(window, renderer, fontManager);
                 ((RoomView*)(view.get()))->updateUser(me);
             }
-            if (lobbyView->getCreateButton().checkIfClicked(mousePosX, mousePosY)) 
+            if (lobbyView->getCreateButton().checkIfClicked(mousePosX, mousePosY))
             {
                 //here create room check
                 if (!lobbyView->getcreateBox().getString().empty())
@@ -158,7 +158,7 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                 SDL_StopTextInput();
             }
         }
-        
+
         if (event.type == SDL_MOUSEWHEEL)
         {
             // event.wheel.y to kierunek (1 w górę, -1 w dół)
@@ -172,7 +172,7 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
 }
 
 void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, SDLTextureManager* texturemanager, std::unique_ptr<View> &view, RoomView* roomView, SDL_Event& event)
-{    
+{
     if (roomView->getRoom().isMatchStarted())
     {
         // Switch to GameView
@@ -200,7 +200,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
         roomReturnCounter = 300;
         return;
     }
-    
+
     while (SDL_PollEvent(&event) != 0)
     {
         if (event.type == SDL_QUIT)
@@ -249,7 +249,7 @@ void roomLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 };
                 MessageHandler::handleView(roomView, connectionManager, roomView->getSelf(), j.dump());
             }
-            
+
         }
     }
 
@@ -274,7 +274,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             ((RoomView*)(view.get()))->updateUser(me);
             return;
         }
-        
+
         return;
     }
     while (SDL_PollEvent(&event) != 0)
@@ -330,7 +330,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 gameView->getChatBox().setSelected(false);
                 SDL_StopTextInput();
             }
-            
+
         }
         if (event.type == SDL_KEYDOWN && event.key.keysym.sym == SDLK_RETURN && !gameView->getChatBox().getString().empty())
         {
@@ -382,7 +382,7 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     view.get()->render();
     if (connectionManager != nullptr)
     {
-        receiveLoop(view);   
+        receiveLoop(view);
         if (toUpdateCounter-- <= 0)
         {
             connectionManager->update();
@@ -393,7 +393,9 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     if (connectionManager != nullptr)
     {
         receiveLoop(view);
-        if ((0) /*jezeli 70 sekund od ostatniego ping*/)
+
+        // Check if a timeout occurred (90 seconds)
+        if (connectionManager->getTimeSinceLastPingRecv().count() > 90)
         {
             view.release();
             view = std::make_unique<ConnectView>(window, renderer, fontManager);

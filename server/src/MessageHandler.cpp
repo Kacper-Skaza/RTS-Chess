@@ -110,7 +110,7 @@ void MessageHandler::handleMessage(Client *client, const std::string &jsonText)
     }
 }
 
-void MessageHandler::handleDisconnect(Client *client, const SOCKET &fd)
+void MessageHandler::handleDisconnect(Client *client)
 {
     // Check if client is in the room
     if (client->room)

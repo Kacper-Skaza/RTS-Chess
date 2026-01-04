@@ -44,5 +44,5 @@ public:
 
     // ===== ENTRY POINTS =====
     static void handleMessage(Client *client, const std::string &jsonText);
-    static void handleDisconnect(Client *client, const SOCKET &fd);
+    static void handleDisconnect(Client *client);
 };

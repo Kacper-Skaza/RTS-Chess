@@ -125,7 +125,7 @@ int main()
                     if (clients.count(fd))
                     {
                         // Disconnect gracefully
-                        MessageHandler::handleDisconnect(clients[fd].get(), fd);
+                        MessageHandler::handleDisconnect(clients[fd].get());
                         std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
                         std::cout << " disconnected gracefully :)" << std::endl;
 
@@ -140,7 +140,7 @@ int main()
                     if (clients.count(fd))
                     {
                         // Disconnect because of unknown error
-                        MessageHandler::handleDisconnect(clients[fd].get(), fd);
+                        MessageHandler::handleDisconnect(clients[fd].get());
                         std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
                         std::cout << " experienced error and disconnected :(" << std::endl;
 
@@ -175,7 +175,7 @@ int main()
                     SOCKET fd = it->first;
 
                     // Disconnect by timeout
-                    MessageHandler::handleDisconnect(clients[fd].get(), fd);
+                    MessageHandler::handleDisconnect(clients[fd].get());
                     std::cout << "[SERVER] Client '" << clients[fd]->user->getUsername() << "' on FD " << fd;
                     std::cout << " disconnected by timeout :(" << std::endl;
 

@@ -104,10 +104,10 @@ const std::vector<std::vector<bool>> Board::getBoardCooldown() const
 			else
 			{
 				cooldownBoard[i][j] = false;
-			}			
+			}
 		}
 	}
-	
+
 	return cooldownBoard;
 }
 
@@ -199,6 +199,11 @@ const MatchEndReasons &Board::getGameState()
 void Board::setGameState(MatchEndReasons state)
 {
     this->gameState = state;
+}
+
+void Board::updateGameState(MatchEndReasons state)
+{
+    this->gameState = this->gameState | state;
 }
 
 void Board::checkGameEnd()

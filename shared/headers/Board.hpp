@@ -23,7 +23,7 @@ public:
 
 	Board(Board&& other) noexcept = default;
 	Board& operator=(Board&& other) noexcept = default;
-	
+
 	Board(const Board &other) = delete;
 	Board& operator=(const Board &other) = delete;
 
@@ -34,9 +34,10 @@ public:
 	const std::vector<std::vector<char>> getBoardSymbol() const;
 	const std::vector<std::vector<bool>> getBoardCooldown() const;
 
-	void checkGameEnd(); 
+	void checkGameEnd();
 	const MatchEndReasons& getGameState();
     void setGameState(MatchEndReasons state);
+    void updateGameState(MatchEndReasons state);
 
 	bool makeMove(const Move &move);
 

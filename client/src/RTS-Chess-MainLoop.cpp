@@ -33,16 +33,24 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
             SDL_GetMouseState(&mousePosX, &mousePosY);
             if (connectView->getConnectionBox().checkIfClicked(mousePosX, mousePosY))
             {
+                connectView->getUserBox().setSelected(false);
+                connectView->getConnectionBox().setSelected(true);
                 SDL_StartTextInput();
                 boxIp = true;
             }
             else if(connectView->getUserBox().checkIfClicked(mousePosX, mousePosY))
             {
+                connectView->getConnectionBox().setSelected(false);
+                connectView->getUserBox().setSelected(true);
                 SDL_StartTextInput();
                 boxIp = false;
             }
             else
+            {
+                connectView->getConnectionBox().setSelected(false);
+                connectView->getUserBox().setSelected(false);
                 SDL_StopTextInput();
+            }
             if (connectView->getConnectButton().checkIfClicked(mousePosX, mousePosY))
             {
                 if (!connectView->getUserBox().getString().empty() &&
@@ -140,9 +148,15 @@ void lobbyLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontM
                 }
             }
             if (lobbyView->getcreateBox().checkIfClicked(mousePosX, mousePosY))
+            {
+                lobbyView->getcreateBox().setSelected(true);
                 SDL_StartTextInput();
+            }
             else
+            {
+                lobbyView->getcreateBox().setSelected(false);
                 SDL_StopTextInput();
+            }
         }
         
         if (event.type == SDL_MOUSEWHEEL)
@@ -307,10 +321,12 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             }
             if (gameView->getChatBox().checkIfClicked(mousePosX, mousePosY))
             {
+                gameView->getChatBox().setSelected(true);
                 SDL_StartTextInput();
             }
             else
             {
+                gameView->getChatBox().setSelected(false);
                 SDL_StopTextInput();
             }
             
@@ -323,6 +339,7 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
             };
             MessageHandler::handleView(gameView, connectionManager, me, j.dump());
             gameView->getChatBox().setText("");
+            gameView->getChatBox().setSelected(false);
             SDL_StopTextInput();
         }
         if (SDL_IsTextInputActive() == SDL_TRUE)

@@ -41,14 +41,20 @@ void ConnectView::render()
     SDL_RenderClear(renderer);
 
     //user box render code
-    SDL_SetRenderDrawColor(renderer, 90, 90, 90, 255);
+    if (userBox.getSelected())
+        SDL_SetRenderDrawColor(renderer, 140, 140, 140, 255);
+    else
+        SDL_SetRenderDrawColor(renderer, 120, 120, 120, 255);
     SDL_RenderFillRect(renderer, &userBox.getBoxPos());
     userBox.genTexture();
     SDL_RenderCopy(renderer, userBox.getTexture(), nullptr, &(userBox.getTextureRect()));
 
 
     //connetion box render code
-    SDL_SetRenderDrawColor(renderer, 90, 90, 90, 255);
+    if (connectionBox.getSelected())
+        SDL_SetRenderDrawColor(renderer, 140, 140, 140, 255);
+    else
+        SDL_SetRenderDrawColor(renderer, 120, 120, 120, 255);
     SDL_RenderFillRect(renderer, &connectionBox.getBoxPos());
     connectionBox.genTexture();
     SDL_RenderCopy(renderer, connectionBox.getTexture(), nullptr, &(connectionBox.getTextureRect()));

@@ -197,7 +197,10 @@ void LobbyView::render()
     SDL_RenderFillRect(renderer, &tempRect);
 
     // Create Box Render
-    SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    if (createBox.getSelected())
+        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
+    else
+        SDL_SetRenderDrawColor(renderer, 180, 180, 180, 255);
     SDL_RenderFillRect(renderer, &createBox.getBoxPos());
     createBox.genTexture();
     SDL_RenderCopy(renderer, createBox.getTexture(), nullptr, &(createBox.getTextureRect()));

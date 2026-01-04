@@ -87,7 +87,10 @@ void GameView::render()
     SDL_RenderCopy(renderer, tex, nullptr, &rect);
 
     //draw chat button
-    SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+    if(chatBox.getSelected())
+        SDL_SetRenderDrawColor(renderer, 140, 140, 140, 255);
+    else
+        SDL_SetRenderDrawColor(renderer, 120, 120, 120, 255);
     SDL_RenderFillRect(renderer, &chatBox.getBoxPos());
     chatBox.genTexture();
     SDL_RenderCopy(renderer, chatBox.getTexture(), nullptr, &chatBox.getTextureRect());

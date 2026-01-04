@@ -5,10 +5,9 @@ Move::Move()
 	this->piece = nullptr;
 	this->from = std::make_pair(-1,-1);
 	this->to = std::make_pair(-1, -1);
-	this->recreated = false;
 }
 
-Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to, bool recreated) : piece(piece), from(from), to(to), recreated(recreated)
+Move::Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to) : piece(piece), from(from), to(to)
 {
 	if (from.first < 0 || from.first >= BOARD_SIZE ||
 		from.second < 0 || from.second >= BOARD_SIZE ||
@@ -43,8 +42,7 @@ Move Move::from_json(const nlohmann::json& j, Board* board)
 {
 	Move p(board->getBoardFull()[j.at("from").at(0).get<int>()][j.at("from").at(1).get<int>()], 
 		std::make_pair(j.at("from").at(0).get<int>(),j.at("from").at(1).get<int>()), 
-		std::make_pair(j.at("to").at(0).get<int>(),j.at("to").at(1).get<int>()),
-		true);
+		std::make_pair(j.at("to").at(0).get<int>(),j.at("to").at(1).get<int>()));
 	return p;
 }
 

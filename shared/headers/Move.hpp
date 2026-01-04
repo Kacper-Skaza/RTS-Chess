@@ -22,11 +22,10 @@ private:
 	Piece *piece;
 	std::pair<int, int> from;
 	std::pair<int, int> to;
-	bool recreated = false;
 
 public:
 	Move();
-	Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to, bool recreated = false);
+	Move(Piece *piece, std::pair<int, int> from, std::pair<int, int> to);
 	~Move() = default;
 
 	const Piece *getPiece() const noexcept;

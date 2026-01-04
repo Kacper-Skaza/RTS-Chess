@@ -33,7 +33,7 @@ private:
 public:
     // ===== INIT CONNECTION MANAGER =====
     explicit ConnectionManager(SOCKET socketFd);
-    ~ConnectionManager() = default;
+    ~ConnectionManager();
 
     // ===== MANAGEMENT =====
     static void setNonBlocking(SOCKET fd);

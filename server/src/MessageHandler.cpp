@@ -133,9 +133,6 @@ void MessageHandler::handleDisconnect(Client *client, const SOCKET &fd)
         // Leave room
         handleRoomLeave(client);
     }
-
-    // Close socket connection
-    ConnectionManager::closeConnection(fd);
 }
 
 // ===== INCOMING MESSAGES =====

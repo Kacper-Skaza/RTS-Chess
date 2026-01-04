@@ -17,6 +17,11 @@ ConnectionManager::ConnectionManager(SOCKET socketFd) : socketFd(socketFd)
     this->update();
 }
 
+ConnectionManager::~ConnectionManager()
+{
+    closeConnection(this->socketFd);
+}
+
 // ===== MANAGEMENT =====
 
 void ConnectionManager::setNonBlocking(SOCKET fd)

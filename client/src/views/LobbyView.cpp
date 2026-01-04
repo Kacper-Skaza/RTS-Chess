@@ -155,9 +155,19 @@ void LobbyView::render()
         SDL_Texture *capTex = fontManager->getFontTexture(capStr, "Roboto/Roboto-Medium", 22, cyan);
         if (capTex)
         {
-            SDL_Rect dst = {roomRect.x + roomRect.w - 200, currentY + 30, 0, 0};
+            SDL_Rect dst = {roomRect.x + roomRect.w - 280, currentY + 30, 0, 0};
             SDL_QueryTexture(capTex, nullptr, nullptr, &dst.w, &dst.h);
             SDL_RenderCopy(renderer, capTex, nullptr, &dst);
+        }
+
+        // 4. Status meczu
+        std::string statusStr = rooms[i].isMatchStarted() ? "IN GAME" : "IN LOBBY";
+        SDL_Texture *statusTex = fontManager->getFontTexture(statusStr, "Roboto/Roboto-Medium", 22, cyan);
+        if (statusTex)
+        {
+            SDL_Rect dst = {roomRect.x + roomRect.w - 225, currentY + 30, 0, 0};
+            SDL_QueryTexture(statusTex, nullptr, nullptr, &dst.w, &dst.h);
+            SDL_RenderCopy(renderer, statusTex, nullptr, &dst);
         }
 
         // --- Przycisk JOIN ---
@@ -204,7 +214,7 @@ void LobbyView::render()
     SDL_RenderFillRect(renderer, &createBox.getBoxPos());
     createBox.genTexture();
     SDL_RenderCopy(renderer, createBox.getTexture(), nullptr, &(createBox.getTextureRect()));
-    
+
     // Create Button Render
     SDL_SetRenderDrawColor(renderer, 46, 87, 25, 255);
     SDL_RenderFillRect(renderer, &createButton.getBoxPos());

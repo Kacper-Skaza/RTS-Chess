@@ -5,7 +5,8 @@ GameView::GameView(SDL_Window *window, SDL_Renderer *renderer,
     Board *board, std::vector<std::string> whitePlayers, std::vector<std::string> blackPlayers,
     std::string roomName)
      :
-    chatBox(window, renderer, fontManager, {1200, 980, 620, 60}, "Roboto/Roboto-Medium", 18, true), selected(-1, -1)
+    chatBox(window, renderer, fontManager, {1200, 980, 620, 60}, "Roboto/Roboto-Medium", 18, true, {0,0,0,255}, false, "Your message..."), 
+    selected(-1, -1)
 {
     //init basic variables
     this->window = window;

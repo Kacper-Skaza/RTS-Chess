@@ -11,9 +11,9 @@
 const std::regex ConnectView::connectionRule("^((1[0-9]{2}|[0-9]{1,2}|2[0-4][0-9]|25[0-5])\\.){3}(1[0-9]{2}|[0-9]{1,2}|2[0-4][0-9]|25[0-5]):([0-9]{1,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$", std::regex::optimize);
 
 ConnectView::ConnectView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager* fontManager)
-    : connectionBox(window, renderer, fontManager, {660, 490, 300, 50}, "Roboto/Roboto-Medium", 20, true),
+    : connectionBox(window, renderer, fontManager, {660, 490, 300, 50}, "Roboto/Roboto-Medium", 20, true, {0,0,0,255}, false, "ipv4:port"),
       connectButton(window, renderer, fontManager, {660, 590, 300, 50}, "Roboto/Roboto-Medium", 20),
-            userBox(window, renderer, fontManager, {660, 390, 300, 50}, "Roboto/Roboto-Medium", 20, true)
+            userBox(window, renderer, fontManager, {660, 390, 300, 50}, "Roboto/Roboto-Medium", 20, true, {0,0,0,255}, false, "username")
 {
     this->connectButton.setText("Connect");
     this->window = window;

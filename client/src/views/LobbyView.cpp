@@ -2,7 +2,7 @@
 #include <iostream>
 
 LobbyView::LobbyView(SDL_Window *window, SDL_Renderer *renderer, SDLFontManager *fontManager) : window(window), renderer(renderer), fontManager(fontManager),
-    createBox   (window, renderer, fontManager, {50, 980, 600, 50}, "Roboto/Roboto-Medium", 24, true),
+    createBox   (window, renderer, fontManager, {50, 980, 600, 50}, "Roboto/Roboto-Medium", 24, true, {0,0,0, 255}, false, "room name"),
     createButton(window, renderer, fontManager, {700, 980, 150, 50}, "Roboto/Roboto-Medium", 24, false, {255, 255, 255, 255})
 {
     createButton.setText("Create Room");

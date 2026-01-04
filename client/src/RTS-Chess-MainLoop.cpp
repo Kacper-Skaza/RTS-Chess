@@ -296,7 +296,6 @@ void gameLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                         if ((std::isupper(gameView->checkPiece())? ChessSide::WHITE: ChessSide::BLACK) == me->getSide())
                         {
                             std::string s =(me->getSide() == ChessSide::BLACK)? "black\n": (me->getSide() == ChessSide::WHITE)? "white\n": "unknown\n";
-                            std::cout << s;
                             Move move(gameView->getBoard()->getBoardFull()[gameView->getSelected().first][gameView->getSelected().second],
                                       gameView->getSelected(), std::make_pair((mousePosY - 40) / 128, (mousePosX - 40) / 128));
                             if (gameView->getBoard()->makeMove(move))

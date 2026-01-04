@@ -21,7 +21,7 @@ jobs:
         run: sudo apt-get install -y cppcheck
 
       - name: Run cppcheck
-        run: cppcheck --std=c++17 --enable=all --inconclusive --suppress=missingIncludeSystem --exclude=./shared/headers/dependencies --error-exitcode=1 --template=gcc ./shared ./client ./server
+        run: cppcheck --std=c++17 --enable=all --inconclusive --suppress=missingIncludeSystem --suppress=*:/shared/headers/dependencies/* --error-exitcode=1 --template=gcc ./shared ./client ./server
 
   # ===== Build on ubuntu =====
   build_ubuntu:

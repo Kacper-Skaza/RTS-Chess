@@ -27,6 +27,7 @@
 #if PLATFORM == PLATFORM_LINUX
     #include <sys/socket.h>
     #include <netinet/in.h>
+    #include <arpa/inet.h>
     #include <fcntl.h>
     #include <unistd.h>
     #include <poll.h>

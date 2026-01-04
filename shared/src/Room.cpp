@@ -156,6 +156,7 @@ void Room::removeUserFromRoom(const User& user)
 void Room::startMatch()
 {
     this->matchStarted = true;
+    board = Board();
 
     const std::unordered_map<unsigned int, User *> players = this->getPlayerList();
     bool turn = true;
@@ -165,15 +166,19 @@ void Room::startMatch()
         user->setSide(turn ? ChessSide::WHITE : ChessSide::BLACK);
         turn = !turn;
     }
-
-    // reinit board
 }
 
 void Room::stopMatch()
 {
     this->matchStarted = false;
-    //destroy board
-    //do not destroy room coz it will be done server side & client side elsewhere
+    this->playerList.clear();
+
+    for (auto &[_, user] : this->userList)
+    {
+        user->setPlayer(false);
+        user->setReady(false);
+        user->setSide(ChessSide::UNKNOWN);
+    }
 }
 
 const User* Room::getHost() const

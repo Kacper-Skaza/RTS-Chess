@@ -14,14 +14,15 @@
 class MessageHandler
 {
 private:
-    static void handleIgnore();
+    static void handleIgnore(const std::string &jsonText);
     static void handleGeneralSend(ConnectionManager* connectionManager, const std::string &jsonText);
+    // static void handleNotInRoom(View* view, const nlohmann::json &data);
 
     //Connect view handles
     //Outgoing
     static void handleGetUsernameID(ConnectionManager *connectionManager, const std::string &jsonText); 
     //Incomming
-    static void handleSetUsernameID(ConnectView *view, ConnectionManager *connectionManager, User* user, const nlohmann::json &data);
+    static void handleSetUsernameID(User* user, const nlohmann::json &data);
 
     //Lobby view handles
     //Outgoing
@@ -29,7 +30,7 @@ private:
     static void handleCreateRoom(LobbyView *view, ConnectionManager *connectionManager, const std::string &jsonText);
     static void handleJoinRoom(LobbyView *view, ConnectionManager *connectionManager, const std::string &jsonText);
     //Incomming
-    static void handleReceiveRooms(LobbyView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
+    static void handleReceiveRooms(LobbyView* view, const nlohmann::json &data);
     
     //Room view handles
     //Outgoing
@@ -38,10 +39,10 @@ private:
     static void handleExitRoom(ConnectionManager* connectionManager, const std::string &jsonText);
     static void handlePlayerCountChange(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
-    static void handleReceiveRoom(RoomView* view, ConnectionManager* connectionManager, const nlohmann::json &data);
+    static void handleReceiveRoom(RoomView* view, const nlohmann::json &data);
     static void handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data);
     static void handleSetPlayerWant(User* user, const nlohmann::json &data);
-    static void handleErrPlayerWant(User* user, const nlohmann::json &data);
+    static void handleErrPlayerWant(RoomView* view, ConnectionManager* connectionManager);
 
     //Game view handles
     //Outgoing

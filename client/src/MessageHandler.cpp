@@ -1,9 +1,14 @@
 #include "../headers/MessageHandler.hpp"
 #include <iostream>
 
-void MessageHandler::handleIgnore()
+void MessageHandler::handleIgnore(const std::string &jsonText)
 {
-    //ignore message (maybe call comething from connection manager)
+    nlohmann::json j = nlohmann::json::parse(jsonText);
+    //ignore message
+    if (j.contains("type"))
+        std::cout << "[INFO] Message Ignored: " << j.at("type").dump() << "\n";
+    else
+        std::cout << "[ERR] No type in message!\n";
 }
 
 void MessageHandler::handleGeneralSend(ConnectionManager *connectionManager, const std::string &jsonText)
@@ -16,7 +21,7 @@ void MessageHandler::handleGetUsernameID(ConnectionManager *connectionManager, c
     handleGeneralSend(connectionManager, jsonText);
 }
 
-void MessageHandler::handleSetUsernameID(ConnectView *view, ConnectionManager *connectionManager, User* user, const nlohmann::json &data)
+void MessageHandler::handleSetUsernameID(User* user, const nlohmann::json &data)
 {
     user->setPlayerID(data.at("id").get<unsigned long long>());
 }
@@ -43,7 +48,7 @@ void MessageHandler::handleExitRoom(ConnectionManager *connectionManager, const 
     handleGeneralSend(connectionManager, jsonText);
 }
 
-void MessageHandler::handleReceiveRooms(LobbyView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
+void MessageHandler::handleReceiveRooms(LobbyView *view, const nlohmann::json &data)
 {
     std::vector<Room> rooms;
     for (const auto& roomJson : data.at("rooms"))
@@ -54,7 +59,7 @@ void MessageHandler::handleReceiveRooms(LobbyView *view, ConnectionManager *conn
     view->updateRooms(rooms);
 }
 
-void MessageHandler::handleReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
+void MessageHandler::handleReceiveRoom(RoomView *view, const nlohmann::json &data)
 {
     Room room;
     Room::from_json(data.at("room"), room);
@@ -63,7 +68,7 @@ void MessageHandler::handleReceiveRoom(RoomView *view, ConnectionManager *connec
 
 void MessageHandler::handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
 {
-    handleReceiveRoom(view, connectionManager, data);
+    handleReceiveRoom(view, data);
     nlohmann::json j = nlohmann::json{
         {"type", "ACK_UPDATE_ROOM"},
         {"data", nullptr}
@@ -104,12 +109,13 @@ void MessageHandler::handleSetPlayerWant(User *user, const nlohmann::json &data)
     }
 }
 
-void MessageHandler::handleErrPlayerWant(User *user, const nlohmann::json &data)
+void MessageHandler::handleErrPlayerWant(RoomView* view, ConnectionManager* connectionManager)
 {
-    //add some error handling logic based on reason in string
-    //full team cant join
-    //game already started
-    //unknown error
+    nlohmann::json j = nlohmann::json{
+        {"type", "REQUEST_ROOM"},
+        {"data", {{"roomName", view->getRoom().getRoomName()}}}
+    };
+    connectionManager->sendMessage(j.dump());
 }
 
 void MessageHandler::handleSendMessage(ConnectionManager *connectionManager, const std::string &jsonText)
@@ -179,6 +185,17 @@ void MessageHandler::handlePlayerCountChange(ConnectionManager* connectionManage
     handleGeneralSend(connectionManager, jsonText);
 }
 
+// void MessageHandler::handleNotInRoom(View* view, const nlohmann::json &data)
+// {
+//     if (data.contains("reason"))
+//     {
+//         if (data.at("reason").get<std::string>().contains("not in the room"))
+//         {
+            
+//         }
+//     }
+// }
+
 void MessageHandler::handleView(View* view, ConnectionManager* connectionManager, User* user, const std::string &jsonText)
 {
     if (connectionManager == nullptr || user == nullptr || view == nullptr)
@@ -190,33 +207,36 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
         std::string type = j.at("type");
         nlohmann::json data = j.contains("data")? j.at("data"): nlohmann::json();
 
-        if(ConnectView* connectView = dynamic_cast<ConnectView*>(view))
+        if(dynamic_cast<ConnectView*>(view))
         {
             if (type == "REQUEST_NICK") handleGetUsernameID(connectionManager, jsonText);
-            else handleIgnore();
+            else handleIgnore(jsonText);
         }
         else if (LobbyView* lobbyView = dynamic_cast<LobbyView*>(view))
         {
             if (type == "REQUEST_ROOMS") handleListRooms(connectionManager, jsonText);
-            else if (type == "ACK_REQUEST_NICK") handleSetUsernameID(connectView, connectionManager, user, data);
+            else if (type == "ACK_REQUEST_NICK") handleSetUsernameID(user, data);
             else if (type == "ROOM_CREATE") handleCreateRoom(lobbyView, connectionManager, jsonText);
             else if (type == "ROOM_JOIN") handleJoinRoom(lobbyView, connectionManager, jsonText);
-            else if (type == "ACK_REQUEST_ROOMS") handleReceiveRooms(lobbyView, connectionManager, data);
-            else handleIgnore();
+            else if (type == "ACK_REQUEST_ROOMS") handleReceiveRooms(lobbyView, data);
+            else handleIgnore(jsonText);
         }
         else if (RoomView* roomView = dynamic_cast<RoomView*>(view))
         {
             if (type == "PLAYER_WANT") handleFlipPlayerWant(connectionManager, jsonText);
             else if (type == "ACK_PLAYER_WANT") handleSetPlayerWant(user, data);
-            else if (type == "ERR_PLAYER_WANT") handleErrPlayerWant(user, data);
+            else if (type == "ERR_PLAYER_WANT") handleErrPlayerWant(roomView, connectionManager);
             else if (type == "ROOM_LEAVE") handleExitRoom(connectionManager, jsonText);
             else if (type == "CHANGE_PLAYER_COUNT") handlePlayerCountChange(connectionManager, jsonText);
-            else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, connectionManager, data);
-            else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, connectionManager, data);
-            else if (type == "ACK_REQUEST_ROOM") handleReceiveRoom(roomView, connectionManager, data);
-            // else if (type == "ACK_CHANGE_PLAYER_COUNT") handleReceiveRoom(roomView, connectionManager, data);
+            // else if (type == "ERR_CHANGE_PLAYER_COUNT") ;
+            else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, data);
+            else if (type == "ERR_ROOM_CREATE") handleReceiveRoom(roomView, data);
+            else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, data);
+            else if (type == "ERR_ROOM_JOIN") handleReceiveRoom(roomView, data);
+            else if (type == "ACK_REQUEST_ROOM") handleReceiveRoom(roomView, data);
+            // else if (type == "ERR_REQUEST_ROOM") ; //same return to lobby view
             else if (type == "UPDATE_ROOM") handleSpecialReceiveRoom(roomView, connectionManager, data);
-            else handleIgnore();
+            else handleIgnore(jsonText);
         }
         else if(GameView* gameView = dynamic_cast<GameView*>(view))
         {
@@ -227,8 +247,10 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "GAME_FINALE") handleGameFinale(gameView, data);
             else if (type == "ERR_MAKE_MOVE") handleBoardMissmatch(gameView, data);
             else if (type == "ACK_ERR_MOVE_MADE") handleBoardMissmatch(gameView, data);
-            else if (type == "ROOM_REQUEST") handleGeneralSend(connectionManager, jsonText);
-            else handleIgnore();
+            // else if (type == "ERR_ERR_MOVE_MADE") handleNotInRoom(view, data);
+            // else if (type == "ERR_CHAT_MESSAGE"); //only when empty message i dont send empty messages coz protect
+            else if (type == "REQUEST_ROOM") handleGeneralSend(connectionManager, jsonText);
+            else handleIgnore(jsonText);
         }
         else throw std::logic_error("Handling this view is not supported");
     }

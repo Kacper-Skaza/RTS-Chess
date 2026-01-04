@@ -4,7 +4,7 @@
 
 
 TextBox::TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
-        const std::string& font, int size, bool editable, SDL_Color color) : boxPos(pos), font(font), color(color), fontSize(size), editable(editable)   
+        const std::string& font, int size, bool editable, SDL_Color color, bool select) : boxPos(pos), font(font), color(color), fontSize(size), editable(editable)   
 {
     //set data
     this->window = window;
@@ -13,6 +13,7 @@ TextBox::TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
     this->texture = nullptr;
     this->textureSize = {pos.x, pos.y, 0, 0};
     this->text = "";
+    this->selected = select;
     render = false;
 
     //create needed data
@@ -52,6 +53,16 @@ SDL_Rect& TextBox::getTextureRect()
 const SDL_Rect &TextBox::getBoxPos()
 {
     return this->boxPos;
+}
+
+bool TextBox::getSelected()
+{
+    return this->selected;
+}
+
+void TextBox::setSelected(bool select)
+{
+    this->selected = select;
 }
 
 void TextBox::setText(const std::string &text)

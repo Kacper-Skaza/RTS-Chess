@@ -28,12 +28,13 @@ private:
     std::string text;
     bool render;
 
+    bool selected;
     
     void handleSpecialKeyPress(SDL_Event &e);
     
 public:
     TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
-        const std::string& font, int size, const bool editable = false, SDL_Color color = {0,0,0,255});
+        const std::string& font, int size, const bool editable = false, SDL_Color color = {0,0,0,255}, bool select = false);
     ~TextBox();
 
     bool checkIfClicked(int x, int y);
@@ -41,7 +42,9 @@ public:
     SDL_Texture* getTexture();
     SDL_Rect& getTextureRect();
     const SDL_Rect& getBoxPos();
+    bool getSelected();
 
+    void setSelected(bool select);
     void setText(const std::string& text);
     void textListener(SDL_Event& e);
 

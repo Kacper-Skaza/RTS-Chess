@@ -91,10 +91,9 @@ SOCKET ConnectView::connectToServer()
     SOCKET sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (sock == INVALID_SOCKET_PLATFORM)
         return sock;
-    sockaddr_in addr{
-        .sin_family = AF_INET,
-        .sin_port = htons(port),
-    };
+    sockaddr_in addr{};
+    addr.sin_family = AF_INET;
+    addr.sin_port = htons(port);
     inet_pton(AF_INET, ip.c_str(), &addr.sin_addr);
 
     if (connect(sock, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR_PLATFORM)

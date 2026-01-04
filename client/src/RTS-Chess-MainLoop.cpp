@@ -57,7 +57,7 @@ void connectLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fon
                      connectView->validateConnectionData())
                 {
                     SOCKET sock;
-                    if((sock = connectView->connectToServer()) != SOCKET_ERROR_PLATFORM)
+                    if((sock = connectView->connectToServer()) != (SOCKET)SOCKET_ERROR_PLATFORM)
                     {
                         if (connectionManager == nullptr)
                             connectionManager = new ConnectionManager(sock);
@@ -391,6 +391,7 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
     }
     delay();
     if (connectionManager != nullptr)
+    {
         receiveLoop(view);
         if ((0) /*jezeli 70 sekund od ostatniego ping*/)
         {
@@ -400,7 +401,7 @@ void mainLoop(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontMa
                 delete me;
             delete connectionManager;
         }
-
+    }
     return;
 }
 

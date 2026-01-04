@@ -169,7 +169,7 @@ void Room::startMatch()
     // reinit board
 }
 
-void Room::stopMatch(MatchEndReasons reason)
+void Room::stopMatch()
 {
     this->matchStarted = false;
     //destroy board

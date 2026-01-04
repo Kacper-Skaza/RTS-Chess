@@ -56,7 +56,7 @@ public:
 
     // Other metchods
     void startMatch();
-    void stopMatch(MatchEndReasons reason);
+    void stopMatch();
     const User* getHost() const;
 
     static void from_json(const nlohmann::json& j, Room& p);

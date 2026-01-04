@@ -73,7 +73,6 @@ void RoomView::render()
 
     // --- 1. Nagłówek i Dane Pokoju ---
     SDL_Color white = {255, 255, 255, 255};
-    SDL_Color green = {0, 255, 100, 255};
 
     SDL_Texture *titleTex = fontManager->getFontTexture("Room: " + room.getRoomName(), "Roboto/Roboto-Medium", 32, white);
     if (titleTex)

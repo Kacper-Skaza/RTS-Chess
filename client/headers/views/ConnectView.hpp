@@ -22,8 +22,8 @@ private:
     SDL_Renderer* renderer;
     
     TextBox connectionBox;
-    TextBox userBox;
     TextBox connectButton;
+    TextBox userBox;
 
     static const std::regex connectionRule;
 public:

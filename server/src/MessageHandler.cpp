@@ -722,6 +722,9 @@ void MessageHandler::broadcastGameFinale(Room *room)
         std::unordered_map<SOCKET, std::unique_ptr<Client>> &clients = *clientsPtr;
         const std::unordered_map<unsigned int, User *> &roomUsers = room->getUserList();
 
+        // Stop match
+        room->stopMatch();
+
         // Prepare GAME_FINALE broadcast
         json broadcastData = {
             {"type", "GAME_FINALE"},

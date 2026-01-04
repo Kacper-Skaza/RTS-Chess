@@ -176,7 +176,7 @@ void GameView::render()
             endText += "BLACK WON ";
         if ((this->board.getGameState() & MatchEndReasons::PLAYER_LEFT) != MatchEndReasons::NOT_ENDED)
             endText += "PLAYER LEFT ";
-        SDL_RenderCopy(renderer, fontManager->getFontTexture(endText, "Roboto/Roboto-Medium", 64), nullptr, &rect);
+        SDL_RenderCopy(renderer, fontManager->getFontTexture(endText, "Roboto/Roboto-Medium", 64, {0,0,0,255}), nullptr, &rect);
     }
 
     SDL_RenderPresent(renderer);

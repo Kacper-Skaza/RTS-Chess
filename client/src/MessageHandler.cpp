@@ -59,16 +59,19 @@ void MessageHandler::handleReceiveRooms(LobbyView *view, const nlohmann::json &d
     view->updateRooms(rooms);
 }
 
-void MessageHandler::handleReceiveRoom(RoomView *view, const nlohmann::json &data)
+void MessageHandler::handleReceiveRoom(RoomView *view, User* user, const nlohmann::json &data)
 {
     Room room;
     Room::from_json(data.at("room"), room);
     view->updateRoom(room);
+    user->setPlayer(view->getOtherSelf()->isPlayer());
+    user->setReady(view->getOtherSelf()->isReady());
+    user->setInRoom(view->getOtherSelf()->isInRoom());
 }
 
-void MessageHandler::handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data)
+void MessageHandler::handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, User* user, const nlohmann::json &data)
 {
-    handleReceiveRoom(view, data);
+    handleReceiveRoom(view, user, data);
     nlohmann::json j = nlohmann::json{
         {"type", "ACK_UPDATE_ROOM"},
         {"data", nullptr}
@@ -229,13 +232,13 @@ void MessageHandler::handleView(View* view, ConnectionManager* connectionManager
             else if (type == "ROOM_LEAVE") handleExitRoom(connectionManager, jsonText);
             else if (type == "CHANGE_PLAYER_COUNT") handlePlayerCountChange(connectionManager, jsonText);
             // else if (type == "ERR_CHANGE_PLAYER_COUNT") ;
-            else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, data);
-            else if (type == "ERR_ROOM_CREATE") handleReceiveRoom(roomView, data);
-            else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, data);
-            else if (type == "ERR_ROOM_JOIN") handleReceiveRoom(roomView, data);
-            else if (type == "ACK_REQUEST_ROOM") handleReceiveRoom(roomView, data);
+            else if (type == "ACK_ROOM_CREATE") handleReceiveRoom(roomView, user, data);
+            else if (type == "ERR_ROOM_CREATE") handleReceiveRoom(roomView, user, data);
+            else if (type == "ACK_ROOM_JOIN") handleReceiveRoom(roomView, user, data);
+            else if (type == "ERR_ROOM_JOIN") handleReceiveRoom(roomView, user, data);
+            else if (type == "ACK_REQUEST_ROOM") handleReceiveRoom(roomView, user, data);
             // else if (type == "ERR_REQUEST_ROOM") ; //same return to lobby view
-            else if (type == "UPDATE_ROOM") handleSpecialReceiveRoom(roomView, connectionManager, data);
+            else if (type == "UPDATE_ROOM") handleSpecialReceiveRoom(roomView, connectionManager, user, data);
             else handleIgnore(jsonText);
         }
         else if(GameView* gameView = dynamic_cast<GameView*>(view))

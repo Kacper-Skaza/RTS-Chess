@@ -39,8 +39,8 @@ private:
     static void handleExitRoom(ConnectionManager* connectionManager, const std::string &jsonText);
     static void handlePlayerCountChange(ConnectionManager* connectionManager, const std::string &jsonText);
     //Incomming
-    static void handleReceiveRoom(RoomView* view, const nlohmann::json &data);
-    static void handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, const nlohmann::json &data);
+    static void handleReceiveRoom(RoomView *view, User* user, const nlohmann::json &data);
+    static void handleSpecialReceiveRoom(RoomView *view, ConnectionManager *connectionManager, User* user, const nlohmann::json &data);
     static void handleSetPlayerWant(User* user, const nlohmann::json &data);
     static void handleErrPlayerWant(RoomView* view, ConnectionManager* connectionManager);
 

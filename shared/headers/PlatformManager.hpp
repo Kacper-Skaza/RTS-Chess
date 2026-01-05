@@ -12,7 +12,7 @@
     #define PLATFORM PLATFORM_LINUX
 #else
     #define PLATFORM PLATFORM_UNKNOWN
-    #error "Unsupported platform !!!"
+    static_assert(false, "Unsupported platform !!!");
 #endif
 
 

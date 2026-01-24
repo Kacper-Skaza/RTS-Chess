@@ -74,7 +74,7 @@ void TextBox::setText(const std::string &text)
     this->render = true;
 }
 
-void TextBox::textListener(SDL_Event &e)
+void TextBox::textListener(const SDL_Event &e)
 {
     if (editable == false) return;
     switch (e.type)

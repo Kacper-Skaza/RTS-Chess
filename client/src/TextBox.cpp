@@ -1,11 +1,8 @@
 #include "../headers/TextBox.hpp"
-#include "TextBox.hpp"
-
-
 
 TextBox::TextBox(SDL_Window* window, SDL_Renderer* renderer, SDLFontManager* fontManager, const SDL_Rect& pos, 
         const std::string& font, int size, bool editable, SDL_Color color, bool select, 
-        std::string temp, SDL_Color tempColor) : 
+        const std::string& temp, SDL_Color tempColor) : 
         boxPos(pos), font(font), color(color), tempColor(tempColor), fontSize(size), editable(editable)
 {
     //set data
@@ -28,7 +25,7 @@ TextBox::~TextBox()
     SDL_DestroyTexture(this->texture);
 }
 
-bool TextBox::checkIfClicked(int x, int y)
+bool TextBox::checkIfClicked(int x, int y) const noexcept
 {
     return boxPos.x <= x && (boxPos.x + boxPos.w) >= x && boxPos.y <= y && (boxPos.y + boxPos.h) >= y;
 }
@@ -56,12 +53,12 @@ SDL_Rect& TextBox::getTextureRect()
     return this->textureSize;
 }
 
-const SDL_Rect &TextBox::getBoxPos()
+const SDL_Rect &TextBox::getBoxPos() const
 {
     return this->boxPos;
 }
 
-bool TextBox::getSelected()
+bool TextBox::getSelected() const
 {
     return this->selected;
 }
@@ -102,7 +99,7 @@ std::string &TextBox::getString()
     return this->text;
 }
 
-void TextBox::handleSpecialKeyPress(SDL_Event &e)
+void TextBox::handleSpecialKeyPress(const SDL_Event &e)
 {
     switch (e.key.keysym.sym)
     {
@@ -127,9 +124,9 @@ void TextBox::handleSpecialKeyPress(SDL_Event &e)
     case SDLK_v:
         if (SDL_GetModState() & KMOD_CTRL)
         {
-            char* text = SDL_GetClipboardText();
-            this->text.append(text);
-            SDL_free(text);
+            char* clipboardText = SDL_GetClipboardText();
+            this->text.append(clipboardText);
+            SDL_free(clipboardText);
             this->render = true;
         }
         break;

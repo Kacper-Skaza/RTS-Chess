@@ -25,7 +25,7 @@ public:
     SDL_Texture* getFontTexture(const std::string& str, const  std::string& font, int size, SDL_Color color = {255,255,255,255});
     int preGenFontTextures(std::vector<std::tuple<std::string, std::string, int, SDL_Color>>& fontTextureVector);
 
-    bool addNewFont(const std::string& pathToFont, int fontSize);
+    bool addNewFont(const std::string& font, int fontSize);
     SDL_Texture* createTextTexture(const std::string& str, const std::string& font, int size, SDL_Color color = {0,0,0,255});
 
     SDL_Texture *createWrappedTextTexture(const std::string &str, const std::string &font, int size, SDL_Color color, uint32_t wraplength);

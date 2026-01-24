@@ -1,5 +1,4 @@
 #include "../headers/SDLFontManager.hpp"
-#include "SDLFontManager.hpp"
 
 SDLFontManager::SDLFontManager(SDL_Renderer* renderer)
 {

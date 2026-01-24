@@ -96,7 +96,7 @@ SOCKET ConnectView::connectToServer()
     addr.sin_port = htons(port);
     inet_pton(AF_INET, ip.c_str(), &addr.sin_addr);
 
-    if (connect(sock, (sockaddr*)&addr, sizeof(addr)) == SOCKET_ERROR_PLATFORM)
+    if (connect(sock, reinterpret_cast<sockaddr*>(&addr), sizeof(addr)) == SOCKET_ERROR_PLATFORM)
     {
         ConnectionManager::closeConnection(sock);
         return -1;

@@ -22,7 +22,7 @@
 #include "../headers/views/LobbyView.hpp"
 #include "../headers/views/RoomView.hpp"
 
-#include "RTS-Chess-MainLoop.hpp"
+#include "../headers/RTS-Chess-MainLoop.hpp"
 
 int main()
 {

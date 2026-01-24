@@ -49,7 +49,7 @@ public:
 
     void setSelected(bool select);
     void setText(const std::string& text);
-    void textListener(SDL_Event& e);
+    void textListener(const SDL_Event& e);
 
     std::string& getString();
 };

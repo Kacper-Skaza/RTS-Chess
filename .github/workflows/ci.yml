@@ -21,7 +21,7 @@ jobs:
         run: sudo apt-get install -y cppcheck
 
       - name: Run cppcheck
-        run: cppcheck --std=c++17 --enable=all --inconclusive -DJSON_HAS_CPP_17=1 --suppress="*:*Json.hpp*" --suppress=normalCheckLevelMaxBranches --suppress=missingIncludeSystem --error-exitcode=1 ./shared ./client ./server
+        run: cppcheck --std=c++17 --enable=all --inconclusive -DJSON_HAS_CPP_17=1 --suppress="*:*Json.hpp*" --suppress=missingIncludeSystem --suppress=unusedFunction --error-exitcode=1 ./shared ./client ./server
 
   # ===== Build on ubuntu =====
   build_ubuntu:

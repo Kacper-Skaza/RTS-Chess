@@ -54,7 +54,7 @@ int main()
 		return 1;
 	}
 
-	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+	SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, 0);
 	SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
 	if (!renderer)
 	{
@@ -86,10 +86,10 @@ int main()
 		SDLFontManager fontMan(renderer);
 
 		std::unique_ptr<View> currentView = std::make_unique<ConnectView>(window, renderer, &fontMan);
-		
+
 		// --- Main loop ---
 		SDL_Event event;
-		
+
 		while (running)
 		{
 			mainLoop(window, renderer, &fontMan, &texMgr, currentView, event);

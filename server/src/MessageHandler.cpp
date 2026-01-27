@@ -618,6 +618,12 @@ void MessageHandler::handleMakeMove(Client *client, const json &data)
     }
     catch (const std::exception &e)
     {
+        json errResponse = {
+            {"type", "ERR_MAKE_MOVE"},
+            {"data", {{"reason", "Invalid move !!!"}, {"board", client->room->getBoard()}}}};
+
+        client->connection->sendMessage(errResponse.dump());
+
         std::cerr << "[ERR] Error in handleMakeMove: " << e.what() << std::endl;
     }
 }
